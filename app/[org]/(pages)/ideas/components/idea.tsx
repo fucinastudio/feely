@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ChevronUp, Dot, LoaderCircle, MessageSquare } from 'lucide-react';
+import React, { useMemo } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ChevronUp, Dot, LoaderCircle, MessageSquare } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage, Toggle } from '@fucina/ui';
-import { useVoteIdea } from '@/app/api/controllers/ideaController';
-import { StatusTag } from '@/utils/parseStatus';
-import { IdeaType } from '@/types/idea';
+import { Avatar, AvatarFallback, AvatarImage, Toggle } from "@fucina/ui";
+import { useVoteIdea } from "@/app/api/controllers/ideaController";
+import { StatusTag } from "@/utils/parseStatus";
+import { IdeaType } from "@/types/idea";
+import useOpenUserTab from "@/utils/useOpenUserTab";
 
 interface IProps {
   idea: IdeaType;
@@ -26,9 +27,8 @@ const IdeaCard = ({ idea, org }: IProps) => {
   const handleVoteIdea = (id: string, isVoted: boolean) => {
     voteIdea({ id, isVoted: !isVoted });
   };
-  const userLink = useMemo(() => {
-    return `/${org}/ideas?user=${idea.authorId}`;
-  }, [org, idea.authorId]);
+  const userPageLink = useOpenUserTab({ userId: idea.authorId });
+
   return (
     <div
       key={idea.id}
@@ -59,10 +59,10 @@ const IdeaCard = ({ idea, org }: IProps) => {
               ev.preventDefault();
             }}
           >
-            by{' '}
+            by{" "}
             <Link
               className="text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
-              href={userLink}
+              href={userPageLink}
             >
               {idea.author.name}
             </Link>

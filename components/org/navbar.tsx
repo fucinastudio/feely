@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
-import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import React, { useMemo } from "react";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   BookText,
   HelpCircle,
@@ -10,11 +10,11 @@ import {
   LogOut,
   Settings,
   User,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
-import { useAuth } from '@/context/authContext';
-import { useWorkspace } from '@/context/workspaceContext';
+import { logoutUser } from "@/app/api/apiServerActions/userApiServerActions";
+import { useAuth } from "@/context/authContext";
+import { useWorkspace } from "@/context/workspaceContext";
 import {
   Avatar,
   AvatarFallback,
@@ -28,7 +28,8 @@ import {
   DropdownMenuTrigger,
   Button,
   Separator,
-} from '@fucina/ui';
+} from "@fucina/ui";
+import useOpenUserTab from "@/utils/useOpenUserTab";
 
 const Navbar = () => {
   const { org, workspace, isLoadingWorkspace } = useWorkspace();
@@ -36,29 +37,16 @@ const Navbar = () => {
   const orgLetter = org[0];
   // Function to check if the route is active
   const isActive = (route: string) => {
-    return pathname.split('/')[2] === route;
+    return pathname.split("/")[2] === route;
   };
   const { user, isAdmin } = useAuth();
 
   const handleClickAvatar = () => {
     if (workspace?.logoUrl) {
-      window.open(workspace?.logoUrl, '_blank');
+      window.open(workspace?.logoUrl, "_blank");
     }
   };
-
-  const pathName = usePathname();
-
-  const searchParams = useSearchParams();
-
-  const openUserPage = useMemo(() => {
-    const newSearchParams = new URLSearchParams(searchParams);
-    if (user) {
-      newSearchParams.set('user', user?.id);
-    }
-
-    return `${pathName}?${newSearchParams.toString()}`;
-  }, [searchParams, pathName, user]);
-
+  const userPageLink = useOpenUserTab({ userId: user?.id ?? null });
   return (
     <div className="z-50 fixed flex justify-center items-center border-default bg-elevated border-b w-full h-14">
       <div className="flex justify-between items-center mx-auto px-10 w-full max-w-screen-xl">
@@ -85,7 +73,7 @@ const Navbar = () => {
                 <Button
                   variant="text"
                   asChild
-                  className={isActive('ideas') ? 'text-brand' : ''}
+                  className={isActive("ideas") ? "text-brand" : ""}
                 >
                   <Link href={`/${org}/ideas`} scroll={false}>
                     Ideas
@@ -96,7 +84,7 @@ const Navbar = () => {
                 <Button
                   variant="text"
                   asChild
-                  className={isActive('roadmap') ? 'text-brand' : ''}
+                  className={isActive("roadmap") ? "text-brand" : ""}
                 >
                   <Link href={`/${org}/roadmap`} scroll={false}>
                     Roadmap
@@ -107,7 +95,7 @@ const Navbar = () => {
                 <Button
                   variant="text"
                   asChild
-                  className={isActive('community') ? 'text-brand' : ''}
+                  className={isActive("community") ? "text-brand" : ""}
                 >
                   <Link href={`/${org}/community`} scroll={false}>
                     Community
@@ -118,7 +106,7 @@ const Navbar = () => {
                 <Button
                   variant="text"
                   asChild
-                  className={isActive('settings') ? 'text-brand' : ''}
+                  className={isActive("settings") ? "text-brand" : ""}
                 >
                   <Link href={`/${org}/settings/general`} scroll={false}>
                     Settings
@@ -151,7 +139,7 @@ const Navbar = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <Link href={openUserPage}>
+                <Link href={userPageLink}>
                   <DropdownMenuItem shortcut="⇧⌘P">
                     <User />
                     <span>Profile</span>
