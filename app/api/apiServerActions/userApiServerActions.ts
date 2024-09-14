@@ -1,29 +1,29 @@
-'use server';
+"use server";
 
-import { redirect } from 'next/navigation';
-import { Prisma } from '@prisma/client';
+import { redirect } from "next/navigation";
+import { Prisma } from "@prisma/client";
 
-import { IAccessToken } from '@/app/api/apiClient';
-import { PeriodType } from '@/types/enum/period';
-import prisma from '@/prisma/client';
-import { createClient } from '@/utils/supabase/server';
+import { IAccessToken } from "@/app/api/apiClient";
+import { PeriodType } from "@/types/enum/period";
+import prisma from "@/prisma/client";
+import { createClient } from "@/utils/supabase/server";
 
 export const logoutUser = async () => {
   const supabase = createClient();
   const { error } = await supabase.auth.signOut();
   if (error) {
-    console.error('Error logging out:', error.message);
+    console.error("Error logging out:", error.message);
   }
-  redirect('/');
+  redirect("/");
 };
 
 interface IGetUserDTO {
-  check_option?: 'id' | 'name';
+  check_option?: "id" | "name";
   current_org?: string;
 }
 
 export const getUser = async ({
-  check_option = 'name',
+  check_option = "name",
   current_org,
   access_token,
 }: IGetUserDTO & IAccessToken) => {
@@ -32,7 +32,7 @@ export const getUser = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -49,15 +49,15 @@ export const getUser = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   let isAdmin = false;
   if (current_org) {
     const userWorkspace = await prisma.workspace.findFirst({
       where: {
-        name: check_option === 'name' ? current_org : undefined,
-        id: check_option === 'id' ? current_org : undefined,
+        name: check_option === "name" ? current_org : undefined,
+        id: check_option === "id" ? current_org : undefined,
         ownerId: user.id,
       },
     });
@@ -89,7 +89,7 @@ export const getUserById = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -111,7 +111,7 @@ export const getUserById = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
 
@@ -128,7 +128,7 @@ export const isAdmin = async (body: IGetUserDTO & IAccessToken) => {
   if (!user.data?.isAdmin) {
     return {
       isSuccess: false,
-      error: 'User is not an admin',
+      error: "User is not an admin",
     };
   }
   return {
@@ -151,13 +151,13 @@ export const getUsersForWorkspace = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   if (!workspaceName && !workspaceId) {
     return {
       isSuccess: false,
-      error: 'Workspace identifier required',
+      error: "Workspace identifier required",
     };
   }
   if (!workspaceId) {
@@ -169,23 +169,23 @@ export const getUsersForWorkspace = async ({
     if (!workspace) {
       return {
         isSuccess: false,
-        error: 'Workspace not found',
+        error: "Workspace not found",
       };
     }
     workspaceId = workspace.id;
   }
   const orderByObject = {
-    ...(period === 'Week' && {
-      pointsInWeek: 'desc',
+    ...(period === "Week" && {
+      pointsInWeek: "desc",
     }),
-    ...(period === 'Month' && {
-      pointsInMonth: 'desc',
+    ...(period === "Month" && {
+      pointsInMonth: "desc",
     }),
-    ...(period === 'Quarter' && {
-      pointsInQuarter: 'desc',
+    ...(period === "Quarter" && {
+      pointsInQuarter: "desc",
     }),
-    ...(period === 'Year' && {
-      pointsInYear: 'desc',
+    ...(period === "Year" && {
+      pointsInYear: "desc",
     }),
   } as Prisma.userInWorkspaceOrderByWithRelationInput;
   const users = await prisma.userInWorkspace.findMany({
@@ -209,6 +209,52 @@ export const getUsersForWorkspace = async ({
         };
       }),
     },
+  };
+};
+
+export interface IPatchUser {
+  id: string;
+  name?: string | null;
+  image_url?: string | null;
+}
+
+export const patchUser = async ({
+  id,
+  name,
+  image_url,
+  access_token,
+}: IPatchUser & IAccessToken) => {
+  const supabase = createClient();
+  const currentUser = await supabase.auth.getUser(access_token);
+  if (!currentUser.data.user) {
+    return {
+      isSuccess: false,
+      error: "Session not found",
+    };
+  }
+  if (currentUser.data.user.id !== id) {
+    return {
+      isSuccess: false,
+      error: "User not authorized",
+    };
+  }
+  const user = await prisma.users.update({
+    where: {
+      id,
+    },
+    data: {
+      name,
+      image_url,
+    },
+  });
+  if (user) {
+    return {
+      isSuccess: true,
+    };
+  }
+  return {
+    isSuccess: false,
+    error: "Error while updating the user",
   };
 };
 

@@ -1,11 +1,14 @@
-import { useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import client, { FeelyRequest } from '@/app/api/apiClient';
-import { IGetUserByIdDTO } from '@/app/api/apiServerActions/userApiServerActions';
-import { Endpoints } from '@/app/api/endpoints';
-import { IGetUserDTO } from '@/types/DTO/getUserDTO';
-import { IGetUserInWorkspaceDTO } from '@/types/DTO/getUserInWorkspaceDTO';
-import { UserType, UserTypeWithPoints } from '@/types/user';
+import client, { FeelyRequest } from "@/app/api/apiClient";
+import {
+  IGetUserByIdDTO,
+  IPatchUser,
+} from "@/app/api/apiServerActions/userApiServerActions";
+import { Endpoints } from "@/app/api/endpoints";
+import { IGetUserDTO } from "@/types/DTO/getUserDTO";
+import { IGetUserInWorkspaceDTO } from "@/types/DTO/getUserInWorkspaceDTO";
+import { UserType, UserTypeWithPoints } from "@/types/user";
 
 export const useGetUser = (params: IGetUserDTO, enabled = true) => {
   const urlParams = new URLSearchParams({
@@ -14,7 +17,7 @@ export const useGetUser = (params: IGetUserDTO, enabled = true) => {
   const request: FeelyRequest = {
     url: `${Endpoints.user.main}?${urlParams.toString()}`,
     config: {
-      method: 'get',
+      method: "get",
     },
   };
   const requestConfig = {
@@ -44,11 +47,11 @@ export const useGetUserById = (params: IGetUserByIdDTO, enabled = true) => {
   const request: FeelyRequest = {
     url: `${Endpoints.user.byId}?${urlParams.toString()}`,
     config: {
-      method: 'get',
+      method: "get",
     },
   };
   const requestConfig = {
-    queryKey: [Endpoints.user.byId, urlParams.toString()],
+    queryKey: [Endpoints.user.byId, params.userId, params.workspaceId],
     queryFn: () => client(request),
     staleTime: 60 * 1000,
     enabled,
@@ -78,7 +81,7 @@ export const useGetUsersForWorkspace = (
   const request: FeelyRequest = {
     url: `${Endpoints.user.workspace}?${urlParams.toString()}`,
     config: {
-      method: 'get',
+      method: "get",
     },
   };
   const requestConfig = {
@@ -98,4 +101,29 @@ export const useGetUsersForWorkspace = (
     },
     null
   >(requestConfig);
+};
+
+export const usePatchUser = () => {
+  const queryClient = useQueryClient();
+  const patchTopicFunction = async (patchUser: IPatchUser) => {
+    const req: FeelyRequest = {
+      url: Endpoints.user.main,
+      config: {
+        method: "PATCH",
+        data: JSON.stringify({ data: patchUser }),
+      },
+    };
+    return await client(req);
+  };
+
+  return useMutation<{ data: { message: string } }, null, IPatchUser>(
+    patchTopicFunction,
+    {
+      onSettled: (_ad, _e, variables) => {
+        queryClient.invalidateQueries([Endpoints.user.main]);
+        queryClient.invalidateQueries([Endpoints.user.workspace]);
+        queryClient.invalidateQueries([Endpoints.user.byId, variables.id]);
+      },
+    }
+  );
 };

@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useQueryClient } from 'react-query';
-import { LoaderCircle } from 'lucide-react';
+import React, { useState } from "react";
+import { useQueryClient } from "react-query";
+import { LoaderCircle } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
-import FileUploadButton from '@/components/fileUploadButton';
-import { createClient } from '@/utils/supabase/client';
-import { Endpoints } from '@/app/api/endpoints';
-import { useWorkspace } from '@/context/workspaceContext';
+import { Avatar, AvatarFallback, AvatarImage } from "@fucina/ui";
+import FileUploadButton from "@/components/fileUploadButton";
+import { createClient } from "@/utils/supabase/client";
+import { Endpoints } from "@/app/api/endpoints";
+import { useWorkspace } from "@/context/workspaceContext";
 
 const AvatarPicker = () => {
   const { workspace } = useWorkspace();
@@ -20,14 +20,14 @@ const AvatarPicker = () => {
     try {
       const supabase = createClient();
       const res = await supabase.storage
-        .from('images')
+        .from("images")
         .upload(workspace.id, file, {
           upsert: true,
-          cacheControl: '3600',
+          cacheControl: "3600",
         });
       queryClient.invalidateQueries([Endpoints.workspace.main]);
     } catch (e) {
-      console.log('Error', e);
+      console.log("Error", e);
     } finally {
       setIsLoadingImage(false);
     }
@@ -43,7 +43,7 @@ const AvatarPicker = () => {
           {isLoadingImage ? (
             <LoaderCircle className="animate-spin stroke-icon" />
           ) : (
-            'D'
+            "D"
           )}
         </AvatarFallback>
       </Avatar>
