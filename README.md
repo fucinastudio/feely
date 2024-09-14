@@ -1,3 +1,3 @@
-# Template
+# Feely
 
-Coming soon...
+User feedbacks get real by being rewarded

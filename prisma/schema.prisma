@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model users {
+  id              String            @id @default(uuid())
+  email           String            @unique
+  name            String?
+  created_at      DateTime          @default(now())
+  image_url       String?
+  comments        comment[]
+  ideas           idea[]
+  votedComments   votedComment[]
+  voted           votedIdea[]
+  workspaces      workspace[]
+  userInWorkspace userInWorkspace[]
+}
+
+model workspace {
+  id                String             @id @default(uuid())
+  name              String             @unique
+  created_at        DateTime           @default(now())
+  ownerId           String
+  externalName      String             @unique
+  logoUrl           String?
+  ideas             idea[]
+  statuses          status[]
+  topics            topic[]
+  owner             users              @relation(fields: [ownerId], references: [id])
+  workspaceSettings workspaceSettings?
+  userInWorkspace   userInWorkspace[]
+}
+
+model workspaceSettings {
+  workspaceId   String    @id @default(dbgenerated("gen_random_uuid()"))
+  showCommunity Boolean   @default(true)
+  showIdeas     Boolean   @default(true)
+  showRoadmap   Boolean   @default(true)
+  primaryColor  String?
+  neutralColor  String?
+  fontFamily    String?
+  workspace     workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model userInWorkspace {
+  userId                String
+  workspaceId           String
+  user                  users                   @relation(fields: [userId], references: [id])
+  workspace             workspace               @relation(fields: [workspaceId], references: [id])
+  points                Int                     @default(0)
+  pointsInWeek          Int                     @default(0)
+  pointsInMonth         Int                     @default(0)
+  pointsInQuarter       Int                     @default(0)
+  pointsInYear          Int                     @default(0)
+  userInWorkspaceAwards userInWorkspaceAwards[]
+
+  @@id([userId, workspaceId])
+}
+
+enum AwardType {
+  WEEK
+  MONTH
+  QUARTER
+  YEAR
+}
+
+model userInWorkspaceAwards {
+  id              String          @id @default(uuid())
+  userId          String
+  workspaceId     String
+  userInWorkspace userInWorkspace @relation(fields: [userId, workspaceId], references: [userId, workspaceId])
+  awardType       AwardType
+  awardedAt       DateTime        @default(now())
+}
+
+model topic {
+  id          String    @id @default(uuid())
+  name        String
+  created_at  DateTime  @default(now())
+  workspaceId String
+  ideas       idea[]
+  workspace   workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model status {
+  id          String    @id @default(uuid())
+  name        String
+  created_at  DateTime  @default(now())
+  workspaceId String
+  order       Int
+  ideas       idea[]
+  workspace   workspace @relation(fields: [workspaceId], references: [id])
+}
+
+model idea {
+  id          String      @id @default(uuid())
+  title       String
+  description String
+  created_at  DateTime    @default(now())
+  updated_at  DateTime    @updatedAt
+  workspaceId String
+  authorId    String
+  topicId     String
+  statusId    String?
+  comments    comment[]
+  author      users       @relation(fields: [authorId], references: [id])
+  status      status?     @relation(fields: [statusId], references: [id])
+  topic       topic       @relation(fields: [topicId], references: [id])
+  workspace   workspace   @relation(fields: [workspaceId], references: [id])
+  voters      votedIdea[]
+}
+
+model votedIdea {
+  ideaId String
+  userId String
+  idea   idea   @relation(fields: [ideaId], references: [id])
+  user   users  @relation(fields: [userId], references: [id])
+
+  @@id([ideaId, userId])
+}
+
+model comment {
+  id            String         @id @default(uuid())
+  text          String
+  created_at    DateTime       @default(now())
+  authorId      String
+  ideaId        String
+  parentId      String?
+  author        users          @relation(fields: [authorId], references: [id])
+  idea          idea           @relation(fields: [ideaId], references: [id])
+  parent        comment?       @relation("ChildComments", fields: [parentId], references: [id])
+  childComments comment[]      @relation("ChildComments")
+  votes         votedComment[]
+}
+
+model votedComment {
+  commentId String
+  userId    String
+  comment   comment @relation(fields: [commentId], references: [id])
+  user      users   @relation(fields: [userId], references: [id])
+
+  @@id([commentId, userId])
+}
