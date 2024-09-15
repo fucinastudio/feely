@@ -5,7 +5,6 @@ import { updateSession } from "@/utils/supabase/middleware";
 export async function middleware(request: NextRequest) {
   const res = await updateSession(request);
   const url = request.nextUrl;
-  console.log("Request", url);
   if (url.pathname === "/") {
     if (res.user) {
       return NextResponse.redirect(
