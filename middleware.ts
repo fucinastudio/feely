@@ -1,9 +1,21 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from "next/server";
 
-import { updateSession } from '@/utils/supabase/middleware';
+import { updateSession } from "@/utils/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const res = await updateSession(request);
+  const url = request.nextUrl;
+  console.log("Request", url);
+  if (url.pathname === "/") {
+    if (res.user) {
+      return NextResponse.redirect(
+        new URL("/redirect_to_workspace", request.url)
+      );
+    } else {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+  return res.response;
   // =============== MIDDLEWARE FOR SUBDOMAINS REDIRECTION ===============
   // const url = request.nextUrl;
   // const hostname = request.headers.get("host");
@@ -48,6 +60,6 @@ export const config = {
      * - images - .svg, .png, .jpg, .jpeg, .gif, .webp
      * Feel free to modify this pattern to include more paths.
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
