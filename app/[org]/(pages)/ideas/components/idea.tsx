@@ -10,6 +10,8 @@ import { useVoteIdea } from "@/app/api/controllers/ideaController";
 import { StatusTag } from "@/utils/parseStatus";
 import { IdeaType } from "@/types/idea";
 import useOpenUserTab from "@/utils/useOpenUserTab";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { useAuth } from "@/context/authContext";
 
 interface IProps {
   idea: IdeaType;
@@ -17,17 +19,31 @@ interface IProps {
 }
 
 const IdeaCard = ({ idea, org }: IProps) => {
+  const { user } = useAuth();
   const router = useRouter();
   const handleClickIdea = (id: string) => {
     router.push(`/${org}/ideas/${id}`);
   };
 
-  const { mutate: voteIdea, isLoading: isLoadingVoteIdea } = useVoteIdea();
+  const { mutate: voteIdea } = useVoteIdea();
 
-  const handleVoteIdea = (id: string, isVoted: boolean) => {
-    voteIdea({ id, isVoted: !isVoted });
+  const handleVoteIdea = (isVoted: boolean) => {
+    voteIdea({ id: idea.id, isVoted: isVoted });
   };
   const userPageLink = useOpenUserTab({ userId: idea.authorId });
+
+  const [isVoted, setIsVoted] = useOptimistic({
+    mainState: idea.isVoted,
+    callOnChange: handleVoteIdea,
+  });
+
+  const votedCountWithoutUser = useMemo(() => {
+    return idea.voters.filter((voter) => voter.userId !== user?.id).length;
+  }, [idea]);
+
+  const votedCountToShow = useMemo(() => {
+    return isVoted ? votedCountWithoutUser + 1 : votedCountWithoutUser;
+  }, [isVoted, votedCountWithoutUser]);
 
   return (
     <div
@@ -80,24 +96,24 @@ const IdeaCard = ({ idea, org }: IProps) => {
       <Toggle
         aria-label="vote"
         className="flex flex-col justify-items-center items-center gap-0 space-y-0 p-1 w-11 h-14"
-        pressed={idea.isVoted}
+        pressed={isVoted}
         onClick={(ev) => {
           ev.stopPropagation();
           ev.preventDefault();
-          handleVoteIdea(idea.id, idea.isVoted);
+          setIsVoted(!isVoted);
         }}
       >
         <ChevronUp size={24} />
-        {isLoadingVoteIdea ? (
+        {/* {isLoadingVoteIdea ? (
           <div className="flex justify-center items-center w-full h-[22px]">
             <LoaderCircle
               size={16}
               className="animate-spin stroke-icon-brand"
             />
           </div>
-        ) : (
-          <p className="text-md">{idea.voters.length}</p>
-        )}
+        ) : ( */}
+        <p className="text-md">{votedCountToShow}</p>
+        {/* )} */}
       </Toggle>
     </div>
   );

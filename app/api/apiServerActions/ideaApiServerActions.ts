@@ -1,15 +1,15 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
-import { isAdmin } from '@/app/api/apiServerActions/userApiServerActions';
-import { IGetIdeasByUserInWorkspace } from '@/app/api/controllers/ideaController';
-import { IAccessToken } from '@/app/api/apiClient';
-import { getWorkspaceByName } from '@/app/api/apiServerActions/workspaceApiServerActions';
-import { IGetIdeasByWorkspaceName } from '@/types/DTO/getIdeasByWorkspaceNameDTO';
-import { IdeaType } from '@/types/idea';
-import { createClient } from '@/utils/supabase/server';
-import prisma from '@/prisma/client';
+import { isAdmin } from "@/app/api/apiServerActions/userApiServerActions";
+import { IGetIdeasByUserInWorkspace } from "@/app/api/controllers/ideaController";
+import { IAccessToken } from "@/app/api/apiClient";
+import { getWorkspaceByName } from "@/app/api/apiServerActions/workspaceApiServerActions";
+import { IGetIdeasByWorkspaceName } from "@/types/DTO/getIdeasByWorkspaceNameDTO";
+import { IdeaType } from "@/types/idea";
+import { createClient } from "@/utils/supabase/server";
+import prisma from "@/prisma/client";
 
 export interface ICreateIdea {
   org: string;
@@ -24,7 +24,7 @@ export const createIdea = async (body: ICreateIdea, access_token?: string) => {
   if (!workspace) {
     return {
       isSuccess: false,
-      error: 'Workspace do not exist',
+      error: "Workspace do not exist",
     };
   }
   const supabase = createClient();
@@ -32,7 +32,7 @@ export const createIdea = async (body: ICreateIdea, access_token?: string) => {
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -43,7 +43,7 @@ export const createIdea = async (body: ICreateIdea, access_token?: string) => {
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
 
@@ -119,7 +119,7 @@ export const getIdeasByWorkspaceName = async ({
   if (!workspace) {
     return {
       isSuccess: false,
-      error: 'Workspace do not exist',
+      error: "Workspace do not exist",
     };
   }
   const supabase = createClient();
@@ -127,7 +127,7 @@ export const getIdeasByWorkspaceName = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -138,7 +138,7 @@ export const getIdeasByWorkspaceName = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const ideas = await prisma.idea.findMany({
@@ -155,16 +155,16 @@ export const getIdeasByWorkspaceName = async ({
       },
     },
     orderBy: {
-      ...(orderBy === 'least_voted' || orderBy === 'most_voted'
+      ...(orderBy === "least_voted" || orderBy === "most_voted"
         ? {
             voters: {
-              _count: orderBy === 'most_voted' ? 'desc' : 'asc',
+              _count: orderBy === "most_voted" ? "desc" : "asc",
             },
           }
         : {}),
-      ...(orderBy === 'latest' || orderBy === 'oldest'
+      ...(orderBy === "latest" || orderBy === "oldest"
         ? {
-            created_at: orderBy === 'latest' ? 'desc' : 'asc',
+            created_at: orderBy === "latest" ? "desc" : "asc",
           }
         : {}),
     },
@@ -235,7 +235,7 @@ export const getIdeasByUserInWorkspace = async ({
   if (!workspace) {
     return {
       isSuccess: false,
-      error: 'Workspace do not exist',
+      error: "Workspace do not exist",
     };
   }
   const supabase = createClient();
@@ -243,7 +243,7 @@ export const getIdeasByUserInWorkspace = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -254,7 +254,7 @@ export const getIdeasByUserInWorkspace = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const ideas = await prisma.idea.findMany({
@@ -324,7 +324,7 @@ export const getIdeaById = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -335,7 +335,7 @@ export const getIdeaById = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const idea = await prisma.idea.findUnique({
@@ -407,7 +407,7 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -418,7 +418,7 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   let response: {
@@ -469,7 +469,6 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
       },
     },
   });
-  revalidatePath(`/${_createAssociation.workspace.name}/community`);
 
   return {
     isSuccess: true,
@@ -493,7 +492,7 @@ export const patchIdea = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const idea = await prisma.idea.findFirst({
@@ -504,19 +503,19 @@ export const patchIdea = async ({
   if (!idea) {
     return {
       isSuccess: false,
-      error: 'Idea not found',
+      error: "Idea not found",
     };
   }
   const checkUser = await isAdmin({
     current_org: idea.workspaceId,
-    check_option: 'id',
+    check_option: "id",
     access_token,
   });
 
   if (!checkUser?.isSuccess) {
     return {
       isSuccess: false,
-      error: 'Unauthorized user',
+      error: "Unauthorized user",
     };
   }
   //Check if statusId and topicId are valid
@@ -530,7 +529,7 @@ export const patchIdea = async ({
     if (!status) {
       return {
         isSuccess: false,
-        error: 'Status not found',
+        error: "Status not found",
       };
     }
   }
@@ -544,7 +543,7 @@ export const patchIdea = async ({
     if (!topic) {
       return {
         isSuccess: false,
-        error: 'Topic not found',
+        error: "Topic not found",
       };
     }
   }

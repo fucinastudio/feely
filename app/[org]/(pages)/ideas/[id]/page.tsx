@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { ChevronUp, LoaderCircle } from 'lucide-react';
+import React, { useMemo, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronUp, LoaderCircle } from "lucide-react";
 
 import {
   Button,
@@ -28,17 +28,18 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@fucina/ui';
+} from "@fucina/ui";
 import {
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
-} from '@/app/api/controllers/ideaController';
-import { useCreateComment } from '@/app/api/controllers/commentController';
-import CommentCard from '@/app/[org]/(pages)/ideas/[id]/components/comment';
-import { useAuth } from '@/context/authContext';
-import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/[org]/(pages)/ideas/[id]/loading';
+} from "@/app/api/controllers/ideaController";
+import { useCreateComment } from "@/app/api/controllers/commentController";
+import CommentCard from "@/app/[org]/(pages)/ideas/[id]/components/comment";
+import { useAuth } from "@/context/authContext";
+import { useWorkspace } from "@/context/workspaceContext";
+import Loading from "@/app/[org]/(pages)/ideas/[id]/loading";
+import { useOptimistic } from "@/utils/useOptimistic";
 
 export interface IPropsIdeaPage {
   params: {
@@ -54,14 +55,14 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const router = useRouter();
   const pathName = usePathname();
   const handleClose = () => {
-    router.push(pathName.substring(0, pathName.lastIndexOf('/')));
+    router.push(pathName.substring(0, pathName.lastIndexOf("/")));
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
   });
   const idea = ideaData?.data.idea;
 
-  const [comment, setComment] = useState<string>('');
+  const [comment, setComment] = useState<string>("");
 
   const { mutateAsync: createComment, isLoading: isLoadingCreateComment } =
     useCreateComment();
@@ -76,17 +77,17 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         ideaId: id,
         comment,
       });
-      setComment('');
+      setComment("");
     } catch (e) {}
   };
 
   const { mutate: voteIdea, isLoading: isLoadingVoteIdea } = useVoteIdea();
 
   const handleVoteIdea = (isVoted: boolean) => {
-    voteIdea({ id, isVoted: !isVoted });
+    voteIdea({ id, isVoted: isVoted });
   };
 
-  const { mutate: patchIdea, isLoading: isLoadingPatchIdea } = usePatchIdea();
+  const { mutate: patchIdea } = usePatchIdea();
 
   const handleChangeStatus = (statusId: string) => {
     if (!idea) return;
@@ -95,6 +96,21 @@ const IdeaPage = (props: IPropsIdeaPage) => {
       statusId: statusId,
     });
   };
+
+  const [isVoted, setIsVoted] = useOptimistic({
+    mainState: idea?.isVoted ?? false,
+    callOnChange: handleVoteIdea,
+  });
+
+  const votedCountWithoutUser = useMemo(() => {
+    return (
+      idea?.voters.filter((voter) => voter.userId !== user?.id).length ?? 0
+    );
+  }, [idea]);
+
+  const votedCountToShow = useMemo(() => {
+    return isVoted ? votedCountWithoutUser + 1 : votedCountWithoutUser;
+  }, [isVoted, votedCountWithoutUser]);
 
   return (
     <div>
@@ -124,19 +140,19 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   <Toggle
                     aria-label="vote"
                     className="flex flex-col justify-items-center items-center gap-0 space-y-0 p-1 w-11 min-w-11 h-14"
-                    pressed={idea.isVoted}
+                    pressed={isVoted}
                     onClick={(ev) => {
                       ev.stopPropagation();
                       ev.preventDefault();
-                      handleVoteIdea(idea.isVoted);
+                      setIsVoted(!isVoted);
                     }}
                   >
                     <ChevronUp size={24} />
-                    {isLoadingVoteIdea ? (
+                    {/* {isLoadingVoteIdea ? (
                       <LoaderCircle className="animate-spin stroke-icon" />
-                    ) : (
-                      <p className="text-md">{idea.voters.length}</p>
-                    )}
+                    ) : ( */}
+                    <p className="text-md">{votedCountToShow}</p>
+                    {/* )} */}
                   </Toggle>
                 </div>
                 <Separator />
@@ -205,7 +221,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                         <Button variant="text">
                           <span className="flex justify-start items-center gap-2">
                             {idea.voters.length === 0 ? (
-                              '0 Voters'
+                              "0 Voters"
                             ) : (
                               <>
                                 <div className="flex justify-start items-center -space-x-1.5">
@@ -297,7 +313,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       {isLoadingCreateComment ? (
                         <LoaderCircle className="animate-spin" />
                       ) : (
-                        'Comment'
+                        "Comment"
                       )}
                     </Button>
                   </div>
