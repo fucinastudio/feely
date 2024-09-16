@@ -4,9 +4,9 @@
   "description": "User feedbacks get real by being rewarded",
   "private": true,
   "scripts": {
-    "dev": "env-cmd -f .env.local next dev -p 3000",
-    "build": "env-cmd -f .env.local next build",
-    "start": "env-cmd -f .env.local next start -p 3000",
+    "dev": "env-cmd -f .env next dev -p 3000",
+    "build": "env-cmd -f .env next build",
+    "start": "env-cmd -f .env next start -p 3000",
     "lint": "next lint",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf .next",
     "postinstall": "prisma generate",
