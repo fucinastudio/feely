@@ -1,11 +1,12 @@
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from "react-query";
 
-import client, { FeelyRequest } from '@/app/api/apiClient';
+import client, { FeelyRequest } from "@/app/api/apiClient";
 import {
   IReplyComment,
   IVoteComment,
-} from '@/app/api/apiServerActions/commentApiServerAction';
-import { Endpoints } from '@/app/api/endpoints';
+} from "@/app/api/apiServerActions/commentApiServerAction";
+import { Endpoints } from "@/app/api/endpoints";
+import { CommentType } from "@/types/comment";
 
 export interface ICreateComment {
   ideaId: string;
@@ -18,7 +19,7 @@ export const useCreateComment = () => {
     const req: FeelyRequest = {
       url: Endpoints.comment.main,
       config: {
-        method: 'POST',
+        method: "POST",
         data: JSON.stringify({ data: createComment }),
       },
     };
@@ -26,7 +27,7 @@ export const useCreateComment = () => {
   };
 
   return useMutation<
-    { data: { message: string; id?: string } },
+    { data: { message: string; id: string | null } },
     null,
     ICreateComment
   >(createCommentFunction, {
@@ -46,7 +47,7 @@ export const useVoteComment = () => {
     const req: FeelyRequest = {
       url: Endpoints.comment.vote,
       config: {
-        method: 'POST',
+        method: "POST",
         data: JSON.stringify({
           data: {
             id: voteIdea.id,
@@ -76,7 +77,7 @@ export const useReplyComment = () => {
     const req: FeelyRequest = {
       url: Endpoints.comment.reply,
       config: {
-        method: 'POST',
+        method: "POST",
         data: JSON.stringify({
           data: commentIdea,
         }),

@@ -1,14 +1,14 @@
-'use server';
+"use server";
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-import { createComment } from '@/app/api/apiServerActions/commentApiServerAction';
-import { authenticateUser } from '@/app/api/apiUtils';
+import { createComment } from "@/app/api/apiServerActions/commentApiServerAction";
+import { authenticateUser } from "@/app/api/apiUtils";
 
 export async function POST(req: NextRequest) {
   const user = await authenticateUser(req);
   if (!user) {
-    return NextResponse.json({ message: 'Unauthorized user' }, { status: 401 });
+    return NextResponse.json({ message: "Unauthorized user" }, { status: 401 });
   }
   const body = await req.json();
   const { data } = body;
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
 
   if (res.isSuccess) {
     return NextResponse.json(
-      { message: 'Comment created', id: res.id },
+      { message: "Comment created", id: res.id ?? null },
       { status: 200 }
     );
   }

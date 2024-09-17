@@ -1,10 +1,10 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
-import { createClient } from '@/utils/supabase/server';
-import { ICreateComment } from '@/app/api/controllers/commentController';
-import prisma from '@/prisma/client';
+import { createClient } from "@/utils/supabase/server";
+import { ICreateComment } from "@/app/api/controllers/commentController";
+import prisma from "@/prisma/client";
 
 export const createComment = async (
   comment: ICreateComment,
@@ -15,7 +15,7 @@ export const createComment = async (
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -26,7 +26,7 @@ export const createComment = async (
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const newComment = await prisma.comment.create({
@@ -42,7 +42,7 @@ export const createComment = async (
   if (!newComment) {
     return {
       isSuccess: false,
-      error: 'Comment not created',
+      error: "Comment not created",
     };
   }
 
@@ -87,7 +87,7 @@ export const voteComment = async (
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -98,7 +98,7 @@ export const voteComment = async (
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   let response: {
@@ -181,7 +181,7 @@ export const replyComment = async (
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -192,7 +192,7 @@ export const replyComment = async (
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
 

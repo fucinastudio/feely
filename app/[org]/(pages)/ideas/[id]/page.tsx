@@ -35,11 +35,14 @@ import {
   useVoteIdea,
 } from "@/app/api/controllers/ideaController";
 import { useCreateComment } from "@/app/api/controllers/commentController";
-import CommentCard from "@/app/[org]/(pages)/ideas/[id]/components/comment";
+import CommentCard, {
+  OptimisticComment,
+} from "@/app/[org]/(pages)/ideas/[id]/components/comment";
 import { useAuth } from "@/context/authContext";
 import { useWorkspace } from "@/context/workspaceContext";
 import Loading from "@/app/[org]/(pages)/ideas/[id]/loading";
 import { useOptimistic } from "@/utils/useOptimistic";
+import { CommentType } from "@/types/comment";
 
 export interface IPropsIdeaPage {
   params: {
@@ -54,13 +57,16 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   } = props;
   const router = useRouter();
   const pathName = usePathname();
+
   const handleClose = () => {
     router.push(pathName.substring(0, pathName.lastIndexOf("/")));
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
   });
-  const idea = ideaData?.data.idea;
+  const idea = useMemo(() => {
+    return ideaData?.data.idea;
+  }, [ideaData]);
 
   const [comment, setComment] = useState<string>("");
 
@@ -71,15 +77,58 @@ const IdeaPage = (props: IPropsIdeaPage) => {
 
   const { statuses } = useWorkspace();
 
+  const [createdComment, setCreatedComment] =
+    useState<OptimisticComment | null>(null);
+
   const handleComment = async () => {
     try {
-      await createComment({
-        ideaId: id,
-        comment,
-      });
+      if (user) {
+        setCreatedComment({
+          id: null,
+          text: comment,
+          author: {
+            id: user.id,
+            name: user.name,
+            image_url: user.image_url,
+          },
+          created_at: new Date(),
+        });
+      }
+      const content = comment;
       setComment("");
+      const res = await createComment({
+        ideaId: id,
+        comment: content,
+      });
+      if (res.data.id) {
+        setCreatedComment((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            id: res.data.id,
+          };
+        });
+      }
     } catch (e) {}
   };
+
+  //Remove the one we set optimistically
+  const comments: (OptimisticComment | CommentType)[] = useMemo(() => {
+    const isNewContained = idea?.comments.some(
+      (comment) => comment.id === createdComment?.id
+    );
+    if (isNewContained) {
+      return idea?.comments ?? [];
+    }
+
+    let newComments: any[] =
+      idea?.comments.filter((comment) => comment.id !== createdComment?.id) ??
+      [];
+    if (createdComment) {
+      newComments = [createdComment, ...newComments];
+    }
+    return newComments;
+  }, [idea, createdComment]);
 
   const { mutate: voteIdea, isLoading: isLoadingVoteIdea } = useVoteIdea();
 
@@ -310,19 +359,24 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       }}
                       className="w-fit"
                     >
-                      {isLoadingCreateComment ? (
+                      {/* {isLoadingCreateComment ? (
                         <LoaderCircle className="animate-spin" />
-                      ) : (
-                        "Comment"
-                      )}
+                      ) : ( */}
+                      Comment
+                      {/* )} */}
                     </Button>
                   </div>
                 </div>
                 <Separator />
                 <div className="flex flex-col gap-4 w-full">
                   <p className="text-description text-heading-group">Replies</p>
-                  {idea.comments?.map((comment) => {
-                    return <CommentCard key={comment.id} comment={comment} />;
+                  {comments?.map((comment, index) => {
+                    return (
+                      <CommentCard
+                        key={comment.id ?? `New_comment-${index}`}
+                        comment={comment}
+                      />
+                    );
                   })}
                 </div>
               </div>
