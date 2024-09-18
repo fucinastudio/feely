@@ -228,8 +228,6 @@ export const replyComment = async (
       },
     },
   });
-
-  revalidatePath(`/${_createAssociation.workspace.name}/community`);
   return {
     isSuccess: true,
     id: newReply.id,

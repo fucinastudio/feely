@@ -86,13 +86,14 @@ export const useReplyComment = () => {
     return await client(req);
   };
 
-  return useMutation<{ data: { message: string } }, null, IReplyComment>(
-    voteIdeaFunction,
-    {
-      onSettled: (_a, _b, variables) => {
-        queryClient.invalidateQueries([Endpoints.idea.workspace.main]);
-        queryClient.invalidateQueries([Endpoints.idea.main, variables.ideaId]);
-      },
-    }
-  );
+  return useMutation<
+    { data: { message: string; id: string | null } },
+    null,
+    IReplyComment
+  >(voteIdeaFunction, {
+    onSettled: (_a, _b, variables) => {
+      queryClient.invalidateQueries([Endpoints.idea.workspace.main]);
+      queryClient.invalidateQueries([Endpoints.idea.main, variables.ideaId]);
+    },
+  });
 };

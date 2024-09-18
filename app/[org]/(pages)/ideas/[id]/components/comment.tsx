@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 
 import {
@@ -14,6 +14,8 @@ import {
   useReplyComment,
   useVoteComment,
 } from "@/app/api/controllers/commentController";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { useAuth } from "@/context/authContext";
 
 export type OptimisticComment = {
   id: string | null;
@@ -24,6 +26,7 @@ export type OptimisticComment = {
     image_url: string | null;
   };
   created_at: Date;
+  parentId?: string | null;
 };
 
 interface IProps {
@@ -31,13 +34,22 @@ interface IProps {
 }
 
 const CommentCard = ({ comment }: IProps) => {
+  const { user } = useAuth();
   const isOptimisticComment = !("childComments" in comment);
   const { mutate: voteComment } = useVoteComment();
-  const handleClickVoteComment = () => {
+
+  const [optimisticVoted, setOptimisticVoted] = useOptimistic({
+    mainState: !isOptimisticComment ? comment.isVoted : false,
+    callOnChange: (value: boolean) => {
+      handleClickVoteComment(value);
+    },
+  });
+
+  const handleClickVoteComment = (value: boolean) => {
     if (isOptimisticComment) return;
     voteComment({
       id: comment.id,
-      isVoted: !comment.isVoted,
+      isVoted: value,
       ideaId: comment.ideaId,
     });
   };
@@ -49,17 +61,74 @@ const CommentCard = ({ comment }: IProps) => {
   const { mutateAsync: createCommentAsync, isLoading: isLoadingCreateComment } =
     useReplyComment();
 
+  const [createdReply, setCreatedReply] = useState<OptimisticComment | null>(
+    null
+  );
+
   const handleComment = async () => {
     if (isOptimisticComment) return;
     try {
-      await createCommentAsync({
+      if (user) {
+        setCreatedReply({
+          id: null,
+          text: reply,
+          author: {
+            id: user.id,
+            name: user.name,
+            image_url: user.image_url,
+          },
+          created_at: new Date(),
+          parentId: comment.id,
+        });
+      }
+      setShowReplySection(false);
+
+      const content = reply;
+      setReply("");
+      const res = await createCommentAsync({
         ideaId: comment.ideaId,
-        reply: reply,
+        reply: content,
         id: comment.id,
       });
-      setReply("");
+      if (res.data.id) {
+        setCreatedReply((prev) => {
+          if (!prev) return null;
+          return {
+            ...prev,
+            id: res.data.id,
+          };
+        });
+      }
     } catch (e) {}
   };
+
+  const votedCountWithoutUser = useMemo(() => {
+    if (isOptimisticComment) return 0;
+    return comment.votes.filter((voter) => voter.userId !== user?.id).length;
+  }, [comment]);
+
+  const votedCountToShow = useMemo(() => {
+    return optimisticVoted ? votedCountWithoutUser + 1 : votedCountWithoutUser;
+  }, [optimisticVoted, votedCountWithoutUser]);
+
+  const comments: (OptimisticComment | CommentType)[] = useMemo(() => {
+    if (isOptimisticComment) return [];
+    const isNewContained = comment?.childComments.some(
+      (comment) => comment.id === createdReply?.id
+    );
+    if (isNewContained) {
+      return comment?.childComments ?? [];
+    }
+
+    let newReplies: any[] =
+      comment.childComments.filter(
+        (comment) => comment.id !== createdReply?.id
+      ) ?? [];
+    if (createdReply) {
+      newReplies = [createdReply, ...newReplies];
+    }
+    return newReplies;
+  }, [comment, createdReply]);
 
   return (
     <div className="flex flex-col">
@@ -92,13 +161,14 @@ const CommentCard = ({ comment }: IProps) => {
                   isOptimisticComment ? "cursor-default" : "cursor-pointer"
                 }
                 onClick={() => {
-                  if (!isOptimisticComment) handleClickVoteComment();
+                  if (!isOptimisticComment)
+                    setOptimisticVoted(!optimisticVoted);
                 }}
               >
-                {!isOptimisticComment && comment.isVoted
+                {!isOptimisticComment && optimisticVoted
                   ? "Downvote"
                   : "Upvote"}
-                {` (${!isOptimisticComment ? comment.votes.length : 0})`}
+                {` (${votedCountToShow})`}
               </span>
               <span
                 className={
@@ -144,11 +214,11 @@ const CommentCard = ({ comment }: IProps) => {
                 }}
                 className="w-fit"
               >
-                {isLoadingCreateComment ? (
+                {/* {isLoadingCreateComment ? (
                   <LoaderCircle className="animate-spin" />
-                ) : (
-                  "Comment"
-                )}
+                ) : ( */}
+                Comment
+                {/* )} */}
               </Button>
             </div>
           </div>
@@ -156,10 +226,10 @@ const CommentCard = ({ comment }: IProps) => {
       )}
       <div className="flex flex-col gap-4 mt-4 pl-[52px]">
         {!isOptimisticComment &&
-          comment.childComments.map((childComment) => {
+          comments.map((childComment, index) => {
             return (
               <div
-                key={childComment.id}
+                key={childComment.id ?? `New_reply-${index}`}
                 className="flex justify-center items-start gap-4"
               >
                 <Avatar size="md" className="border-default border">
