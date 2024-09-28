@@ -49,15 +49,26 @@ const AuthButtons = () => {
     <>
       <form onSubmit={handleGoogleLogin}>
         <div className="flex flex-col space-y-2 w-full">
-          <Button variant="secondary" className="w-full h-10">
+          <Button
+            variant="secondary"
+            className="flex justify-center items-center gap-2 w-full h-10"
+          >
             <GoogleIcon />
             Continue with Google
           </Button>
-          <Button disabled variant="secondary" className="w-full h-10">
+          <Button
+            disabled
+            variant="secondary"
+            className="flex justify-center items-center gap-2 w-full h-10"
+          >
             <GithubIcon />
             Continue with Github
           </Button>
-          <Button disabled variant="secondary" className="w-full h-10">
+          <Button
+            disabled
+            variant="secondary"
+            className="flex justify-center items-center gap-2 w-full h-10"
+          >
             <FacebookIcon />
             Continue with Facebook
           </Button>

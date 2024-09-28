@@ -29,7 +29,7 @@ export default async function RootLayout({
           <AuthProvider>
             <Navbar />
             <div className="flex justify-center mx-auto min-h-screen size-full">
-              <div className="px-10 pt-24 pb-10 max-w-screen-xl size-full">
+              <div className="px-5 sm:px-10 pt-24 pb-10 max-w-screen-xl size-full">
                 <UserTab />
                 {children}
               </div>

@@ -57,7 +57,7 @@ const WorkspaceInputField = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex items-start gap-3 w-[384px]"
+        className="flex sm:flex-row flex-col items-center sm:items-start gap-4 sm:gap-3 w-full sm:w-[384px]"
       >
         <FormField
           control={form.control}
@@ -66,16 +66,16 @@ const WorkspaceInputField = () => {
             <FormItem className="w-full">
               <FormControl>
                 <Input
-                  placeholder="your workspace"
+                  placeholder="Your workspace name"
                   {...field}
-                  className="w-full input-brand"
+                  className="w-full"
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="button-brand">
+        <Button type="submit" className="w-full sm:w-fit">
           Continue
         </Button>
       </form>

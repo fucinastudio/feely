@@ -11,7 +11,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-col justify-center items-center p-6 w-screen h-screen">
+    <div className="flex flex-col justify-center items-center p-5 sm:p-6 w-screen h-screen">
       <Logo className="top-6 left-6 z-50 absolute" />
       <Suspense fallback={<Loading />}>{children}</Suspense>
       <GridPattern

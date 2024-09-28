@@ -8,8 +8,8 @@ import { sans, brand, logo } from '@/styles/fonts/font';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
-  title: 'Fucina - Product Template',
-  description: 'Open source product template',
+  title: 'Feely - User feedbacks get real by being rewarded',
+  description: 'User feedbacks get real by being rewarded',
 };
 
 export default function RootLayout({

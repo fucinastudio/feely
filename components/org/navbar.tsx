@@ -1,20 +1,13 @@
-"use client";
+'use client';
 
-import React, { useMemo } from "react";
-import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
-import {
-  BookText,
-  HelpCircle,
-  LoaderCircle,
-  LogOut,
-  Settings,
-  User,
-} from "lucide-react";
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { LogOut, Settings, User, Menu } from 'lucide-react';
 
-import { logoutUser } from "@/app/api/apiServerActions/userApiServerActions";
-import { useAuth } from "@/context/authContext";
-import { useWorkspace } from "@/context/workspaceContext";
+import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
+import { useAuth } from '@/context/authContext';
+import { useWorkspace } from '@/context/workspaceContext';
 import {
   Avatar,
   AvatarFallback,
@@ -28,8 +21,21 @@ import {
   DropdownMenuTrigger,
   Button,
   Separator,
-} from "@fucina/ui";
-import useOpenUserTab from "@/utils/useOpenUserTab";
+  Skeleton,
+  Sheet,
+  SheetTrigger,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetBody,
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  SheetClose,
+} from '@fucina/ui';
+import useOpenUserTab from '@/utils/useOpenUserTab';
+import { cn, focusRing } from '@fucina/utils';
 
 const Navbar = () => {
   const { org, workspace, isLoadingWorkspace } = useWorkspace();
@@ -37,88 +43,109 @@ const Navbar = () => {
   const orgLetter = org[0];
   // Function to check if the route is active
   const isActive = (route: string) => {
-    return pathname.split("/")[2] === route;
+    return pathname.split('/')[2] === route;
   };
   const { user, isAdmin } = useAuth();
 
-  const handleClickAvatar = () => {
+  const handleClickButton = () => {
     if (workspace?.logoUrl) {
-      window.open(workspace?.logoUrl, "_blank");
+      window.open(workspace?.logoUrl, '_blank');
     }
   };
   const userPageLink = useOpenUserTab({ userId: user?.id ?? null });
   return (
-    <div className="z-50 fixed flex justify-center items-center border-default bg-elevated border-b w-full h-14">
-      <div className="flex justify-between items-center mx-auto px-10 w-full max-w-screen-xl">
+    <div className="z-50 fixed flex justify-center items-center border-default bg-background border-b w-full h-14">
+      <div className="flex justify-between items-center mx-auto px-5 sm:px-10 w-full max-w-screen-xl">
         <div className="flex justify-center items-center space-x-4 h-9">
-          <div className="flex justify-center items-center space-x-2 h-9">
-            <Avatar
-              size="md"
-              className="border-default border"
-              onClick={handleClickAvatar}
-            >
-              <AvatarImage src={workspace?.imageUrl} alt={org} />
-              <AvatarFallback>{orgLetter}</AvatarFallback>
-            </Avatar>
-            <h1 className="text-heading-body">
-              {workspace?.externalName ?? org}
-            </h1>
-          </div>
-          <Separator orientation="vertical" className="h-7" />
-          {isLoadingWorkspace ? (
-            <LoaderCircle className="animate-spin stroke-icon" />
-          ) : (
-            <div className="flex gap-1.5">
-              {workspace?.workspaceSettings?.showIdeas && (
-                <Button
-                  variant="text"
-                  asChild
-                  className={isActive("ideas") ? "text-brand" : ""}
-                >
-                  <Link href={`/${org}/ideas`} scroll={false}>
-                    Ideas
-                  </Link>
-                </Button>
-              )}
-              {workspace?.workspaceSettings?.showRoadmap && (
-                <Button
-                  variant="text"
-                  asChild
-                  className={isActive("roadmap") ? "text-brand" : ""}
-                >
-                  <Link href={`/${org}/roadmap`} scroll={false}>
-                    Roadmap
-                  </Link>
-                </Button>
-              )}
-              {workspace?.workspaceSettings?.showCommunity && (
-                <Button
-                  variant="text"
-                  asChild
-                  className={isActive("community") ? "text-brand" : ""}
-                >
-                  <Link href={`/${org}/community`} scroll={false}>
-                    Community
-                  </Link>
-                </Button>
-              )}
-              {isAdmin && (
-                <Button
-                  variant="text"
-                  asChild
-                  className={isActive("settings") ? "text-brand" : ""}
-                >
-                  <Link href={`/${org}/settings/general`} scroll={false}>
-                    Settings
-                  </Link>
-                </Button>
-              )}
+          <button
+            onClick={handleClickButton}
+            className={cn('rounded', focusRing)}
+          >
+            <div className="flex justify-center items-center space-x-2 h-9">
+              <Avatar size="md" className="border-default border">
+                <AvatarImage src={workspace?.imageUrl} alt={org} />
+                <AvatarFallback className="uppercase">
+                  {orgLetter}
+                </AvatarFallback>
+              </Avatar>
+              <h1 className="text-heading-body">
+                {workspace?.externalName ?? org}
+              </h1>
             </div>
+          </button>
+          <Separator orientation="vertical" className="md:flex hidden h-7" />
+          {isLoadingWorkspace ? (
+            <div className="md:flex items-center gap-1.5 hidden">
+              <Skeleton className="w-20 h-7" />
+              <Skeleton className="w-20 h-7" />
+              <Skeleton className="w-20 h-7" />
+            </div>
+          ) : (
+            <NavigationMenu className="md:flex gap-1.5 hidden">
+              <NavigationMenuList orientation="horizontal">
+                {workspace?.workspaceSettings?.showIdeas && (
+                  <NavigationMenuItem>
+                    <Link
+                      href={`/${org}/ideas`}
+                      scroll={false}
+                      legacyBehavior
+                      passHref
+                    >
+                      <NavigationMenuLink active={isActive('ideas')}>
+                        Ideas
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                )}
+                {workspace?.workspaceSettings?.showRoadmap && (
+                  <NavigationMenuItem>
+                    <Link
+                      href={`/${org}/roadmap`}
+                      scroll={false}
+                      legacyBehavior
+                      passHref
+                    >
+                      <NavigationMenuLink active={isActive('roadmap')}>
+                        Roadmap
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                )}
+                {workspace?.workspaceSettings?.showCommunity && (
+                  <NavigationMenuItem>
+                    <Link
+                      href={`/${org}/community`}
+                      scroll={false}
+                      legacyBehavior
+                      passHref
+                    >
+                      <NavigationMenuLink active={isActive('community')}>
+                        Community
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                )}
+                {isAdmin && (
+                  <NavigationMenuItem>
+                    <Link
+                      href={`/${org}/settings/general`}
+                      scroll={false}
+                      legacyBehavior
+                      passHref
+                    >
+                      <NavigationMenuLink active={isActive('settings')}>
+                        Settings
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                )}
+              </NavigationMenuList>
+            </NavigationMenu>
           )}
         </div>
-        <div className="flex space-x-2">
+        <div className="md:flex space-x-2 hidden">
           <DropdownMenu>
-            <DropdownMenuTrigger asChild>
+            <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
               <Avatar
                 size="lg"
                 className="border-default border hover:cursor-pointer"
@@ -127,20 +154,22 @@ const Navbar = () => {
                   src={user?.image_url ?? undefined}
                   alt={user?.name ?? undefined}
                 />
-                <AvatarFallback>{user?.name?.slice(0, 1)}</AvatarFallback>
+                <AvatarFallback className="uppercase">
+                  {user?.name?.slice(0, 1)}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel className="pb-0 h-7 text">
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel className="pt-1 pb-0 h-7 !text">
                 {user?.name}
               </DropdownMenuLabel>
-              <DropdownMenuLabel className="pt-0 h-7 text-md">
+              <DropdownMenuLabel className="pt-0 pb-1 h-7 !font-normal text-md">
                 {user?.email}
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <Link href={userPageLink}>
-                  <DropdownMenuItem shortcut="⇧⌘P">
+                  <DropdownMenuItem>
                     <User />
                     <span>Profile</span>
                   </DropdownMenuItem>
@@ -153,19 +182,7 @@ const Navbar = () => {
                 </Link>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <HelpCircle />
-                  <span>Help</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <BookText />
-                  <span>Docs</span>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
               <DropdownMenuItem
-                shortcut="⇧⌘Q"
                 onClick={async (e: any) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -178,6 +195,147 @@ const Navbar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+        <Sheet>
+          <SheetTrigger className="flex md:hidden">
+            <Button variant="secondary" icon>
+              <Menu />
+            </Button>
+          </SheetTrigger>
+          <SheetContent>
+            <SheetHeader>
+              <SheetTitle>{workspace?.externalName ?? org}</SheetTitle>
+            </SheetHeader>
+            <SheetBody className="w-full">
+              {isLoadingWorkspace ? (
+                <div className="flex flex-col justify-start gap-1.5 w-full">
+                  <Skeleton className="w-20 h-7" />
+                  <Skeleton className="w-20 h-7" />
+                  <Skeleton className="w-20 h-7" />
+                </div>
+              ) : (
+                <NavigationMenu className="w-full">
+                  <NavigationMenuList orientation="vertical" className="w-full">
+                    {workspace?.workspaceSettings?.showIdeas && (
+                      <NavigationMenuItem className="w-full">
+                        <Link
+                          href={`/${org}/ideas`}
+                          scroll={false}
+                          legacyBehavior
+                          passHref
+                        >
+                          <NavigationMenuLink
+                            active={isActive('ideas')}
+                            className="justify-start w-full"
+                          >
+                            Ideas
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    )}
+                    {workspace?.workspaceSettings?.showRoadmap && (
+                      <NavigationMenuItem className="w-full">
+                        <Link
+                          href={`/${org}/roadmap`}
+                          scroll={false}
+                          legacyBehavior
+                          passHref
+                        >
+                          <NavigationMenuLink
+                            active={isActive('roadmap')}
+                            className="justify-start w-full"
+                          >
+                            Roadmap
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    )}
+                    {workspace?.workspaceSettings?.showCommunity && (
+                      <NavigationMenuItem className="w-full">
+                        <Link
+                          href={`/${org}/community`}
+                          scroll={false}
+                          legacyBehavior
+                          passHref
+                        >
+                          <NavigationMenuLink
+                            active={isActive('community')}
+                            className="justify-start w-full"
+                          >
+                            Community
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    )}
+                    {isAdmin && (
+                      <NavigationMenuItem className="w-full">
+                        <Link
+                          href={`/${org}/settings/general`}
+                          scroll={false}
+                          legacyBehavior
+                          passHref
+                        >
+                          <NavigationMenuLink
+                            active={isActive('settings')}
+                            className="justify-start w-full"
+                          >
+                            Settings
+                          </NavigationMenuLink>
+                        </Link>
+                      </NavigationMenuItem>
+                    )}
+                  </NavigationMenuList>
+                </NavigationMenu>
+              )}
+              <Separator orientation="horizontal" className="my-4" />
+              <NavigationMenu className="w-full">
+                <NavigationMenuList orientation="vertical" className="w-full">
+                  <NavigationMenuItem className="w-full">
+                    <Link
+                      href={userPageLink}
+                      scroll={false}
+                      legacyBehavior
+                      passHref
+                    >
+                      <NavigationMenuLink className="justify-start w-full">
+                        <User />
+                        Profile
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem className="w-full">
+                    <Link
+                      href={`/${org}/account/settings/profile`}
+                      scroll={false}
+                      legacyBehavior
+                      passHref
+                    >
+                      <NavigationMenuLink
+                        active={isActive('account')}
+                        className="justify-start w-full"
+                      >
+                        <Settings />
+                        Account Settings
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem className="w-full">
+                    <NavigationMenuLink
+                      onClick={async (e: any) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        await logoutUser();
+                      }}
+                      className="justify-start w-full"
+                    >
+                      <LogOut />
+                      Log out
+                    </NavigationMenuLink>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            </SheetBody>
+          </SheetContent>
+        </Sheet>
       </div>
     </div>
   );
