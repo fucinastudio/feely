@@ -3,7 +3,17 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LogOut, Settings, User, Menu } from 'lucide-react';
+import { useTheme } from 'next-themes';
+import {
+  LogOut,
+  Settings,
+  User,
+  Menu,
+  PlusCircle,
+  Sun,
+  Moon,
+  Monitor,
+} from 'lucide-react';
 
 import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
 import { useAuth } from '@/context/authContext';
@@ -33,11 +43,25 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   SheetClose,
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectGroup,
+  SelectGroupLabel,
+  SelectItem,
+  SelectValue,
+  DropdownMenuSubMenu,
+  DropdownMenuSubMenuTrigger,
+  DropdownMenuSubMenuContent,
+  DropdownMenuRadioItem,
+  DropdownMenuRadioGroup,
 } from '@fucina/ui';
 import useOpenUserTab from '@/utils/useOpenUserTab';
 import { cn, focusRing } from '@fucina/utils';
 
 const Navbar = () => {
+  const { setTheme } = useTheme();
+
   const { org, workspace, isLoadingWorkspace } = useWorkspace();
   const pathname = usePathname();
   const orgLetter = org[0];
@@ -57,22 +81,71 @@ const Navbar = () => {
     <div className="z-50 fixed flex justify-center items-center border-default bg-background border-b w-full h-14">
       <div className="flex justify-between items-center mx-auto px-5 sm:px-10 w-full max-w-screen-xl">
         <div className="flex justify-center items-center space-x-4 h-9">
-          <button
-            onClick={handleClickButton}
-            className={cn('rounded', focusRing)}
-          >
-            <div className="flex justify-center items-center space-x-2 h-9">
-              <Avatar size="md" className="border-default border">
-                <AvatarImage src={workspace?.imageUrl} alt={org} />
-                <AvatarFallback className="uppercase">
-                  {orgLetter}
-                </AvatarFallback>
-              </Avatar>
-              <h1 className="text-heading-body">
-                {workspace?.externalName ?? org}
-              </h1>
-            </div>
-          </button>
+          {isAdmin && (
+            <Select>
+              <SelectTrigger className="pr-2.5 pl-2 border-none w-40 sm:w-56 font-semibold">
+                <SelectValue defaultValue={workspace?.name} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectGroupLabel>Workspaces</SelectGroupLabel>
+                  <SelectItem value={workspace?.name ?? ''}>
+                    <div className="flex justify-start items-center gap-2">
+                      <Avatar size="sm" className="border-default border">
+                        <AvatarImage src={workspace?.imageUrl} alt={org} />
+                        <AvatarFallback className="uppercase">
+                          {orgLetter}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="capitalize">{workspace?.name}</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="Pedro">
+                    <div className="flex justify-start items-center gap-2 w-full">
+                      <Avatar size="sm" className="border-default border">
+                        <AvatarImage src={workspace?.imageUrl} alt={org} />
+                        <AvatarFallback className="uppercase">
+                          {orgLetter}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-ellipsis truncate capitalize">
+                        Pedro hjxabc nxbsajhzcbashjzcba
+                      </span>
+                    </div>
+                  </SelectItem>
+                  <Separator className="my-1" />
+                  <Button
+                    value="new workspace"
+                    variant="text"
+                    className="flex justify-start items-center gap-2 rounded-sm w-full"
+                  >
+                    <div className="flex justify-center items-center size-6">
+                      <PlusCircle className="size-4" />
+                    </div>
+                    Create new workspace
+                  </Button>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          )}
+          {!isAdmin && (
+            <button
+              onClick={handleClickButton}
+              className={cn('rounded', focusRing)}
+            >
+              <div className="flex justify-center items-center space-x-2 h-9">
+                <Avatar size="md" className="border-default border">
+                  <AvatarImage src={workspace?.imageUrl} alt={org} />
+                  <AvatarFallback className="uppercase">
+                    {orgLetter}
+                  </AvatarFallback>
+                </Avatar>
+                <h1 className="text-heading-body">
+                  {workspace?.externalName ?? org}
+                </h1>
+              </div>
+            </button>
+          )}
           <Separator orientation="vertical" className="md:flex hidden h-7" />
           {isLoadingWorkspace ? (
             <div className="md:flex items-center gap-1.5 hidden">
@@ -180,6 +253,48 @@ const Navbar = () => {
                     <span>Settings</span>
                   </DropdownMenuItem>
                 </Link>
+                <DropdownMenuSubMenu>
+                  <DropdownMenuSubMenuTrigger>
+                    {localStorage.theme === 'dark' ? (
+                      <>
+                        <Moon /> <span>Theme</span>
+                      </>
+                    ) : localStorage.theme === 'light' ? (
+                      <>
+                        <Sun /> <span>Theme</span>
+                      </>
+                    ) : (
+                      <>
+                        <Monitor /> <span>Theme</span>
+                      </>
+                    )}
+                  </DropdownMenuSubMenuTrigger>
+                  <DropdownMenuSubMenuContent>
+                    <DropdownMenuRadioGroup value={localStorage.theme}>
+                      <DropdownMenuRadioItem
+                        value="light"
+                        onClick={() => setTheme('light')}
+                      >
+                        <Sun />
+                        <span>Light</span>
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem
+                        value="dark"
+                        onClick={() => setTheme('dark')}
+                      >
+                        <Moon />
+                        <span>Dark</span>
+                      </DropdownMenuRadioItem>
+                      <DropdownMenuRadioItem
+                        value="system"
+                        onClick={() => setTheme('system')}
+                      >
+                        <Monitor />
+                        <span>System</span>
+                      </DropdownMenuRadioItem>
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuSubMenuContent>
+                </DropdownMenuSubMenu>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -217,70 +332,61 @@ const Navbar = () => {
                   <NavigationMenuList orientation="vertical" className="w-full">
                     {workspace?.workspaceSettings?.showIdeas && (
                       <NavigationMenuItem className="w-full">
-                        <Link
-                          href={`/${org}/ideas`}
-                          scroll={false}
-                          legacyBehavior
-                          passHref
-                        >
-                          <NavigationMenuLink
-                            active={isActive('ideas')}
-                            className="justify-start w-full"
-                          >
-                            Ideas
-                          </NavigationMenuLink>
-                        </Link>
+                        <SheetClose asChild>
+                          <Link href={`/${org}/ideas`} scroll={false}>
+                            <NavigationMenuLink
+                              active={isActive('ideas')}
+                              className="justify-start w-full"
+                            >
+                              Ideas
+                            </NavigationMenuLink>
+                          </Link>
+                        </SheetClose>
                       </NavigationMenuItem>
                     )}
                     {workspace?.workspaceSettings?.showRoadmap && (
                       <NavigationMenuItem className="w-full">
-                        <Link
-                          href={`/${org}/roadmap`}
-                          scroll={false}
-                          legacyBehavior
-                          passHref
-                        >
-                          <NavigationMenuLink
-                            active={isActive('roadmap')}
-                            className="justify-start w-full"
-                          >
-                            Roadmap
-                          </NavigationMenuLink>
-                        </Link>
+                        <SheetClose asChild>
+                          <Link href={`/${org}/roadmap`} scroll={false}>
+                            <NavigationMenuLink
+                              active={isActive('roadmap')}
+                              className="justify-start w-full"
+                            >
+                              Roadmap
+                            </NavigationMenuLink>
+                          </Link>
+                        </SheetClose>
                       </NavigationMenuItem>
                     )}
                     {workspace?.workspaceSettings?.showCommunity && (
                       <NavigationMenuItem className="w-full">
-                        <Link
-                          href={`/${org}/community`}
-                          scroll={false}
-                          legacyBehavior
-                          passHref
-                        >
-                          <NavigationMenuLink
-                            active={isActive('community')}
-                            className="justify-start w-full"
-                          >
-                            Community
-                          </NavigationMenuLink>
-                        </Link>
+                        <SheetClose asChild>
+                          <Link href={`/${org}/community`} scroll={false}>
+                            <NavigationMenuLink
+                              active={isActive('community')}
+                              className="justify-start w-full"
+                            >
+                              Community
+                            </NavigationMenuLink>
+                          </Link>
+                        </SheetClose>
                       </NavigationMenuItem>
                     )}
                     {isAdmin && (
                       <NavigationMenuItem className="w-full">
-                        <Link
-                          href={`/${org}/settings/general`}
-                          scroll={false}
-                          legacyBehavior
-                          passHref
-                        >
-                          <NavigationMenuLink
-                            active={isActive('settings')}
-                            className="justify-start w-full"
+                        <SheetClose asChild>
+                          <Link
+                            href={`/${org}/settings/general`}
+                            scroll={false}
                           >
-                            Settings
-                          </NavigationMenuLink>
-                        </Link>
+                            <NavigationMenuLink
+                              active={isActive('settings')}
+                              className="justify-start w-full"
+                            >
+                              Settings
+                            </NavigationMenuLink>
+                          </Link>
+                        </SheetClose>
                       </NavigationMenuItem>
                     )}
                   </NavigationMenuList>
@@ -303,20 +409,20 @@ const Navbar = () => {
                     </Link>
                   </NavigationMenuItem>
                   <NavigationMenuItem className="w-full">
-                    <Link
-                      href={`/${org}/account/settings/profile`}
-                      scroll={false}
-                      legacyBehavior
-                      passHref
-                    >
-                      <NavigationMenuLink
-                        active={isActive('account')}
-                        className="justify-start w-full"
+                    <SheetClose asChild>
+                      <Link
+                        href={`/${org}/account/settings/profile`}
+                        scroll={false}
                       >
-                        <Settings />
-                        Account Settings
-                      </NavigationMenuLink>
-                    </Link>
+                        <NavigationMenuLink
+                          active={isActive('account')}
+                          className="justify-start w-full"
+                        >
+                          <Settings />
+                          Account Settings
+                        </NavigationMenuLink>
+                      </Link>
+                    </SheetClose>
                   </NavigationMenuItem>
                   <NavigationMenuItem className="w-full">
                     <NavigationMenuLink

@@ -18,6 +18,7 @@ import {
   SelectValue,
   Form,
   FormField,
+  Label,
 } from '@fucina/ui';
 import { cn } from '@fucina/utils';
 import {
@@ -101,7 +102,6 @@ const Theme = () => {
             Customize the interface appearance for your customers.
           </p>
         </div>
-
         {isLoadingWorkspace ? (
           <Loading />
         ) : (
@@ -112,10 +112,8 @@ const Theme = () => {
                   control={form.control}
                   name="primaryColor"
                   render={({ field }) => (
-                    <div className="flex flex-col gap-2" key={field.value}>
-                      <p className="text-description text-md-medium uppercase">
-                        Primary Color
-                      </p>
+                    <div className="flex flex-col gap-3" key={field.value}>
+                      <Label>Primary Color</Label>
                       <Select
                         value={field.value}
                         onValueChange={(value: PrimaryColorType) => {
@@ -129,7 +127,6 @@ const Theme = () => {
                         <SelectContent>
                           <SelectGroup>
                             <SelectGroupLabel>Primary Color</SelectGroupLabel>
-                            <SelectSeparator />
                             {PrimaryColorOptions.map((primaryColor) => {
                               return (
                                 <SelectItem
@@ -160,10 +157,8 @@ const Theme = () => {
                   control={form.control}
                   name="neutralColor"
                   render={({ field }) => (
-                    <div className="flex flex-col gap-2" key={field.value}>
-                      <p className="text-description text-md-medium uppercase">
-                        Neutral Color
-                      </p>
+                    <div className="flex flex-col gap-3" key={field.value}>
+                      <Label>Neutral Color</Label>
                       <Select
                         value={field.value}
                         onValueChange={(value: NeutralColorType) => {
@@ -177,7 +172,6 @@ const Theme = () => {
                         <SelectContent>
                           <SelectGroup>
                             <SelectGroupLabel>Neutral Color</SelectGroupLabel>
-                            <SelectSeparator />
                             {NeutralColorOptions.map((neutralColor) => {
                               return (
                                 <SelectItem
@@ -208,10 +202,8 @@ const Theme = () => {
                   control={form.control}
                   name="fontFamily"
                   render={({ field }) => (
-                    <div className="flex flex-col gap-2" key={field.value}>
-                      <p className="text-description text-md-medium uppercase">
-                        Font family
-                      </p>
+                    <div className="flex flex-col gap-3" key={field.value}>
+                      <Label>Font family</Label>
                       <Select
                         value={field.value}
                         onValueChange={(value: string) => {
@@ -224,7 +216,6 @@ const Theme = () => {
                         <SelectContent>
                           <SelectGroup>
                             <SelectGroupLabel>Font family</SelectGroupLabel>
-                            <SelectSeparator />
                             <SelectItem value="geist" className="h-9">
                               Geist
                             </SelectItem>

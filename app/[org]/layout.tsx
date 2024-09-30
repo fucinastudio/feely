@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
+// import type { Metadata } from 'next';
 
 import Loading from '@/app/[org]/loading';
 import UserTab from '@/app/[org]/userTab';
@@ -8,6 +9,29 @@ import protectRoute from '@/utils/protectedRoute';
 import { WorkspaceProvider } from '@/context/workspaceContext';
 import { AuthProvider } from '@/context/authContext';
 import Navbar from '@/components/org/navbar';
+
+/*
+async function getOrgData(org: string) {
+  const exists = await checkWorkspaceExistanceServer(org);
+  if (!exists) {
+    throw new Error('Not foundr');
+  }
+  return { name: org };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { org: string };
+}): Promise<Metadata> {
+  const org = await getOrgData(params.org);
+
+  return {
+    title: `${org.name}`,
+    description: `${org.name}`,
+  };
+}
+*/
 
 export default async function RootLayout({
   children,

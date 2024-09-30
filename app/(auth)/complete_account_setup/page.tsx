@@ -36,7 +36,7 @@ const CompleteAccountSetup = () => {
         {error && <div>{error}</div>}
         <div className="flex flex-col items-center space-y-3 text-center">
           <h1 className="text-heading-section">
-            Everything is <span className="text-bg-gradient">ready</span>
+            Everything is <span className="brand-gradient">ready</span>
           </h1>
           <p className="text-description text-md">
             It took a while, but now everything is ready. Start listening to

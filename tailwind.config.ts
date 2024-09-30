@@ -8,6 +8,7 @@ const config: Pick<Config, 'presets'> = {
       content: [
         './app/**/*.tsx',
         './components/**/*.tsx',
+        './utils/**/*.ts',
         './node_modules/@fucina/ui/dist/**/*.mjs',
         './node_modules/@fucina/visualizations/dist/**/*.mjs',
         './node_modules/@fucina/utils/dist/**/*.mjs',

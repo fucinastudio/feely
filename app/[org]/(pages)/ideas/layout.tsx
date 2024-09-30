@@ -1,8 +1,10 @@
 import React from 'react';
 import { Suspense } from 'react';
+import Link from 'next/link';
 
 import Loading from '@/app/[org]/(pages)/loading';
 import Ideas from '@/app/[org]/(pages)/ideas/default_page';
+import { Button, Separator } from '@fucina/ui';
 
 export default async function RootLayout({
   children,
@@ -14,9 +16,18 @@ export default async function RootLayout({
   };
 }>) {
   return (
-    <Suspense fallback={<Loading />}>
-      <Ideas />
-      {children}
-    </Suspense>
+    <div className="flex flex-col space-y-6">
+      <div className="flex justify-between items-center w-full">
+        <h2 className="text-heading-section">Ideas</h2>
+        <Button asChild>
+          <Link href={`/${org}/ideas/new_idea`}>New idea</Link>
+        </Button>
+      </div>
+      <Separator />
+      <Suspense fallback={<Loading />}>
+        <Ideas />
+        {children}
+      </Suspense>
+    </div>
   );
 }

@@ -3,11 +3,31 @@
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import { LoaderCircle, Dot, X } from 'lucide-react';
 
-import { Separator, Sheet, SheetContent } from '@fucina/ui';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Button,
+  ScrollArea,
+  Sheet,
+  SheetBody,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  Skeleton,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@fucina/ui';
 import { useGetIdeaByUserInWorkspace } from '@/app/api/controllers/ideaController';
 import { useGetUserById } from '@/app/api/controllers/userController';
 import { useWorkspace } from '@/context/workspaceContext';
+import IdeaCard from '@/app/[org]/(pages)/ideas/components/idea';
 
 const UserTab = () => {
   const { workspace, org } = useWorkspace();
@@ -54,23 +74,81 @@ const UserTab = () => {
           }
         }}
       >
-        <SheetContent className="flex flex-col space-y-4 p-10 min-w-[476px]">
-          {isLoadingGetUserById ? (
-            <div>Loading</div>
-          ) : (
-            <div className="flex flex-col space-y-1">
-              <h2 className="text-heading-body">{user?.name}</h2>
-              <p className="text-description text-md">{user?.email}</p>
+        <SheetContent>
+          <div className="flex justify-between items-start gap-x-4">
+            <div className="flex flex-col gap-y-1 mt-1">
+              {isLoadingGetUserById ? (
+                <div className="flex justify-start items-center gap-3">
+                  <Skeleton shape="circle" className="sm:flex hidden size-14" />
+                  <div className="flex flex-col gap-1">
+                    <SheetTitle>
+                      <Skeleton shape="line" className="rounded w-56 h-7" />
+                    </SheetTitle>
+                    <SheetDescription>
+                      <Skeleton shape="line" className="rounded w-48 h-6" />
+                    </SheetDescription>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex justify-start items-center gap-3">
+                  <Avatar
+                    size="xl"
+                    className="sm:flex border-default hidden border size-14"
+                  >
+                    <AvatarImage
+                      src={user?.image_url ?? undefined}
+                      alt={user?.name ?? undefined}
+                      className="size-14"
+                    />
+                    <AvatarFallback className="size-14">
+                      {user?.name ? user?.name[0] : undefined}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col gap-1">
+                    <SheetTitle>{user?.name}</SheetTitle>
+                    <SheetDescription>
+                      <div className="flex justify-start items-center gap-0 text-description text-sm">
+                        <p>🪬 {user?.email} karmas</p>
+                        <Dot />
+                        <p>🏅 7 badges</p>
+                      </div>
+                    </SheetDescription>
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-          <Separator />
-          {(isLoadingIdeaByUserInWorkspace || isLoadingGetUserById) && (
-            <div>Loading...</div>
-          )}
-          {errorGetUserById && <div>{errorGetUserById}</div>}
-          {ideasByUserInWorkspace?.data.ideas.map((idea) => {
-            return <>{idea.title}</>;
-          })}
+            <SheetClose asChild>
+              <Button size="small" icon={true} variant="text">
+                <X className="size-6" aria-hidden="true" />
+              </Button>
+            </SheetClose>
+          </div>
+          <SheetBody>
+            <Tabs defaultValue="badges">
+              <TabsList>
+                <TabsTrigger value="badges">Badges</TabsTrigger>
+                <TabsTrigger value="ideas">Ideas</TabsTrigger>
+              </TabsList>
+              <TabsContent value="badges">
+                <div className="flex justify-center items-center p-10 w-full">
+                  <LoaderCircle className="animate-spin stroke-brand-600" />
+                </div>
+              </TabsContent>
+              <TabsContent value="ideas" className="p-0">
+                <ScrollArea className="h-full">
+                  {(isLoadingIdeaByUserInWorkspace || isLoadingGetUserById) && (
+                    <div className="flex justify-center items-center p-10 w-full">
+                      <LoaderCircle className="animate-spin stroke-brand-600" />
+                    </div>
+                  )}
+                  {errorGetUserById && <div>{errorGetUserById}</div>}
+                  {ideasByUserInWorkspace?.data.ideas.map((idea) => {
+                    return <IdeaCard idea={idea} org={org} key={idea.id} />;
+                  })}
+                </ScrollArea>
+              </TabsContent>
+            </Tabs>
+          </SheetBody>
         </SheetContent>
       </Sheet>
     </div>

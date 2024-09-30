@@ -1,3 +1,8 @@
-export const Periods = ["Week", "Month", "Quarter", "Year"] as const;
+export const Periods = [
+  'Last week',
+  'Last month',
+  'Last quarter',
+  'Last year',
+] as const;
 
 export type PeriodType = (typeof Periods)[number];

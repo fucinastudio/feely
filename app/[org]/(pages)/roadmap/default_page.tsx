@@ -1,9 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import Link from 'next/link';
 
-import { Button, Separator } from '@fucina/ui';
 import { useWorkspace } from '@/context/workspaceContext';
 import useMainPageFilters from '@/components/filters/filters';
 import FiltersComponentObject from '@/components/filters/filtersComponent';
@@ -52,14 +50,7 @@ const RoadmapPage = () => {
   }
 
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="flex justify-between items-center w-full">
-        <h2 className="text-heading-section">Roadmap</h2>
-        <Button asChild>
-          <Link href={`/${org}/roadmap/new_idea`}>New idea</Link>
-        </Button>
-      </div>
-      <Separator />
+    <>
       <FiltersComponentObject {...filterObjectAttributes} />
       <div className="gap-4 grid grid-cols-1 md:grid-cols-3 w-full">
         {!statusesToRender || !statuses ? (
@@ -82,7 +73,7 @@ const RoadmapPage = () => {
           })
         )}
       </div>
-    </div>
+    </>
   );
 };
 

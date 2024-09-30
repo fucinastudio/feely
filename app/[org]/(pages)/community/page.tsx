@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 import {
   Separator,
@@ -10,16 +11,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@fucina/ui';
-import Loading from '@/app/(auth)/loading';
 import { useGetUsersForWorkspace } from '@/app/api/controllers/userController';
 import { PeriodType, Periods } from '@/types/enum/period';
 import { UserTypeWithPoints } from '@/types/user';
 import { useWorkspace } from '@/context/workspaceContext';
+import UserCard from '@/app/[org]/(pages)/community/components/user';
 
 const Community = () => {
   const { org, workspace } = useWorkspace();
 
-  const [period, setPeriod] = useState<PeriodType>('Week');
+  const [period, setPeriod] = useState<PeriodType>('Last week');
   const { data: usersInWorkspace, isLoading: isLoadingUsersInWorkspace } =
     useGetUsersForWorkspace(
       {
@@ -34,20 +35,16 @@ const Community = () => {
     return <div className="flex justify-center items-center">Not found</div>;
   }
   return (
-    <div className="flex flex-col space-y-6">
-      <div className="flex justify-start items-center w-full">
-        <h2 className="text-heading-section">Community</h2>
-      </div>
-      <Separator />
+    <>
       <div className="flex justify-end w-full">
         <Select
           value={period}
           onValueChange={(value: PeriodType) => setPeriod(value)}
         >
-          <SelectTrigger id="period" className="w-fit">
+          <SelectTrigger id="period" className="w-36">
             <SelectValue placeholder="Period" />
           </SelectTrigger>
-          <SelectContent position="popper">
+          <SelectContent position="popper" align="end">
             {Periods.map((period) => (
               <SelectItem key={period} value={period}>
                 {period}
@@ -56,30 +53,33 @@ const Community = () => {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex flex-col space-y-6">
+      <div className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full">
         {isLoadingUsersInWorkspace ? (
-          <Loading />
+          <div className="flex justify-center items-center w-full min-h-56">
+            <LoaderCircle className="animate-spin stroke-brand-600" />
+          </div>
         ) : (
           usersInWorkspace?.data.usersInWorkspace?.map((user, index) => {
+            const isLastItem =
+              index ===
+              (usersInWorkspace?.data?.usersInWorkspace?.length ?? 0) - 1;
             return (
-              <div key={user.id} className="flex items-center space-x-4">
-                {index}
-                <img
-                  src={user.image_url ?? undefined}
-                  alt={user.name ?? undefined}
-                  className="rounded-full size-12"
+              <>
+                <UserCard
+                  id={user.id}
+                  index={index + 1}
+                  name={user.name ?? undefined}
+                  points={user.points}
+                  image_url={user.image_url ?? undefined}
+                  correctedPoints={getCorrectPointsForPeriod(user, period)}
                 />
-                <div>
-                  <h3 className="text-heading-section">{user.name}</h3>
-                  <p className="text-body">{user.points}</p>
-                </div>
-                <p>{getCorrectPointsForPeriod(user, period)}</p>
-              </div>
+                {!isLastItem && <Separator />}
+              </>
             );
           })
         )}
       </div>
-    </div>
+    </>
   );
 };
 
@@ -89,13 +89,13 @@ const getCorrectPointsForPeriod = (
   user: UserTypeWithPoints,
   period: PeriodType
 ) => {
-  if (period === 'Week') {
+  if (period === 'Last week') {
     return user.pointsInWeek;
-  } else if (period === 'Month') {
+  } else if (period === 'Last month') {
     return user.pointsInMonth;
-  } else if (period === 'Quarter') {
+  } else if (period === 'Last quarter') {
     return user.pointsInQuarter;
-  } else if (period === 'Year') {
+  } else if (period === 'Last year') {
     return user.pointsInYear;
   }
   return 0;

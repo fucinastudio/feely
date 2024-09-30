@@ -9,8 +9,8 @@ const CreateAccount = async () => {
       <div className="flex flex-col items-center space-y-3 text-center">
         <h1 className="text-heading-section">Create your account</h1>
         <p className="text-description text-md">
-          Lorem ipsum dolor sit amet consectetur. Neque massa amet vitae
-          fringilla dolor iaculis.
+          Just click on your favorite social network below and you&apos;re in.
+          No forms, no fuss. Let&apos;s get started!
         </p>
       </div>
       <Separator />
@@ -19,7 +19,7 @@ const CreateAccount = async () => {
       </div>
       <div className="items-center gap-4 grid">
         <Separator />
-        <div className="flex justify-center items-center space-x-0">
+        <div className="flex sm:flex-row flex-col justify-center items-center gap-1 sm:gap-0">
           <p className="text-description text-md">Already have an account?</p>
           <Button variant="link" asChild>
             <Link href={'/login'}>Login</Link>

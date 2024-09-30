@@ -5,7 +5,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ChevronUp, Dot, MessageSquare } from 'lucide-react';
 
-import { Avatar, AvatarFallback, AvatarImage, Toggle } from '@fucina/ui';
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+  Toggle,
+} from '@fucina/ui';
 import { useVoteIdea } from '@/app/api/controllers/ideaController';
 import { StatusTag } from '@/utils/parseStatus';
 import { IdeaType } from '@/types/idea';
@@ -70,6 +78,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
         </p>
         <div className="flex justify-start items-center gap-0 pt-1 text-description text-sm">
           <p
+            className="flex items-center gap-0.5"
             onClick={(ev) => {
               ev.stopPropagation();
               ev.preventDefault();
@@ -77,11 +86,42 @@ const IdeaCard = ({ idea, org }: IProps) => {
           >
             by{' '}
             <Link
-              className="text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
+              className="flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
               href={userPageLink}
             >
               {idea.author.name}
             </Link>
+            <HoverCard>
+              <HoverCardTrigger asChild className="sm:flex hidden">
+                <Link
+                  className="text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
+                  href={userPageLink}
+                >
+                  {idea.author.name}
+                </Link>
+              </HoverCardTrigger>
+              <HoverCardContent className="w-fit">
+                <div className="flex items-center gap-2">
+                  <Avatar size="xl" className="border-default border">
+                    <AvatarImage
+                      src={idea?.author.image_url ?? undefined}
+                      alt={idea?.author.name ?? undefined}
+                    />
+                    <AvatarFallback>
+                      {idea.author.name ? idea.author.name[0] : undefined}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col gap-0.5">
+                    <p className="font-semibold text-md">{idea.author.name}</p>
+                    <div className="flex justify-start items-center gap-0 w-fit text-description text-sm">
+                      <p>🪬 {idea.author.email} karmas</p>
+                      <Dot />
+                      <p>🏅 7 badges</p>
+                    </div>
+                  </div>
+                </div>
+              </HoverCardContent>
+            </HoverCard>
           </p>
           <Dot />
           <p>{idea.topic.name}</p>
@@ -104,16 +144,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
         }}
       >
         <ChevronUp size={24} />
-        {/* {isLoadingVoteIdea ? (
-          <div className="flex justify-center items-center w-full h-[22px]">
-            <LoaderCircle
-              size={16}
-              className="animate-spin stroke-icon-brand"
-            />
-          </div>
-        ) : ( */}
         <p className="text-md">{votedCountToShow}</p>
-        {/* )} */}
       </Toggle>
     </div>
   );

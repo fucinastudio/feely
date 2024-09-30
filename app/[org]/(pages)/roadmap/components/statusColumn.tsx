@@ -52,8 +52,14 @@ const StatusColumn = ({ status, ideas }: IProps) => {
         </>
       ) : (
         <>
-          {ideas.map((idea) => {
-            return <IdeaCard idea={idea} org={org} key={idea.id} />;
+          {ideas.map((idea, index) => {
+            const isLastItem = index === ideas.length - 1;
+            return (
+              <>
+                <IdeaCard idea={idea} org={org} key={idea.id} />{' '}
+                {!isLastItem && <Separator />}
+              </>
+            );
           })}
         </>
       )}
