@@ -20,6 +20,7 @@ import { IdeaType } from '@/types/idea';
 import useOpenUserTab from '@/utils/useOpenUserTab';
 import { useOptimistic } from '@/utils/useOptimistic';
 import { useAuth } from '@/context/authContext';
+import { cn, focusRing } from '@fucina/utils';
 
 interface IProps {
   idea: IdeaType;
@@ -54,12 +55,15 @@ const IdeaCard = ({ idea, org }: IProps) => {
   }, [isVoted, votedCountWithoutUser]);
 
   return (
-    <div
+    <button
       key={idea.id}
-      className="flex gap-3 hover:bg-item-hover active:bg-item-selected p-4 rounded-md w-full cursor-pointer"
+      className={cn(
+        'flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer',
+        focusRing
+      )}
       onClick={() => handleClickIdea(idea.id)}
     >
-      <Avatar size="xl" className="border-default mt-1 border">
+      <Avatar size="xl" className="sm:flex hidden mt-1">
         <AvatarImage
           src={idea.author.image_url ?? undefined}
           alt={idea.author.name ?? undefined}
@@ -78,7 +82,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
         </p>
         <div className="flex justify-start items-center gap-0 pt-1 text-description text-sm">
           <p
-            className="flex items-center gap-0.5"
+            className="flex items-center gap-1"
             onClick={(ev) => {
               ev.stopPropagation();
               ev.preventDefault();
@@ -86,7 +90,10 @@ const IdeaCard = ({ idea, org }: IProps) => {
           >
             by{' '}
             <Link
-              className="flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
+              className={cn(
+                'flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4',
+                focusRing
+              )}
               href={userPageLink}
             >
               {idea.author.name}
@@ -102,7 +109,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
               </HoverCardTrigger>
               <HoverCardContent className="w-fit">
                 <div className="flex items-center gap-2">
-                  <Avatar size="xl" className="border-default border">
+                  <Avatar size="xl">
                     <AvatarImage
                       src={idea?.author.image_url ?? undefined}
                       alt={idea?.author.name ?? undefined}
@@ -123,12 +130,14 @@ const IdeaCard = ({ idea, org }: IProps) => {
               </HoverCardContent>
             </HoverCard>
           </p>
-          <Dot />
-          <p>{idea.topic.name}</p>
-          <Dot />
-          <p>{new Date(idea.created_at).toLocaleDateString()}</p>
-          <Dot />
-          <p className="flex items-center gap-1">
+          <Dot className="sm:flex hidden" />
+          <p className="sm:flex hidden">{idea.topic.name}</p>
+          <Dot className="md:flex hidden" />
+          <p className="md:flex hidden">
+            {new Date(idea.created_at).toLocaleDateString()}
+          </p>
+          <Dot className="sm:flex hidden" />
+          <p className="sm:flex items-center gap-1 hidden">
             {idea.commentsCount} <MessageSquare size={16} />
           </p>
         </div>
@@ -146,7 +155,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
         <ChevronUp size={24} />
         <p className="text-md">{votedCountToShow}</p>
       </Toggle>
-    </div>
+    </button>
   );
 };
 

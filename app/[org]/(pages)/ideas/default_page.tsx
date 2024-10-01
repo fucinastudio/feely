@@ -1,8 +1,10 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
+import { LoaderCircle, Inbox } from 'lucide-react';
 
-import { Separator } from '@fucina/ui';
+import { Button, Card, Separator } from '@fucina/ui';
 import { useGetIdeasByWorkspaceName } from '@/app/api/controllers/ideaController';
 import IdeaCard from '@/app/[org]/(pages)/ideas/components/idea';
 import { useWorkspace } from '@/context/workspaceContext';
@@ -34,15 +36,35 @@ const Ideas = () => {
     }
   );
   if (!workspace?.workspaceSettings?.showIdeas) {
-    return <div className="bg-red-600 size-8">Loading</div>;
+    return (
+      <div className="flex justify-center items-center w-full h-56">
+        <LoaderCircle className="animate-spin stroke-icon-brand" />
+      </div>
+    );
   }
   return (
     <>
       {/*Filters */}
       <FiltersComponentObject {...filterObjectAttributes} />
-      <div className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full min-h-64">
+      <Card className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full">
         {!statuses || !topics || isLoadingIdeas ? (
           <Loading />
+        ) : ideas?.data.ideas.length === 0 ? (
+          <div className="flex flex-col justify-center items-center gap-3 p-10 w-full text-description">
+            <Inbox className="size-8 stroke-icon" />
+            <div className="flex flex-col gap-1 w-full">
+              <h3 className="font-semibold text-center text-lg">
+                No ideas found
+              </h3>
+              <p className="text-center">
+                There are no ideas in this workspace. You can create the first
+                one.
+              </p>
+            </div>
+            <Button variant="secondary" className="mt-3" asChild>
+              <Link href={`/${org}/ideas/new_idea`}>Create new idea</Link>
+            </Button>
+          </div>
         ) : (
           ideas?.data.ideas.map((idea, index) => {
             const isLastItem = index === ideas.data.ideas.length - 1;
@@ -54,7 +76,7 @@ const Ideas = () => {
             );
           })
         )}
-      </div>
+      </Card>
     </>
   );
 };

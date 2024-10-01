@@ -1,5 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { LoaderCircle } from "lucide-react";
+import React, { useMemo, useState } from 'react';
 
 import {
   Textarea,
@@ -8,14 +7,14 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@fucina/ui";
-import { CommentType } from "@/types/comment";
+} from '@fucina/ui';
+import { CommentType } from '@/types/comment';
 import {
   useReplyComment,
   useVoteComment,
-} from "@/app/api/controllers/commentController";
-import { useOptimistic } from "@/utils/useOptimistic";
-import { useAuth } from "@/context/authContext";
+} from '@/app/api/controllers/commentController';
+import { useOptimistic } from '@/utils/useOptimistic';
+import { useAuth } from '@/context/authContext';
 
 export type OptimisticComment = {
   id: string | null;
@@ -35,7 +34,7 @@ interface IProps {
 
 const CommentCard = ({ comment }: IProps) => {
   const { user } = useAuth();
-  const isOptimisticComment = !("childComments" in comment);
+  const isOptimisticComment = !('childComments' in comment);
   const { mutate: voteComment } = useVoteComment();
 
   const [optimisticVoted, setOptimisticVoted] = useOptimistic({
@@ -56,7 +55,7 @@ const CommentCard = ({ comment }: IProps) => {
 
   const [showReplySection, setShowReplySection] = useState(false);
 
-  const [reply, setReply] = useState<string>("");
+  const [reply, setReply] = useState<string>('');
 
   const { mutateAsync: createCommentAsync, isLoading: isLoadingCreateComment } =
     useReplyComment();
@@ -84,7 +83,7 @@ const CommentCard = ({ comment }: IProps) => {
       setShowReplySection(false);
 
       const content = reply;
-      setReply("");
+      setReply('');
       const res = await createCommentAsync({
         ideaId: comment.ideaId,
         reply: content,
@@ -133,7 +132,7 @@ const CommentCard = ({ comment }: IProps) => {
   return (
     <div className="flex flex-col">
       <div className="flex justify-center items-start gap-4">
-        <Avatar size="md" className="border-default border">
+        <Avatar size="md" className="sm:flex hidden mt-0.5">
           <AvatarImage
             src={comment.author.image_url ?? undefined}
             alt={comment.author.name ?? undefined}
@@ -145,7 +144,7 @@ const CommentCard = ({ comment }: IProps) => {
         <div className="flex flex-col gap-1 w-full">
           <div className="flex justify-between items-center gap-1">
             <p className="text-md-medium">{comment.author.name}</p>
-            <p className="text-description text-sm">
+            <p className="sm:flex hidden text-description text-sm">
               {new Date(comment.created_at).toLocaleString()}
             </p>
           </div>
@@ -153,12 +152,12 @@ const CommentCard = ({ comment }: IProps) => {
           <div className="flex gap-4 mt-1 text-description text-md-medium">
             <div
               className={`flex gap-4 items-center ${
-                isOptimisticComment ? "opacity-50" : ""
+                isOptimisticComment ? 'opacity-50' : ''
               }`}
             >
               <span
                 className={
-                  isOptimisticComment ? "cursor-default" : "cursor-pointer"
+                  isOptimisticComment ? 'cursor-default' : 'cursor-pointer'
                 }
                 onClick={() => {
                   if (!isOptimisticComment)
@@ -166,13 +165,13 @@ const CommentCard = ({ comment }: IProps) => {
                 }}
               >
                 {!isOptimisticComment && optimisticVoted
-                  ? "Downvote"
-                  : "Upvote"}
+                  ? 'Downvote'
+                  : 'Upvote'}
                 {` (${votedCountToShow})`}
               </span>
               <span
                 className={
-                  isOptimisticComment ? "cursor-default" : "cursor-pointer"
+                  isOptimisticComment ? 'cursor-default' : 'cursor-pointer'
                 }
                 onClick={() => {
                   if (!isOptimisticComment)
@@ -186,11 +185,11 @@ const CommentCard = ({ comment }: IProps) => {
         </div>
       </div>
       {showReplySection && (
-        <div className="flex flex-col gap-2 mt-2 ml-[52px]">
+        <div className="flex flex-col gap-2 mt-2 sm:ml-[52px]">
           <Separator />
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex flex-col gap-2 px-1 w-full">
             <div className="flex items-start gap-3">
-              <Avatar size="md" className="border-default border">
+              <Avatar size="md" className="sm:flex hidden mt-0.5">
                 <AvatarImage
                   src={comment.author.image_url ?? undefined}
                   alt={comment.author.name ?? undefined}
@@ -203,28 +202,27 @@ const CommentCard = ({ comment }: IProps) => {
                 placeholder={`Reply to ${comment.author.name}`}
                 value={reply}
                 onChange={(ev) => setReply(ev.target.value)}
-                className="border-none w-full"
+                className="w-full"
               />
             </div>
             <div className="flex justify-end items-center w-full">
               <Button
-                disabled={!comment || isLoadingCreateComment}
+                disabled={!reply}
+                isLoading={isLoadingCreateComment}
+                loadingText="Wait a sec..."
                 onClick={() => {
                   if (!isLoadingCreateComment) handleComment();
                 }}
                 className="w-fit"
               >
-                {/* {isLoadingCreateComment ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : ( */}
                 Comment
-                {/* )} */}
               </Button>
             </div>
           </div>
+          <Separator />
         </div>
       )}
-      <div className="flex flex-col gap-4 mt-4 pl-[52px]">
+      <div className="flex flex-col gap-4 border-default mt-4 ml-2 pl-3 sm:pl-[52px] border-l sm:border-l-0">
         {!isOptimisticComment &&
           comments.map((childComment, index) => {
             return (
@@ -232,7 +230,7 @@ const CommentCard = ({ comment }: IProps) => {
                 key={childComment.id ?? `New_reply-${index}`}
                 className="flex justify-center items-start gap-4"
               >
-                <Avatar size="md" className="border-default border">
+                <Avatar size="md" className="sm:flex hidden mt-0.5">
                   <AvatarImage
                     src={childComment.author.image_url ?? undefined}
                     alt={childComment.author.name ?? undefined}
@@ -244,9 +242,9 @@ const CommentCard = ({ comment }: IProps) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col gap-1 w-full">
-                  <div className="flex justify-between items-center gap-1">
+                  <div className="flex justify-between items-center gap-0.5">
                     <p className="text-md-medium">{childComment.author.name}</p>
-                    <p className="text-description text-sm">
+                    <p className="sm:flex hidden text-description text-sm">
                       {new Date(childComment.created_at).toLocaleString()}
                     </p>
                   </div>

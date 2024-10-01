@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronUp, LoaderCircle } from "lucide-react";
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChevronUp, Dot, Inbox } from 'lucide-react';
 
 import {
   Button,
@@ -19,7 +19,6 @@ import {
   Select,
   Toggle,
   Separator,
-  ScrollArea,
   Textarea,
   DropdownMenu,
   DropdownMenuContent,
@@ -28,21 +27,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@fucina/ui";
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+  SelectGroupLabel,
+  SelectGroup,
+} from '@fucina/ui';
 import {
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
-} from "@/app/api/controllers/ideaController";
-import { useCreateComment } from "@/app/api/controllers/commentController";
+} from '@/app/api/controllers/ideaController';
+import { useCreateComment } from '@/app/api/controllers/commentController';
 import CommentCard, {
   OptimisticComment,
-} from "@/app/[org]/(pages)/ideas/[id]/components/comment";
-import { useAuth } from "@/context/authContext";
-import { useWorkspace } from "@/context/workspaceContext";
-import Loading from "@/app/[org]/(pages)/ideas/[id]/loading";
-import { useOptimistic } from "@/utils/useOptimistic";
-import { CommentType } from "@/types/comment";
+} from '@/app/[org]/(pages)/ideas/[id]/components/comment';
+import { useAuth } from '@/context/authContext';
+import { useWorkspace } from '@/context/workspaceContext';
+import Loading from '@/app/[org]/(pages)/ideas/[id]/loading';
+import { useOptimistic } from '@/utils/useOptimistic';
+import useOpenUserTab from '@/utils/useOpenUserTab';
+import { CommentType } from '@/types/comment';
 
 export interface IPropsIdeaPage {
   params: {
@@ -59,7 +67,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const pathName = usePathname();
 
   const handleClose = () => {
-    router.push(pathName.substring(0, pathName.lastIndexOf("/")));
+    router.push(pathName.substring(0, pathName.lastIndexOf('/')));
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
@@ -68,7 +76,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     return ideaData?.data.idea;
   }, [ideaData]);
 
-  const [comment, setComment] = useState<string>("");
+  const [comment, setComment] = useState<string>('');
 
   const { mutateAsync: createComment, isLoading: isLoadingCreateComment } =
     useCreateComment();
@@ -95,7 +103,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         });
       }
       const content = comment;
-      setComment("");
+      setComment('');
       const res = await createComment({
         ideaId: id,
         comment: content,
@@ -146,6 +154,8 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     });
   };
 
+  const userPageLink = useOpenUserTab({ userId: idea?.authorId ?? '' });
+
   const [isVoted, setIsVoted] = useOptimistic({
     mainState: idea?.isVoted ?? false,
     callOnChange: handleVoteIdea,
@@ -172,68 +182,121 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         }}
       >
         {isLoadingGetIdea ? (
-          <SheetContent className="p-10 w-2/5 min-w-[40%] max-w-[40%]">
+          <SheetContent>
             <Loading />
           </SheetContent>
         ) : idea ? (
-          <SheetContent className="flex p-0 w-2/5 min-w-[40%] max-w-[40%]">
-            <ScrollArea className="size-full">
-              <div className="flex flex-col gap-6 p-10 w-full overflow-auto">
-                <div className="flex gap-4 w-full">
-                  <div className="flex flex-col gap-1 w-full">
-                    <h2 className="text-heading-body">{idea?.title}</h2>
-                    <p className="text-description text-md">
-                      {idea?.description}
-                    </p>
-                  </div>
-                  <Toggle
-                    aria-label="vote"
-                    className="flex flex-col justify-items-center items-center gap-0 space-y-0 p-1 w-11 min-w-11 h-14"
-                    pressed={isVoted}
-                    onClick={(ev) => {
-                      ev.stopPropagation();
-                      ev.preventDefault();
-                      setIsVoted(!isVoted);
-                    }}
-                  >
-                    <ChevronUp size={24} />
-                    {/* {isLoadingVoteIdea ? (
+          <SheetContent>
+            <SheetHeader>
+              <div className="flex sm:flex-row flex-col justify-start items-start gap-3 sm:gap-4">
+                <Toggle
+                  aria-label="vote"
+                  className="flex flex-col justify-items-center items-center gap-0 space-y-0 p-1 w-11 min-w-11 h-14"
+                  pressed={isVoted}
+                  onClick={(ev) => {
+                    ev.stopPropagation();
+                    ev.preventDefault();
+                    setIsVoted(!isVoted);
+                  }}
+                >
+                  <ChevronUp size={24} />
+                  {/* {isLoadingVoteIdea ? (
                       <LoaderCircle className="animate-spin stroke-icon" />
                     ) : ( */}
-                    <p className="text-md">{votedCountToShow}</p>
-                    {/* )} */}
-                  </Toggle>
+                  <p className="text-md">{votedCountToShow}</p>
+                  {/* )} */}
+                </Toggle>
+                <div className="flex flex-col gap-1">
+                  <SheetTitle>{idea?.title}</SheetTitle>
+                  <SheetDescription>{idea?.description}</SheetDescription>
                 </div>
-                <Separator />
-                <div className="flex flex-col gap-1 w-full">
-                  <div className="flex items-center gap-4 h-9">
-                    <p className="min-w-20 text-description text-md">Author</p>
-                    <Button variant="link">
-                      <Link href="" className="flex items-center gap-2">
-                        <Avatar size="sm" className="border-default border">
+              </div>
+            </SheetHeader>
+            <div className="flex flex-col gap-4 py-4 w-full overflow-auto">
+              <div className="flex flex-col gap-3 sm:gap-1.5 px-0.5 sm:px-0 w-full">
+                <div className="flex sm:flex-row flex-col items-start sm:items-center gap-1 sm:gap-4 w-full sm:h-9">
+                  <p className="px-3 sm:px-0 min-w-20 text-description text-md">
+                    Author
+                  </p>
+                  <Button variant="link" asChild className="flex sm:hidden">
+                    <Link
+                      href={userPageLink}
+                      className="flex items-center gap-2"
+                    >
+                      <Avatar size="sm">
+                        <AvatarImage
+                          src={idea.author.image_url ?? undefined}
+                          alt={idea.author.name ?? undefined}
+                        />
+                        <AvatarFallback>
+                          {idea.author.name ? idea.author.name[0] : undefined}
+                        </AvatarFallback>
+                      </Avatar>
+                      {idea.author.name}
+                    </Link>
+                  </Button>
+                  <HoverCard>
+                    <HoverCardTrigger asChild className="sm:flex hidden">
+                      <Button variant="link" asChild>
+                        <Link
+                          href={userPageLink}
+                          className="flex items-center gap-2"
+                        >
+                          <Avatar size="sm">
+                            <AvatarImage
+                              src={idea.author.image_url ?? undefined}
+                              alt={idea.author.name ?? undefined}
+                            />
+                            <AvatarFallback>
+                              {idea.author.name
+                                ? idea.author.name[0]
+                                : undefined}
+                            </AvatarFallback>
+                          </Avatar>
+                          {idea.author.name}
+                        </Link>
+                      </Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-fit">
+                      <div className="flex items-center gap-2">
+                        <Avatar size="xl">
                           <AvatarImage
-                            src={idea.author.image_url ?? undefined}
-                            alt={idea.author.name ?? undefined}
+                            src={idea?.author.image_url ?? undefined}
+                            alt={idea?.author.name ?? undefined}
                           />
                           <AvatarFallback>
                             {idea.author.name ? idea.author.name[0] : undefined}
                           </AvatarFallback>
                         </Avatar>
-                        {idea.author.name}
-                      </Link>
-                    </Button>
-                  </div>
-                  <div className="flex items-center gap-4 h-9">
-                    <p className="min-w-20 text-description text-md">Status</p>
-                    {isAdmin ? (
-                      <Select
-                        defaultValue={idea.statusId ?? undefined}
-                        onValueChange={(ev) => handleChangeStatus(ev)}
-                      >
-                        <SelectTrigger className="hover:bg-item-hover active:bg-item-selected border-none rounded h-9">
-                          <SelectValue placeholder="Chose one topic" />
-                        </SelectTrigger>
-                        <SelectContent>
+                        <div className="flex flex-col gap-0.5">
+                          <p className="font-semibold text-md">
+                            {idea.author.name}
+                          </p>
+                          <div className="flex justify-start items-center gap-0 w-fit text-description text-sm">
+                            <p>🪬 {idea.author.email} karmas</p>
+                            <Dot />
+                            <p>🏅 7 badges</p>
+                          </div>
+                        </div>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+                <div className="flex sm:flex-row flex-col items-start sm:items-center gap-1 sm:gap-4 w-full sm:h-9">
+                  <p className="px-3 sm:px-0 min-w-20 text-description text-md">
+                    Status
+                  </p>
+                  {isAdmin ? (
+                    <Select
+                      defaultValue={idea.statusId ?? undefined}
+                      onValueChange={(ev) => handleChangeStatus(ev)}
+                    >
+                      <SelectTrigger className="hover:bg-item-active active:bg-item-selected shadow-none border-none rounded w-36 h-9 font-medium">
+                        <SelectValue placeholder="Chose one topic" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectGroupLabel>Status</SelectGroupLabel>
                           {statuses?.map((status) => {
                             return (
                               <SelectItem key={status.id} value={status.id}>
@@ -241,78 +304,78 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                               </SelectItem>
                             );
                           })}
-                        </SelectContent>
-                      </Select>
-                    ) : idea.status ? (
-                      <div className="flex items-center px-3 py-1 h-9">
-                        <p className="text-md">{idea.status.name}</p>
-                      </div>
-                    ) : null}
-                  </div>
-                  <div className="flex items-center gap-4 h-9">
-                    <p className="min-w-20 text-description text-md">Topic</p>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  ) : idea.status ? (
                     <div className="flex items-center px-3 py-1 h-9">
-                      <p className="text-md">{idea.topic.name}</p>
+                      <p className="font-medium text-md">{idea.status.name}</p>
                     </div>
+                  ) : null}
+                </div>
+                <div className="flex sm:flex-row flex-col items-start sm:items-center gap-1 sm:gap-4 w-full sm:h-9">
+                  <p className="px-3 sm:px-0 min-w-20 text-description text-md">
+                    Topic
+                  </p>
+                  <div className="flex items-center px-3 py-1 h-9">
+                    <p className="font-medium text-md">{idea.topic.name}</p>
                   </div>
-                  <div className="flex items-center gap-4 h-9">
-                    <p className="min-w-20 text-description text-md">Created</p>
-                    <div className="flex items-center px-3 py-1 h-9">
-                      <p className="text-md">
-                        {new Date(idea.created_at).toLocaleString()}
-                      </p>
-                    </div>
+                </div>
+                <div className="flex sm:flex-row flex-col items-start sm:items-center gap-1 sm:gap-4 w-full sm:h-9">
+                  <p className="px-3 sm:px-0 min-w-20 text-description text-md">
+                    Created
+                  </p>
+                  <div className="flex items-center px-3 py-1 h-9">
+                    <p className="font-medium text-md">
+                      {new Date(idea.created_at).toLocaleString()}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-4 h-9">
-                    <p className="min-w-20 text-description text-md">Voters</p>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="text">
-                          <span className="flex justify-start items-center gap-2">
-                            {idea.voters.length === 0 ? (
-                              "0 Voters"
-                            ) : (
-                              <>
-                                <div className="flex justify-start items-center -space-x-1.5">
-                                  {idea.voters
-                                    .slice(0, 5)
-                                    .map((voter, index) => (
-                                      <Avatar key={index} size="sm">
-                                        <AvatarImage
-                                          src={
-                                            voter.user.image_url ?? undefined
-                                          }
-                                          alt={voter.user.name ?? undefined}
-                                        />
-                                        <AvatarFallback>
-                                          {voter.user.name
-                                            ? voter.user.name[0]
-                                            : undefined}
-                                        </AvatarFallback>
-                                      </Avatar>
-                                    ))}
-                                </div>
-                                {idea.voters.length > 5 && (
-                                  <span>+ {idea.voters.length - 5} Voters</span>
-                                )}
-                              </>
-                            )}
-                          </span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-56">
-                        <DropdownMenuLabel>Voters</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
+                </div>
+                <div className="flex sm:flex-row flex-col items-start sm:items-center gap-1 sm:gap-4 w-full sm:h-9">
+                  <p className="px-3 sm:px-0 min-w-20 text-description text-md">
+                    Voters
+                  </p>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="text">
+                        <span className="flex justify-start items-center gap-2">
                           {idea.voters.length === 0 ? (
-                            <DropdownMenuItem>0 Voters</DropdownMenuItem>
+                            '0 Voters'
                           ) : (
-                            idea.voters.map((voter, index) => (
-                              <DropdownMenuItem
-                                key={index}
-                                className="flex items-center gap-2 h-9"
-                              >
-                                <Avatar key={index} size="sm">
+                            <>
+                              <div className="flex justify-start items-center -space-x-1.5">
+                                {idea.voters.slice(0, 5).map((voter, index) => (
+                                  <Avatar key={index} size="sm">
+                                    <AvatarImage
+                                      src={voter.user.image_url ?? undefined}
+                                      alt={voter.user.name ?? undefined}
+                                    />
+                                    <AvatarFallback>
+                                      {voter.user.name
+                                        ? voter.user.name[0]
+                                        : undefined}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                ))}
+                              </div>
+                              {idea.voters.length > 5 && (
+                                <span>+ {idea.voters.length - 5} Voters</span>
+                              )}
+                            </>
+                          )}
+                        </span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="start" className="w-56">
+                      <DropdownMenuLabel>Voters</DropdownMenuLabel>
+                      <DropdownMenuGroup>
+                        {idea.voters.length === 0 ? (
+                          <DropdownMenuItem>0 Voters</DropdownMenuItem>
+                        ) : (
+                          idea.voters.map((voter, index) => (
+                            <Link key={index} href={userPageLink}>
+                              <DropdownMenuItem className="flex items-center gap-2 w-full h-9">
+                                <Avatar size="sm">
                                   <AvatarImage
                                     src={voter.user.image_url ?? undefined}
                                     alt={voter.user.name ?? undefined}
@@ -323,70 +386,79 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                                       : undefined}
                                   </AvatarFallback>
                                 </Avatar>
-                                {voter.user.name}
+                                <span>{voter.user.name}</span>
                               </DropdownMenuItem>
-                            ))
-                          )}
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </div>
-                <Separator />
-                <div className="flex flex-col gap-2 w-full">
-                  <div className="flex items-start gap-3">
-                    <Avatar size="md" className="border-default border">
-                      <AvatarImage
-                        src={user?.image_url ?? undefined}
-                        alt={user?.name ?? undefined}
-                      />
-                      <AvatarFallback>
-                        {user?.name ? user?.name[0] : undefined}
-                      </AvatarFallback>
-                    </Avatar>
-                    <Textarea
-                      placeholder={`Reply to ${idea.author.name}`}
-                      value={comment}
-                      onChange={(ev) => setComment(ev.target.value)}
-                      className="border-none w-full"
-                    />
-                  </div>
-                  <div className="flex justify-end items-center w-full">
-                    <Button
-                      disabled={!comment || isLoadingCreateComment}
-                      onClick={() => {
-                        if (!isLoadingCreateComment) handleComment();
-                      }}
-                      className="w-fit"
-                    >
-                      {/* {isLoadingCreateComment ? (
-                        <LoaderCircle className="animate-spin" />
-                      ) : ( */}
-                      Comment
-                      {/* )} */}
-                    </Button>
-                  </div>
-                </div>
-                <Separator />
-                <div className="flex flex-col gap-4 w-full">
-                  <p className="text-description text-heading-group">Replies</p>
-                  {comments?.map((comment, index) => {
-                    return (
-                      <CommentCard
-                        key={comment.id ?? `New_comment-${index}`}
-                        comment={comment}
-                      />
-                    );
-                  })}
+                            </Link>
+                          ))
+                        )}
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
-            </ScrollArea>
+              <Separator />
+              <div className="flex flex-col gap-3 w-full">
+                <div className="flex items-start gap-2 px-1">
+                  <Avatar size="md" className="sm:flex hidden mt-0.5">
+                    <AvatarImage
+                      src={user?.image_url ?? undefined}
+                      alt={user?.name ?? undefined}
+                    />
+                    <AvatarFallback>
+                      {user?.name ? user?.name[0] : undefined}
+                    </AvatarFallback>
+                  </Avatar>
+                  <Textarea
+                    placeholder={`Reply to ${idea.author.name}`}
+                    value={comment}
+                    onChange={(ev) => setComment(ev.target.value)}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-end items-center px-1 w-full">
+                  <Button
+                    disabled={!comment}
+                    isLoading={isLoadingCreateComment}
+                    loadingText="Wait a sec..."
+                    onClick={() => {
+                      if (!isLoadingCreateComment) handleComment();
+                    }}
+                    className="w-fit"
+                  >
+                    Comment
+                  </Button>
+                </div>
+              </div>
+              <Separator />
+              <div className="flex flex-col gap-4 px-1 w-full">
+                <p className="text-description text-heading-group">Replies</p>
+                {comments?.map((comment, index) => {
+                  return (
+                    <CommentCard
+                      key={comment.id ?? `New_comment-${index}`}
+                      comment={comment}
+                    />
+                  );
+                })}
+              </div>
+            </div>
           </SheetContent>
         ) : (
-          <SheetContent className="p-10 w-2/5 max-w-[40%]">
-            <p className="w-full text-center text-description text-md">
-              Idea not found
-            </p>
+          <SheetContent>
+            <div className="flex flex-col justify-center items-center gap-3 p-10 w-full h-full text-description">
+              <Inbox className="size-8 stroke-icon" />
+              <div className="flex flex-col gap-1 w-full">
+                <h3 className="font-semibold text-center text-lg">
+                  Idea not found
+                </h3>
+                <p className="text-center">
+                  This idea does not exist or you do not have access to it.
+                </p>
+              </div>
+              <Button variant="secondary" className="mt-3" asChild>
+                <Link href="/">Back to the homepage</Link>
+              </Button>
+            </div>
           </SheetContent>
         )}
       </Sheet>

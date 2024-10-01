@@ -9,7 +9,8 @@ import {
   Settings,
   User,
   Menu,
-  PlusCircle,
+  Grip,
+  CirclePlus,
   Sun,
   Moon,
   Monitor,
@@ -81,71 +82,22 @@ const Navbar = () => {
     <div className="z-50 fixed flex justify-center items-center border-default bg-background border-b w-full h-14">
       <div className="flex justify-between items-center mx-auto px-5 sm:px-10 w-full max-w-screen-xl">
         <div className="flex justify-center items-center space-x-4 h-9">
-          {isAdmin && (
-            <Select>
-              <SelectTrigger className="pr-2.5 pl-2 border-none w-40 sm:w-56 font-semibold">
-                <SelectValue defaultValue={workspace?.name} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectGroupLabel>Workspaces</SelectGroupLabel>
-                  <SelectItem value={workspace?.name ?? ''}>
-                    <div className="flex justify-start items-center gap-2">
-                      <Avatar size="sm" className="border-default border">
-                        <AvatarImage src={workspace?.imageUrl} alt={org} />
-                        <AvatarFallback className="uppercase">
-                          {orgLetter}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="capitalize">{workspace?.name}</span>
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="Pedro">
-                    <div className="flex justify-start items-center gap-2 w-full">
-                      <Avatar size="sm" className="border-default border">
-                        <AvatarImage src={workspace?.imageUrl} alt={org} />
-                        <AvatarFallback className="uppercase">
-                          {orgLetter}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-ellipsis truncate capitalize">
-                        Pedro hjxabc nxbsajhzcbashjzcba
-                      </span>
-                    </div>
-                  </SelectItem>
-                  <Separator className="my-1" />
-                  <Button
-                    value="new workspace"
-                    variant="text"
-                    className="flex justify-start items-center gap-2 rounded-sm w-full"
-                  >
-                    <div className="flex justify-center items-center size-6">
-                      <PlusCircle className="size-4" />
-                    </div>
-                    Create new workspace
-                  </Button>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
-          )}
-          {!isAdmin && (
-            <button
-              onClick={handleClickButton}
-              className={cn('rounded', focusRing)}
-            >
-              <div className="flex justify-center items-center space-x-2 h-9">
-                <Avatar size="md" className="border-default border">
-                  <AvatarImage src={workspace?.imageUrl} alt={org} />
-                  <AvatarFallback className="uppercase">
-                    {orgLetter}
-                  </AvatarFallback>
-                </Avatar>
-                <h1 className="text-heading-body">
-                  {workspace?.externalName ?? org}
-                </h1>
-              </div>
-            </button>
-          )}
+          <button
+            onClick={handleClickButton}
+            className={cn('rounded', focusRing)}
+          >
+            <div className="flex justify-center items-center space-x-2 h-9">
+              <Avatar size="md">
+                <AvatarImage src={workspace?.imageUrl} alt={org} />
+                <AvatarFallback className="uppercase">
+                  {orgLetter}
+                </AvatarFallback>
+              </Avatar>
+              <h1 className="text-heading-body">
+                {workspace?.externalName ?? org}
+              </h1>
+            </div>
+          </button>
           <Separator orientation="vertical" className="md:flex hidden h-7" />
           {isLoadingWorkspace ? (
             <div className="md:flex items-center gap-1.5 hidden">
@@ -219,10 +171,7 @@ const Navbar = () => {
         <div className="md:flex space-x-2 hidden">
           <DropdownMenu>
             <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
-              <Avatar
-                size="lg"
-                className="border-default border hover:cursor-pointer"
-              >
+              <Avatar size="lg" className="hover:cursor-pointer">
                 <AvatarImage
                   src={user?.image_url ?? undefined}
                   alt={user?.name ?? undefined}
@@ -253,6 +202,47 @@ const Navbar = () => {
                     <span>Settings</span>
                   </DropdownMenuItem>
                 </Link>
+                {isAdmin && (
+                  <DropdownMenuSubMenu>
+                    <DropdownMenuSubMenuTrigger>
+                      <Grip />
+                      <span>Workspaces</span>
+                    </DropdownMenuSubMenuTrigger>
+                    <DropdownMenuSubMenuContent className="w-64">
+                      <DropdownMenuRadioGroup value="fucina">
+                        <DropdownMenuRadioItem value="fucina">
+                          <Avatar size="sm">
+                            <AvatarImage
+                              src={workspace?.imageUrl ?? undefined}
+                              alt={workspace?.externalName ?? undefined}
+                            />
+                            <AvatarFallback className="uppercase">
+                              {workspace?.externalName?.slice(0, 1)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span>Fucina</span>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem value="pedro">
+                          <Avatar size="sm">
+                            <AvatarImage
+                              src={workspace?.imageUrl ?? undefined}
+                              alt={workspace?.externalName ?? undefined}
+                            />
+                            <AvatarFallback className="uppercase">
+                              {workspace?.externalName?.slice(0, 1)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span>Pedro</span>
+                        </DropdownMenuRadioItem>
+                      </DropdownMenuRadioGroup>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>
+                        <CirclePlus />
+                        <span>Create new Workspace</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuSubMenuContent>
+                  </DropdownMenuSubMenu>
+                )}
                 <DropdownMenuSubMenu>
                   <DropdownMenuSubMenuTrigger>
                     {localStorage.theme === 'dark' ? (
@@ -269,7 +259,7 @@ const Navbar = () => {
                       </>
                     )}
                   </DropdownMenuSubMenuTrigger>
-                  <DropdownMenuSubMenuContent>
+                  <DropdownMenuSubMenuContent className="w-40">
                     <DropdownMenuRadioGroup value={localStorage.theme}>
                       <DropdownMenuRadioItem
                         value="light"
@@ -424,6 +414,11 @@ const Navbar = () => {
                       </Link>
                     </SheetClose>
                   </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+              <Separator orientation="horizontal" className="my-4" />
+              <NavigationMenu className="w-full">
+                <NavigationMenuList orientation="vertical" className="w-full">
                   <NavigationMenuItem className="w-full">
                     <NavigationMenuLink
                       onClick={async (e: any) => {

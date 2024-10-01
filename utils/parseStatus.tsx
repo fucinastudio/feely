@@ -6,7 +6,8 @@ import {
   CheckCircle,
 } from 'lucide-react';
 
-import { Tag } from '@fucina/ui';
+import { Tag, Tooltip } from '@fucina/ui';
+import { cn } from '@fucina/utils';
 
 export type TagColor = 'amber' | 'purple' | 'blue' | 'red' | 'emerald';
 
@@ -38,9 +39,12 @@ export const StatusTag = ({
 }) => {
   const { tagColor, tagIcon } = getStatusProps(status);
   return (
-    <Tag variant={tagColor} className={className}>
+    <Tag
+      variant={tagColor}
+      className={cn('px-1 sm:px-1.5 sm:!pr-2', className)}
+    >
       {tagIcon}
-      {status}
+      <span className="sm:flex hidden">{status}</span>
     </Tag>
   );
 };

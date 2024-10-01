@@ -3,7 +3,14 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-import { Sheet, SheetContent, Separator } from '@fucina/ui';
+import {
+  Sheet,
+  SheetContent,
+  Separator,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from '@fucina/ui';
 import NewIdeaForm from '@/app/[org]/(pages)/ideas/new_idea/new_idea_form';
 
 const NewIdeaPage = () => {
@@ -22,14 +29,10 @@ const NewIdeaPage = () => {
           }
         }}
       >
-        <SheetContent className="flex flex-col space-y-4 p-10 min-w-[476px]">
-          <div className="flex flex-col space-y-1">
-            <h2 className="text-heading-body">Tell us your idea</h2>
-            <p className="text-description text-md">
-              Lorem ipsum dolor sit amet cum condipiscitur
-            </p>
-          </div>
-          <Separator />
+        <SheetContent>
+          <SheetHeader>
+            <SheetTitle>Tell us your idea</SheetTitle>
+          </SheetHeader>
           <NewIdeaForm />
         </SheetContent>
       </Sheet>

@@ -51,17 +51,20 @@ const FiltersComponentObject = ({
   setSelectedOrder: (value: IIdeasOrdering) => void;
 }) => {
   return (
-    <div className="flex justify-between items-center space-x-20">
+    <div className="flex sm:flex-row flex-col justify-between items-center gap-4 sm:gap-10 md:gap-20">
       <Input
         value={searchTitleFastRefreshing}
         onChange={(ev) => setDebounced(ev.target.value)}
         placeholder="Search ideas..."
-        className="max-w-96"
+        className="w-full sm:max-w-96"
       />
-      <div className="flex justify-center items-center space-x-1.5">
+      <div className="flex justify-center items-center gap-2 w-full sm:w-fit">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary">
+            <Button
+              variant="secondary"
+              className="justify-start w-full sm:w-24 font-normal"
+            >
               Filters{' '}
               {selectedTopics.length + selectedStatuses.length > 0
                 ? `(${selectedTopics.length + selectedStatuses.length})`
@@ -70,7 +73,6 @@ const FiltersComponentObject = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56">
             <DropdownMenuLabel>Topics</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             {topics.map((topic) => (
               <DropdownMenuCheckboxItem
                 checked={selectedTopics.includes(topic.id)}
@@ -88,8 +90,8 @@ const FiltersComponentObject = ({
                 {topic.name}
               </DropdownMenuCheckboxItem>
             ))}
-            <DropdownMenuLabel>Statuses</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuLabel>Statuses</DropdownMenuLabel>
             {statuses.map((status) => (
               <DropdownMenuCheckboxItem
                 checked={selectedStatuses.includes(status.id)}
@@ -113,7 +115,7 @@ const FiltersComponentObject = ({
           value={selectedOrder}
           onValueChange={(ev) => setSelectedOrder(ev as IIdeasOrdering)}
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-full sm:w-36">
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
           <SelectContent>

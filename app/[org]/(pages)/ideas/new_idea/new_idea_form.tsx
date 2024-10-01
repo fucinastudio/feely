@@ -21,6 +21,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  SheetClose,
 } from '@fucina/ui';
 import { useCreateIdea } from '@/app/api/controllers/ideaController';
 import { useWorkspace } from '@/context/workspaceContext';
@@ -65,66 +66,81 @@ const NewIdeaForm = () => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit)}
-        className="flex flex-col gap-4"
+        className="flex flex-col justify-between h-full"
       >
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <Label>Title</Label>
-              <FormControl>
-                <Input
-                  placeholder="One sentences that summarizes your idea"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <Label>Description</Label>
-              <FormControl>
-                <Textarea placeholder="Why your idea is helpful?" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="topic"
-          render={({ field }) => (
-            <FormItem>
-              <Label>Topic</Label>
-              <Select defaultValue={field.value} onValueChange={field.onChange}>
+        <div className="flex flex-col gap-4 py-4">
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <Label>Title</Label>
                 <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chose one topic" />
-                  </SelectTrigger>
+                  <Input
+                    placeholder="One sentences that summarizes your idea"
+                    {...field}
+                  />
                 </FormControl>
-                <SelectContent>
-                  {topics?.map((topic) => {
-                    return (
-                      <SelectItem key={topic.id} value={topic.id}>
-                        {topic.name}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <Label>Description</Label>
+                <FormControl>
+                  <Textarea
+                    placeholder="Why your idea is helpful?"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="topic"
+            render={({ field }) => (
+              <FormItem>
+                <Label>Topic</Label>
+                <Select
+                  defaultValue={field.value}
+                  onValueChange={field.onChange}
+                >
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Chose one topic" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {topics?.map((topic) => {
+                      return (
+                        <SelectItem key={topic.id} value={topic.id}>
+                          {topic.name}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
 
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="flex justify-end pt-4 w-full">
-          <Button type="submit" disabled={isLoadingCreateIdea}>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className="flex flex-row justify-end gap-2 border-default pt-4 border-t w-full">
+          <SheetClose asChild>
+            <Button variant="secondary">Cancel</Button>
+          </SheetClose>
+          <Button
+            type="submit"
+            isLoading={isLoadingCreateIdea}
+            loadingText="Wait a sec..."
+          >
             Submit idea
           </Button>
         </div>
