@@ -11,6 +11,7 @@ import {
   AvatarImage,
   Button,
   ScrollArea,
+  Separator,
   Sheet,
   SheetBody,
   SheetClose,
@@ -124,7 +125,7 @@ const UserTab = () => {
             </SheetClose>
           </div>
           <SheetBody>
-            <Tabs defaultValue="badges">
+            <Tabs defaultValue="badges" className="p-0">
               <TabsList>
                 <TabsTrigger value="badges">Badges</TabsTrigger>
                 <TabsTrigger value="ideas">Ideas</TabsTrigger>
@@ -134,18 +135,23 @@ const UserTab = () => {
                   <LoaderCircle className="animate-spin stroke-brand-600" />
                 </div>
               </TabsContent>
-              <TabsContent value="ideas" className="p-0">
-                <ScrollArea className="h-full">
-                  {(isLoadingIdeaByUserInWorkspace || isLoadingGetUserById) && (
-                    <div className="flex justify-center items-center p-10 w-full">
-                      <LoaderCircle className="animate-spin stroke-brand-600" />
-                    </div>
-                  )}
-                  {errorGetUserById && <div>{errorGetUserById}</div>}
-                  {ideasByUserInWorkspace?.data.ideas.map((idea) => {
-                    return <IdeaCard idea={idea} org={org} key={idea.id} />;
-                  })}
-                </ScrollArea>
+              <TabsContent value="ideas" className="space-y-1 p-0">
+                {(isLoadingIdeaByUserInWorkspace || isLoadingGetUserById) && (
+                  <div className="flex justify-center items-center p-10 w-full">
+                    <LoaderCircle className="animate-spin stroke-brand-600" />
+                  </div>
+                )}
+                {errorGetUserById && <div>{errorGetUserById}</div>}
+                {ideasByUserInWorkspace?.data.ideas.map((idea, index) => {
+                  const isLastItem =
+                    index === ideasByUserInWorkspace.data.ideas.length - 1;
+                  return (
+                    <>
+                      <IdeaCard idea={idea} org={org} key={idea.id} />
+                      {!isLastItem && <Separator />}
+                    </>
+                  );
+                })}
               </TabsContent>
             </Tabs>
           </SheetBody>

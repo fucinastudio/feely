@@ -15,7 +15,7 @@ const SettingsNavbar = () => {
   };
 
   return (
-    <div className="flex flex-col gap-1 my-2 w-56 min-w-56">
+    <div className="flex flex-col gap-1 md:gap-1 my-0 md:my-2 w-full md:w-56 min-w-56">
       <Button
         variant="text"
         asChild

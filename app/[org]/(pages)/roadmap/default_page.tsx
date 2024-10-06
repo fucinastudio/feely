@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 import { useWorkspace } from '@/context/workspaceContext';
 import useMainPageFilters from '@/components/filters/filters';
@@ -8,6 +9,7 @@ import FiltersComponentObject from '@/components/filters/filtersComponent';
 import StatusColumn from '@/app/[org]/(pages)/roadmap/components/statusColumn';
 import { useGetIdeasByWorkspaceName } from '@/app/api/controllers/ideaController';
 import { IdeaType } from '@/types/idea';
+import { Skeleton } from '@fucina/ui';
 
 const RoadmapPage = () => {
   const { org, workspace, statuses, topics } = useWorkspace();
@@ -46,7 +48,11 @@ const RoadmapPage = () => {
   }, [selectedStatuses, statuses]);
 
   if (!workspace || !workspace.workspaceSettings?.showRoadmap) {
-    return <div className="bg-red-600 size-8">Loading</div>;
+    return (
+      <div className="flex justify-center items-center w-full h-56">
+        <LoaderCircle className="animate-spin stroke-icon-brand" />
+      </div>
+    );
   }
 
   return (
@@ -54,7 +60,11 @@ const RoadmapPage = () => {
       <FiltersComponentObject {...filterObjectAttributes} />
       <div className="gap-4 grid grid-cols-1 md:grid-cols-3 w-full">
         {!statusesToRender || !statuses ? (
-          <div className="bg-green-600 size-10">Loading</div>
+          <>
+            <Skeleton className="w-full h-80" />
+            <Skeleton className="w-full h-80" />
+            <Skeleton className="w-full h-80" />
+          </>
         ) : (
           statusesToRender.map((status) => {
             let ideas: IdeaType[] | null = null;

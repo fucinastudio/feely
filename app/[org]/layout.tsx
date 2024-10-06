@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
-// import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 
 import Loading from '@/app/[org]/loading';
 import UserTab from '@/app/[org]/userTab';
@@ -10,11 +10,10 @@ import { WorkspaceProvider } from '@/context/workspaceContext';
 import { AuthProvider } from '@/context/authContext';
 import Navbar from '@/components/org/navbar';
 
-/*
 async function getOrgData(org: string) {
   const exists = await checkWorkspaceExistanceServer(org);
   if (!exists) {
-    throw new Error('Not foundr');
+    throw new Error('Not found');
   }
   return { name: org };
 }
@@ -28,10 +27,8 @@ export async function generateMetadata({
 
   return {
     title: `${org.name}`,
-    description: `${org.name}`,
   };
 }
-*/
 
 export default async function RootLayout({
   children,

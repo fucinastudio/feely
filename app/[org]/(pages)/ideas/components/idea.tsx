@@ -15,7 +15,7 @@ import {
   Toggle,
 } from '@fucina/ui';
 import { useVoteIdea } from '@/app/api/controllers/ideaController';
-import { StatusTag } from '@/utils/parseStatus';
+import { StatusTagIdea } from '@/utils/parseStatus';
 import { IdeaType } from '@/types/idea';
 import useOpenUserTab from '@/utils/useOpenUserTab';
 import { useOptimistic } from '@/utils/useOptimistic';
@@ -75,7 +75,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
       <div className="flex flex-col space-y-1 pr-4 w-full">
         <div className="flex justify-between items-center">
           <h1 className="line-clamp-1 pr-2 text-lg-semibold">{idea.title}</h1>
-          {idea.status && <StatusTag status={idea.status.name} />}
+          {idea.status && <StatusTagIdea status={idea.status.name} />}
         </div>
         <p className="line-clamp-1 text-description text-md">
           {idea.description}

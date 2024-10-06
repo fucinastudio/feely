@@ -1,14 +1,15 @@
-"use client";
+'use client';
 
-import React, { useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { ChevronUp, LoaderCircle } from "lucide-react";
+import React, { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChevronUp } from 'lucide-react';
 
-import { Toggle } from "@fucina/ui";
-import { IdeaType } from "@/types/idea";
-import { useVoteIdea } from "@/app/api/controllers/ideaController";
-import { useOptimistic } from "@/utils/useOptimistic";
-import { useAuth } from "@/context/authContext";
+import { Toggle } from '@fucina/ui';
+import { IdeaType } from '@/types/idea';
+import { useVoteIdea } from '@/app/api/controllers/ideaController';
+import { useOptimistic } from '@/utils/useOptimistic';
+import { useAuth } from '@/context/authContext';
+import { cn, focusRing } from '@fucina/utils';
 
 interface IProps {
   idea: IdeaType;
@@ -44,10 +45,13 @@ const IdeaCard = ({ idea, org }: IProps) => {
   }, [isVoted, votedCountWithoutUser]);
 
   return (
-    <div
+    <button
       key={idea.id}
+      className={cn(
+        'flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer',
+        focusRing
+      )}
       onClick={() => handleClickIdea(idea.id)}
-      className="flex gap-4 hover:bg-item-hover active:bg-item-selected p-4 rounded w-full cursor-pointer"
     >
       <div className="flex flex-col gap-2 w-full">
         <h1 className="line-clamp-3 text-lg-semibold">{idea.title}</h1>
@@ -75,7 +79,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
         <p className="text-md">{votedCountToShow}</p>
         {/* )} */}
       </Toggle>
-    </div>
+    </button>
   );
 };
 

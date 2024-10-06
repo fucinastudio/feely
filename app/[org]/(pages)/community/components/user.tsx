@@ -1,9 +1,13 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { Dot } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
+import { cn, focusRing } from '@fucina/utils';
+import useOpenUserTab from '@/utils/useOpenUserTab';
+
 interface IProps {
   id: string;
   index: number;
@@ -21,17 +25,22 @@ const UserCard = ({
   image_url,
   correctedPoints,
 }: IProps) => {
+  const userPageLink = useOpenUserTab({ userId: id });
   return (
-    <div
+    <Link
       key={id}
-      className="flex items-center gap-2 hover:bg-item-hover active:bg-item-selected py-3 pr-3 pl-2 rounded-md w-full cursor-pointer"
+      className={cn(
+        'flex gap-2 items-center hover:bg-item-active active:bg-item-selected py-3 pr-3 pl-2 rounded-md w-full cursor-pointer',
+        focusRing
+      )}
+      href={userPageLink}
     >
       <div className="flex justify-center items-center w-8 sm:w-10 h-8">
         <span className="text-center text-description text-heading-body">
           {index}
         </span>
       </div>
-      <Avatar size="xl" className="sm:flex border-default hidden mt-1 border">
+      <Avatar size="xl" className="sm:flex hidden mt-1">
         <AvatarImage src={image_url ?? undefined} alt={name ?? undefined} />
         <AvatarFallback>{name ? name[0] : undefined}</AvatarFallback>
       </Avatar>
@@ -48,7 +57,7 @@ const UserCard = ({
           {correctedPoints} 🪬
         </span>
       </div>
-    </div>
+    </Link>
   );
 };
 

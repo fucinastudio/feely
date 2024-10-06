@@ -32,7 +32,11 @@ const Community = () => {
     );
 
   if (!workspace?.workspaceSettings?.showCommunity) {
-    return <div className="flex justify-center items-center">Not found</div>;
+    return (
+      <div className="flex justify-center items-center w-full h-56">
+        <LoaderCircle className="animate-spin stroke-icon-brand" />
+      </div>
+    );
   }
   return (
     <>

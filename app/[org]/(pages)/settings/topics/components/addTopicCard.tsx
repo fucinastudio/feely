@@ -28,20 +28,23 @@ const AddTopicCard = () => {
     }
   };
   return (
-    <div className="flex items-center gap-4 w-full">
+    <div className="flex sm:flex-row flex-col items-center gap-3 sm:gap-2 w-full">
       <Input
         placeholder="Topic name"
         className="w-full"
         value={topicName}
         onChange={(ev) => setTopicName(ev.target.value)}
       />
-      {isLoading ? (
-        <LoaderCircle className="w-[36px] animate-spin stroke-icon" />
-      ) : (
-        <Button variant="primary" disabled={!topicName} onClick={handleSubmit}>
-          Add topic
-        </Button>
-      )}
+      <Button
+        variant="primary"
+        disabled={!topicName}
+        isLoading={isLoading}
+        loadingText="Wait a sec..."
+        onClick={handleSubmit}
+        className="w-full sm:w-fit"
+      >
+        Add topic
+      </Button>
     </div>
   );
 };

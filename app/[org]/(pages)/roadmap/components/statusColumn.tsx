@@ -1,12 +1,13 @@
 import React from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Inbox, Plus } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 
 import { Button, Separator } from '@fucina/ui';
 import IdeaCard from '@/app/[org]/(pages)/roadmap/components/idea';
 import Loading from '@/app/[org]/(pages)/settings/loading';
 import { IdeaType } from '@/types/idea';
-import { StatusTag } from '@/utils/parseStatus';
+import { StatusTagColumn } from '@/utils/parseStatus';
 import { useWorkspace } from '@/context/workspaceContext';
 
 interface IProps {
@@ -27,28 +28,27 @@ const StatusColumn = ({ status, ideas }: IProps) => {
   return (
     <div className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full h-fit">
       <div className="flex items-center border-default pt-1 pr-1 pb-2 pl-2 border-b h-12">
-        <StatusTag status={status} />
+        <StatusTagColumn status={status} />
       </div>
       {!ideas ? (
         <Loading />
       ) : ideas.length === 0 ? (
         <>
-          <div className="flex flex-col justify-center items-center gap-3 p-10 w-full">
-            <Inbox size={40} className="stroke-icon" />
-            <div className="flex flex-col gap-2 w-full text-center">
-              <h4 className="text-heading-body">No ideas found</h4>
-              <p className="text-description text-md">
-                Starting to share is difficult. But you could start by setting a
-                good example.
+          <div className="flex flex-col justify-center items-center gap-3 p-8 w-full text-description">
+            <Inbox className="size-8 stroke-icon" />
+            <div className="flex flex-col gap-1 w-full">
+              <h3 className="font-semibold text-center text-lg">
+                No ideas found
+              </h3>
+              <p className="text-center">
+                There are no ideas in this workspace. You can create the first
+                one.
               </p>
             </div>
+            <Button variant="secondary" className="mt-3" asChild>
+              <Link href={`/${org}/roadmap/new_idea`}>Create new idea</Link>
+            </Button>
           </div>
-
-          <Separator />
-          <Button variant="text" className="w-full" onClick={handleAddIdea}>
-            <Plus />
-            Add idea
-          </Button>
         </>
       ) : (
         <>

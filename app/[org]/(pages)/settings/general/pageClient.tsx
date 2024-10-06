@@ -108,9 +108,9 @@ function General() {
   };
 
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-5 md:gap-6 w-full">
       <div className="border-default bg-card border rounded-lg w-full">
-        <div className="p-6 border-b border-b-default">
+        <div className="flex flex-col gap-1 p-5 md:p-6 border-b border-b-default">
           <h2 className="text-heading-subsection">General</h2>
           <p className="text-description text-md">
             Manage your company settings.
@@ -121,10 +121,10 @@ function General() {
             {isLoadingWorkspace ? (
               <Loading />
             ) : (
-              <div className="flex flex-col gap-6 p-6 w-full">
+              <div className="flex flex-col gap-5 md:gap-6 p-5 md:p-6 w-full">
                 <AvatarPicker />
                 <Separator />
-                <div className="flex flex-col gap-6 w-96">
+                <div className="flex flex-col gap-5 md:gap-6 w-full md:w-96">
                   {/*Fake field to pass the workspaceId */}
                   <FormField
                     control={form.control}
@@ -181,7 +181,7 @@ function General() {
               </div>
             )}
 
-            <div className="flex justify-end items-center border-default px-6 py-4 border-t w-full">
+            <div className="flex justify-end items-center border-default px-5 md:px-6 py-4 border-t w-full">
               {isLoading || isLoadingCheckWorkspaceExistance ? (
                 <LoaderCircle className="animate-spin stroke-icon" />
               ) : (
@@ -195,7 +195,7 @@ function General() {
       </div>
 
       <div className="border-danger bg-card border rounded-lg w-full overflow-hidden">
-        <div className="p-6 border-b border-b-danger">
+        <div className="flex flex-col gap-1 p-5 md:p-6 border-b border-b-danger">
           <h2 className="text-heading-subsection">Delete Company</h2>
           <p className="text-description text-md">
             Permanently remove your account and all of its contents from the
@@ -203,7 +203,7 @@ function General() {
             with caution.
           </p>
         </div>
-        <div className="flex justify-end items-center bg-danger-subtlest px-6 py-4 w-full">
+        <div className="flex justify-end items-center bg-danger-subtlest px-5 md:px-6 py-4 w-full">
           <Button variant="danger">Delete company</Button>
         </div>
       </div>

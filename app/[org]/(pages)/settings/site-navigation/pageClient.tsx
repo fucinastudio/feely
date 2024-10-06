@@ -55,9 +55,9 @@ function SiteNavigation() {
     } catch (e) {}
   };
   return (
-    <div className="flex flex-col gap-6 w-full">
+    <div className="flex flex-col gap-5 md:gap-6 w-full">
       <div className="border-default bg-card border rounded-lg w-full">
-        <div className="p-6 border-b border-b-default">
+        <div className="flex flex-col gap-1 p-5 md:p-6 border-b border-b-default">
           <h2 className="text-heading-subsection">Navigation</h2>
           <p className="text-description text-md">
             Manage your website navigation.
@@ -68,13 +68,13 @@ function SiteNavigation() {
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="flex flex-col gap-4 p-6 w-full">
+              <div className="flex flex-col gap-4 p-5 md:p-6 w-full">
                 <FormField
                   control={form.control}
                   name="showIdeas"
                   render={({ field }) => (
                     <div className="flex justify-between items-center w-full">
-                      <p className="text-md-medium">Ideas</p>
+                      <p className="font-medium text-md">Ideas</p>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -87,7 +87,7 @@ function SiteNavigation() {
                   name="showRoadmap"
                   render={({ field }) => (
                     <div className="flex justify-between items-center w-full">
-                      <p className="text-md-medium">Roadmap</p>
+                      <p className="font-medium text-md">Roadmap</p>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -100,7 +100,7 @@ function SiteNavigation() {
                   name="showCommunity"
                   render={({ field }) => (
                     <div className="flex justify-between items-center w-full">
-                      <p className="text-md-medium">Community</p>
+                      <p className="font-medium text-md">Community</p>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
@@ -109,8 +109,7 @@ function SiteNavigation() {
                   )}
                 />
               </div>
-
-              <div className="flex justify-end items-center border-default px-6 py-4 border-t w-full">
+              <div className="flex justify-end items-center border-default px-5 md:px-6 py-4 border-t w-full">
                 {isLoading ? (
                   <LoaderCircle className="animate-spin stroke-icon" />
                 ) : (

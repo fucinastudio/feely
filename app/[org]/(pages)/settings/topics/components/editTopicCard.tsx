@@ -4,7 +4,7 @@ import React, { FormEvent, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderCircle, PenSquare, Trash2 } from 'lucide-react';
+import { LoaderCircle, PenSquare, Trash2, Save } from 'lucide-react';
 
 import {
   Button,
@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
   toast,
+  Tooltip,
 } from '@fucina/ui';
 import {
   useDeleteTopic,
@@ -34,6 +35,13 @@ const EditTopicCard = ({ topic }: IProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSave = () => {
+    if (formRef.current) {
+      formRef.current.requestSubmit();
+    }
+    setIsEditing(false);
+  };
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -108,16 +116,16 @@ const EditTopicCard = ({ topic }: IProps) => {
   };
 
   return (
-    <div className="flex items-center justify-between gap-2 px-4 py-3">
+    <div className="flex justify-between items-center gap-2 px-4 py-3">
       <Form {...form}>
-        <form onSubmit={onSubmit} ref={formRef}>
+        <form onSubmit={onSubmit} ref={formRef} className="w-full">
           {isEditing ? (
             <FormField
               control={form.control}
               name="topicName"
               render={({ field }) => (
-                <FormItem className="w-full">
-                  <FormLabel>Name</FormLabel>
+                <FormItem className="space-y-0 w-full">
+                  <FormLabel className="hidden">Name</FormLabel>
                   <FormControl>
                     <Input
                       {...field}
@@ -130,22 +138,35 @@ const EditTopicCard = ({ topic }: IProps) => {
               )}
             />
           ) : (
-            <p className="">{topic.name}</p>
+            <div className="flex justify-start items-center h-9">
+              <p className="w-full">{topic.name}</p>
+            </div>
           )}
         </form>
       </Form>
       <div className="flex items-center gap-1">
         {isLoadingPatchTopic || isLoadingDeleteTopic ? (
-          <LoaderCircle className="stroke-icon w-[36px] animate-spin" />
+          <div className="flex justify-center items-center size-9">
+            <LoaderCircle className="animate-spin size-4 stroke-icon-brand" />
+          </div>
+        ) : isEditing ? (
+          <Tooltip content="Save changes">
+            <Button variant="text" icon onClick={handleSave}>
+              <Save />
+            </Button>
+          </Tooltip>
         ) : (
           <>
-            <Button variant="text" icon onClick={handleEdit}>
-              <PenSquare />
-            </Button>
-
-            <Button variant="text" icon onClick={handleDelete}>
-              <Trash2 />
-            </Button>
+            <Tooltip content="Edit topic">
+              <Button variant="text" icon onClick={handleEdit}>
+                <PenSquare />
+              </Button>
+            </Tooltip>
+            <Tooltip content="Delete topic">
+              <Button variant="text" icon onClick={handleDelete}>
+                <Trash2 />
+              </Button>
+            </Tooltip>
           </>
         )}
       </div>
