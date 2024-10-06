@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { X } from 'lucide-react';
 
 import {
   IIdeasOrdering,
@@ -50,8 +51,14 @@ const FiltersComponentObject = ({
   selectedOrder: IIdeasOrdering;
   setSelectedOrder: (value: IIdeasOrdering) => void;
 }) => {
+  const hasSelectedFilters =
+    selectedTopics.length + selectedStatuses.length > 0;
+  const clearAllFilters = () => {
+    setSelectedTopics([]);
+    setSelectedStatuses([]);
+  };
   return (
-    <div className="flex sm:flex-row flex-col justify-between items-center gap-4 sm:gap-10 md:gap-20">
+    <div className="flex sm:flex-row flex-col justify-between items-center gap-4 sm:gap-10">
       <Input
         value={searchTitleFastRefreshing}
         onChange={(ev) => setDebounced(ev.target.value)}
@@ -59,6 +66,19 @@ const FiltersComponentObject = ({
         className="w-full sm:max-w-96"
       />
       <div className="flex justify-center items-center gap-2 w-full sm:w-fit">
+        {hasSelectedFilters && (
+          <Button
+            variant="text"
+            className="sm:flex hidden font-normal"
+            onClick={(ev) => {
+              ev.stopPropagation();
+              ev.preventDefault();
+              clearAllFilters();
+            }}
+          >
+            Clear all
+          </Button>
+        )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -111,6 +131,20 @@ const FiltersComponentObject = ({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        {hasSelectedFilters && (
+          <Button
+            variant="secondary"
+            icon
+            className="flex sm:hidden"
+            onClick={(ev) => {
+              ev.stopPropagation();
+              ev.preventDefault();
+              clearAllFilters();
+            }}
+          >
+            <X />
+          </Button>
+        )}
         <Select
           value={selectedOrder}
           onValueChange={(ev) => setSelectedOrder(ev as IIdeasOrdering)}

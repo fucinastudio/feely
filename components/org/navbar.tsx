@@ -44,13 +44,6 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   SheetClose,
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectGroup,
-  SelectGroupLabel,
-  SelectItem,
-  SelectValue,
   DropdownMenuSubMenu,
   DropdownMenuSubMenuTrigger,
   DropdownMenuSubMenuContent,
@@ -61,7 +54,7 @@ import useOpenUserTab from '@/utils/useOpenUserTab';
 import { cn, focusRing } from '@fucina/utils';
 
 const Navbar = () => {
-  const { setTheme } = useTheme();
+  const { setTheme, theme } = useTheme();
 
   const { org, workspace, isLoadingWorkspace } = useWorkspace();
   const pathname = usePathname();
@@ -245,11 +238,11 @@ const Navbar = () => {
                 )}
                 <DropdownMenuSubMenu>
                   <DropdownMenuSubMenuTrigger>
-                    {localStorage.theme === 'dark' ? (
+                    {theme === 'dark' ? (
                       <>
                         <Moon /> <span>Theme</span>
                       </>
-                    ) : localStorage.theme === 'light' ? (
+                    ) : theme === 'light' ? (
                       <>
                         <Sun /> <span>Theme</span>
                       </>
@@ -260,7 +253,7 @@ const Navbar = () => {
                     )}
                   </DropdownMenuSubMenuTrigger>
                   <DropdownMenuSubMenuContent className="w-40">
-                    <DropdownMenuRadioGroup value={localStorage.theme}>
+                    <DropdownMenuRadioGroup value={theme}>
                       <DropdownMenuRadioItem
                         value="light"
                         onClick={() => setTheme('light')}

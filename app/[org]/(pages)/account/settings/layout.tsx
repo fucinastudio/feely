@@ -15,7 +15,7 @@ export default function RootLayout({
         <h2 className="text-heading-section">Account Settings</h2>
       </div>
       <Separator />
-      <div className="flex items-start gap-10">
+      <div className="flex md:flex-row flex-col items-start gap-4 md:gap-10">
         <AccountNavbar />
         <Suspense fallback={<Loading />}>{children}</Suspense>
       </div>
