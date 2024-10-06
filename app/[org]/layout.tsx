@@ -1,21 +1,24 @@
-import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import type { Metadata } from 'next';
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import type { Metadata } from "next";
 
-import Loading from '@/app/loading';
-import UserTab from '@/app/[org]/userTab';
-import { checkWorkspaceExistanceServer } from '@/app/api/apiServerActions/workspaceApiServerActions';
-import protectRoute from '@/utils/protectedRoute';
-import { WorkspaceProvider } from '@/context/workspaceContext';
-import { AuthProvider } from '@/context/authContext';
-import Navbar from '@/components/org/navbar';
+import Loading from "@/app/loading";
+import UserTab from "@/app/[org]/userTab";
+import {
+  checkWorkspaceExistanceServer,
+  getWorkspaceByName,
+} from "@/app/api/apiServerActions/workspaceApiServerActions";
+import protectRoute from "@/utils/protectedRoute";
+import { WorkspaceProvider } from "@/context/workspaceContext";
+import { AuthProvider } from "@/context/authContext";
+import Navbar from "@/components/org/navbar";
 
 async function getOrgData(org: string) {
-  const exists = await checkWorkspaceExistanceServer(org);
-  if (!exists) {
-    throw new Error('Not found');
+  const workspace = await getWorkspaceByName(org);
+  if (!workspace) {
+    throw new Error("Not found");
   }
-  return { name: org };
+  return { name: workspace?.externalName || org };
 }
 
 export async function generateMetadata({
@@ -24,7 +27,6 @@ export async function generateMetadata({
   params: { org: string };
 }): Promise<Metadata> {
   const org = await getOrgData(params.org);
-
   return {
     title: `${org.name}`,
   };
@@ -42,7 +44,7 @@ export default async function RootLayout({
   const user = await protectRoute(`/${org}`);
   const exists = await checkWorkspaceExistanceServer(org);
   if (!exists) {
-    redirect('/');
+    redirect("/");
   } else
     return (
       <Suspense fallback={<Loading className="w-screen h-screen" />}>
