@@ -147,7 +147,7 @@ const UserTab = () => {
                     index === ideasByUserInWorkspace.data.ideas.length - 1;
                   return (
                     <>
-                      <IdeaCard idea={idea} org={org} key={idea.id} />
+                      <IdeaCard profile idea={idea} org={org} key={idea.id} />
                       {!isLastItem && <Separator />}
                     </>
                   );
