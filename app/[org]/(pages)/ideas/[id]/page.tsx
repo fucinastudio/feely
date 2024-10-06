@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { ChevronUp, Dot, Inbox } from 'lucide-react';
+import React, { useMemo, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronUp, Dot, Inbox } from "lucide-react";
 
 import {
   Button,
@@ -25,7 +25,6 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   SheetHeader,
   SheetTitle,
@@ -35,22 +34,22 @@ import {
   HoverCardContent,
   SelectGroupLabel,
   SelectGroup,
-} from '@fucina/ui';
+} from "@fucina/ui";
 import {
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
-} from '@/app/api/controllers/ideaController';
-import { useCreateComment } from '@/app/api/controllers/commentController';
+} from "@/app/api/controllers/ideaController";
+import { useCreateComment } from "@/app/api/controllers/commentController";
 import CommentCard, {
   OptimisticComment,
-} from '@/app/[org]/(pages)/ideas/[id]/components/comment';
-import { useAuth } from '@/context/authContext';
-import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/loading';
-import { useOptimistic } from '@/utils/useOptimistic';
-import useOpenUserTab from '@/utils/useOpenUserTab';
-import { CommentType } from '@/types/comment';
+} from "@/app/[org]/(pages)/ideas/[id]/components/comment";
+import { useAuth } from "@/context/authContext";
+import { useWorkspace } from "@/context/workspaceContext";
+import Loading from "@/app/loading";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { CommentType } from "@/types/comment";
+import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
 
 export interface IPropsIdeaPage {
   params: {
@@ -67,7 +66,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const pathName = usePathname();
 
   const handleClose = () => {
-    router.push(pathName?.substring(0, pathName?.lastIndexOf('/')) ?? '/');
+    router.push(pathName?.substring(0, pathName?.lastIndexOf("/")) ?? "/");
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
@@ -76,7 +75,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     return ideaData?.data.idea;
   }, [ideaData]);
 
-  const [comment, setComment] = useState<string>('');
+  const [comment, setComment] = useState<string>("");
 
   const { mutateAsync: createComment, isLoading: isLoadingCreateComment } =
     useCreateComment();
@@ -103,7 +102,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         });
       }
       const content = comment;
-      setComment('');
+      setComment("");
       const res = await createComment({
         ideaId: id,
         comment: content,
@@ -153,8 +152,6 @@ const IdeaPage = (props: IPropsIdeaPage) => {
       statusId: statusId,
     });
   };
-
-  const userPageLink = useOpenUserTab({ userId: idea?.authorId ?? '' });
 
   const [isVoted, setIsVoted] = useOptimistic({
     mainState: idea?.isVoted ?? false,
@@ -215,8 +212,8 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                     Author
                   </p>
                   <Button variant="link" asChild className="flex sm:hidden">
-                    <Link
-                      href={userPageLink}
+                    <UserProfileLinkComponent
+                      userId={idea.authorId}
                       className="flex items-center gap-2"
                     >
                       <Avatar size="sm">
@@ -229,13 +226,13 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                         </AvatarFallback>
                       </Avatar>
                       {idea.author.name}
-                    </Link>
+                    </UserProfileLinkComponent>
                   </Button>
                   <HoverCard>
                     <HoverCardTrigger asChild className="sm:flex hidden">
                       <Button variant="link" asChild>
-                        <Link
-                          href={userPageLink}
+                        <UserProfileLinkComponent
+                          userId={idea.authorId}
                           className="flex items-center gap-2"
                         >
                           <Avatar size="sm">
@@ -250,7 +247,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                             </AvatarFallback>
                           </Avatar>
                           {idea.author.name}
-                        </Link>
+                        </UserProfileLinkComponent>
                       </Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-fit">
@@ -336,7 +333,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       <Button variant="text">
                         <span className="flex justify-start items-center gap-2">
                           {idea.voters.length === 0 ? (
-                            '0 Voters'
+                            "0 Voters"
                           ) : (
                             <>
                               <div className="flex justify-start items-center -space-x-1.5">
@@ -369,7 +366,10 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                           <DropdownMenuItem>0 Voters</DropdownMenuItem>
                         ) : (
                           idea.voters.map((voter, index) => (
-                            <Link key={index} href={userPageLink}>
+                            <UserProfileLinkComponent
+                              key={index}
+                              userId={voter.userId}
+                            >
                               <DropdownMenuItem className="flex items-center gap-2 w-full h-9">
                                 <Avatar size="sm">
                                   <AvatarImage
@@ -384,7 +384,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                                 </Avatar>
                                 <span>{voter.user.name}</span>
                               </DropdownMenuItem>
-                            </Link>
+                            </UserProfileLinkComponent>
                           ))
                         )}
                       </DropdownMenuGroup>
