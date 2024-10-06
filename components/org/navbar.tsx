@@ -61,7 +61,7 @@ const Navbar = () => {
   const orgLetter = org[0];
   // Function to check if the route is active
   const isActive = (route: string) => {
-    return pathname.split('/')[2] === route;
+    return pathname?.split('/')[2] === route;
   };
   const { user, isAdmin } = useAuth();
 

@@ -32,12 +32,16 @@ import Loading from '@/app/loading';
 const UserTab = () => {
   const { workspace, org } = useWorkspace();
   const searchParams = useSearchParams();
-  const userId = searchParams.get('user');
+  const userId = searchParams?.get('user');
   const router = useRouter();
   const handleClose = () => {
-    const newParams = new URLSearchParams(searchParams);
-    newParams.delete('user');
-    router.push(window.location.pathname + '?' + newParams.toString());
+    if (searchParams) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('user');
+      router.push(window.location.pathname + '?' + newParams.toString());
+    } else {
+      router.push(window.location.pathname);
+    }
   };
 
   const {

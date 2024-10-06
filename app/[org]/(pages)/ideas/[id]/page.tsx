@@ -67,7 +67,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const pathName = usePathname();
 
   const handleClose = () => {
-    router.push(pathName.substring(0, pathName.lastIndexOf('/')));
+    router.push(pathName?.substring(0, pathName?.lastIndexOf('/')) ?? '/');
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,

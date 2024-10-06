@@ -8,7 +8,7 @@ import { useCreateWorkspace } from '@/app/api/controllers/workspaceController';
 
 const CompleteAccountSetup = () => {
   const searchParams = useSearchParams();
-  const workspace = searchParams.get('workspace');
+  const workspace = searchParams?.get('workspace');
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const { mutateAsync: createWorkspaceFunction } = useCreateWorkspace();

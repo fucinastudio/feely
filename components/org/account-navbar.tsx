@@ -27,18 +27,6 @@ const AccountNavbar = () => {
           Profile
         </Link>
       </Button>
-      {/* <Button
-        variant="text"
-        asChild
-        disabled
-        className={`${
-          isActive('account/settings/notifications') ? 'text-brand' : ''
-        } w-full justify-start`}
-      >
-        <Link href={`/${org}/account/settings/notifications`} scroll={false}>
-          Notifications
-        </Link>
-      </Button> */}
     </div>
   );
 };

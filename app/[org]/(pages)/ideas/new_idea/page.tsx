@@ -10,7 +10,7 @@ const NewIdeaPage = () => {
   const router = useRouter();
   const pathName = usePathname();
   const handleClose = () => {
-    router.push(pathName.split('/new_idea')[0]);
+    router.push(pathName?.split('/new_idea')[0] ?? '/');
   };
   return (
     <div>
