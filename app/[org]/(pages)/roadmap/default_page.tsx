@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { LoaderCircle } from 'lucide-react';
 
 import { useWorkspace } from '@/context/workspaceContext';
 import useMainPageFilters from '@/components/filters/filters';
@@ -10,6 +9,7 @@ import StatusColumn from '@/app/[org]/(pages)/roadmap/components/statusColumn';
 import { useGetIdeasByWorkspaceName } from '@/app/api/controllers/ideaController';
 import { IdeaType } from '@/types/idea';
 import { Skeleton } from '@fucina/ui';
+import Loading from '@/app/loading';
 
 const RoadmapPage = () => {
   const { org, workspace, statuses, topics } = useWorkspace();
@@ -48,11 +48,7 @@ const RoadmapPage = () => {
   }, [selectedStatuses, statuses]);
 
   if (!workspace || !workspace.workspaceSettings?.showRoadmap) {
-    return (
-      <div className="flex justify-center items-center w-full h-56">
-        <LoaderCircle className="animate-spin stroke-icon-brand" />
-      </div>
-    );
+    return <Loading className="w-full h-56" />;
   }
 
   return (

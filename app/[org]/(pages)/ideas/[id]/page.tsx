@@ -47,7 +47,7 @@ import CommentCard, {
 } from '@/app/[org]/(pages)/ideas/[id]/components/comment';
 import { useAuth } from '@/context/authContext';
 import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/[org]/(pages)/ideas/[id]/loading';
+import Loading from '@/app/loading';
 import { useOptimistic } from '@/utils/useOptimistic';
 import useOpenUserTab from '@/utils/useOpenUserTab';
 import { CommentType } from '@/types/comment';
@@ -183,7 +183,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
       >
         {isLoadingGetIdea ? (
           <SheetContent>
-            <Loading />
+            <Loading className="size-full" />
           </SheetContent>
         ) : idea ? (
           <SheetContent>
@@ -200,11 +200,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   }}
                 >
                   <ChevronUp size={24} />
-                  {/* {isLoadingVoteIdea ? (
-                      <LoaderCircle className="animate-spin stroke-icon" />
-                    ) : ( */}
                   <p className="text-md">{votedCountToShow}</p>
-                  {/* )} */}
                 </Toggle>
                 <div className="flex flex-col gap-1">
                   <SheetTitle>{idea?.title}</SheetTitle>

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { LoaderCircle } from 'lucide-react';
 
 import { Button, Input } from '@fucina/ui';
 import { useCreateTopic } from '@/app/api/controllers/topicController';

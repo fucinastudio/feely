@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { LoaderCircle } from 'lucide-react';
 
 import {
   Button,
@@ -19,7 +18,7 @@ import {
   FormMessage,
 } from '@fucina/ui';
 import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/[org]/(pages)/settings/loading';
+import Loading from '@/app/loading';
 import AvatarPicker from '@/app/[org]/(pages)/settings/general/components/avatarPicker';
 import {
   useCheckWorkspaceExistance,
@@ -119,7 +118,7 @@ function General() {
         <Form {...form}>
           <form onSubmit={onSubmit}>
             {isLoadingWorkspace ? (
-              <Loading />
+              <Loading className="min-h-[60vh] size-full" />
             ) : (
               <div className="flex flex-col gap-5 md:gap-6 p-5 md:p-6 w-full">
                 <AvatarPicker />
@@ -182,13 +181,14 @@ function General() {
             )}
 
             <div className="flex justify-end items-center border-default px-5 md:px-6 py-4 border-t w-full">
-              {isLoading || isLoadingCheckWorkspaceExistance ? (
-                <LoaderCircle className="animate-spin stroke-icon" />
-              ) : (
-                <Button variant="primary" type="submit">
-                  Save
-                </Button>
-              )}
+              <Button
+                isLoading={isLoading || isLoadingCheckWorkspaceExistance}
+                loadingText="Wait a sec..."
+                variant="primary"
+                type="submit"
+              >
+                Save
+              </Button>
             </div>
           </form>
         </Form>

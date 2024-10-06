@@ -2,7 +2,7 @@ import React from 'react';
 import { Suspense } from 'react';
 import Link from 'next/link';
 
-import Loading from '@/app/[org]/(pages)/loading';
+import Loading from '@/app/loading';
 import Ideas from '@/app/[org]/(pages)/ideas/default_page';
 import { Button, Separator } from '@fucina/ui';
 
@@ -24,7 +24,7 @@ export default async function RootLayout({
         </Button>
       </div>
       <Separator />
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<Loading className="min-h-[80vh] size-full" />}>
         <Ideas />
         {children}
       </Suspense>

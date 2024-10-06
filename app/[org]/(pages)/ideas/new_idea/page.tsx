@@ -3,14 +3,7 @@
 import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 
-import {
-  Sheet,
-  SheetContent,
-  Separator,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from '@fucina/ui';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@fucina/ui';
 import NewIdeaForm from '@/app/[org]/(pages)/ideas/new_idea/new_idea_form';
 
 const NewIdeaPage = () => {

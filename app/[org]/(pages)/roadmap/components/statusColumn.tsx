@@ -5,7 +5,7 @@ import { Inbox } from 'lucide-react';
 
 import { Button, Separator } from '@fucina/ui';
 import IdeaCard from '@/app/[org]/(pages)/roadmap/components/idea';
-import Loading from '@/app/[org]/(pages)/settings/loading';
+import Loading from '@/app/loading';
 import { IdeaType } from '@/types/idea';
 import { StatusTagColumn } from '@/utils/parseStatus';
 import { useWorkspace } from '@/context/workspaceContext';
@@ -31,7 +31,7 @@ const StatusColumn = ({ status, ideas }: IProps) => {
         <StatusTagColumn status={status} />
       </div>
       {!ideas ? (
-        <Loading />
+        <Loading className="w-full h-56" />
       ) : ideas.length === 0 ? (
         <>
           <div className="flex flex-col justify-center items-center gap-3 p-8 w-full text-description">

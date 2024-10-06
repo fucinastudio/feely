@@ -2,7 +2,6 @@ import FileUploadButton from '@/components/fileUploadButton';
 import { createClient } from '@/utils/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
 import React, { useState } from 'react';
-import { LoaderCircle } from 'lucide-react';
 import { useAuth } from '@/context/authContext';
 import { usePatchUser } from '@/app/api/controllers/userController';
 

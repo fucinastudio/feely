@@ -9,9 +9,6 @@ import {
   Button,
   Separator,
   Input,
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
   Form,
   FormControl,
   FormField,
@@ -21,8 +18,7 @@ import {
 import AvatarPickerProfile from '@/app/[org]/(pages)/account/settings/profile/components/avatarPickerProfile';
 import { useAuth } from '@/context/authContext';
 import { usePatchUser } from '@/app/api/controllers/userController';
-import { LoaderCircle } from 'lucide-react';
-import Loading from '@/app/(auth)/loading';
+import Loading from '@/app/loading';
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -74,7 +70,7 @@ function SettingsProfile() {
         <Form {...form}>
           <form onSubmit={handleSubmit}>
             {isLoadingUser ? (
-              <Loading />
+              <Loading className="min-h-[60vh] size-full" />
             ) : (
               <div>
                 <div className="flex flex-col gap-5 md:gap-6 p-5 md:p-6 w-full">

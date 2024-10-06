@@ -3,21 +3,19 @@
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { LoaderCircle, Dot, X } from 'lucide-react';
+import { Dot, X } from 'lucide-react';
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
   Button,
-  ScrollArea,
   Separator,
   Sheet,
   SheetBody,
   SheetClose,
   SheetContent,
   SheetDescription,
-  SheetHeader,
   SheetTitle,
   Skeleton,
   Tabs,
@@ -29,6 +27,7 @@ import { useGetIdeaByUserInWorkspace } from '@/app/api/controllers/ideaControlle
 import { useGetUserById } from '@/app/api/controllers/userController';
 import { useWorkspace } from '@/context/workspaceContext';
 import IdeaCard from '@/app/[org]/(pages)/ideas/components/idea';
+import Loading from '@/app/loading';
 
 const UserTab = () => {
   const { workspace, org } = useWorkspace();
@@ -130,16 +129,12 @@ const UserTab = () => {
                 <TabsTrigger value="badges">Badges</TabsTrigger>
                 <TabsTrigger value="ideas">Ideas</TabsTrigger>
               </TabsList>
-              <TabsContent value="badges">
-                <div className="flex justify-center items-center p-10 w-full">
-                  <LoaderCircle className="animate-spin stroke-brand-600" />
-                </div>
+              <TabsContent value="badges" className="p-0">
+                <Loading className="p-10 w-full" />
               </TabsContent>
               <TabsContent value="ideas" className="space-y-1 p-0">
                 {(isLoadingIdeaByUserInWorkspace || isLoadingGetUserById) && (
-                  <div className="flex justify-center items-center p-10 w-full">
-                    <LoaderCircle className="animate-spin stroke-brand-600" />
-                  </div>
+                  <Loading className="p-10 w-full" />
                 )}
                 {errorGetUserById && <div>{errorGetUserById}</div>}
                 {ideasByUserInWorkspace?.data.ideas.map((idea, index) => {

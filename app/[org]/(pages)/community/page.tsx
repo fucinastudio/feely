@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { LoaderCircle } from 'lucide-react';
 
 import {
   Separator,
@@ -16,6 +15,7 @@ import { PeriodType, Periods } from '@/types/enum/period';
 import { UserTypeWithPoints } from '@/types/user';
 import { useWorkspace } from '@/context/workspaceContext';
 import UserCard from '@/app/[org]/(pages)/community/components/user';
+import Loading from '@/app/loading';
 
 const Community = () => {
   const { org, workspace } = useWorkspace();
@@ -32,11 +32,7 @@ const Community = () => {
     );
 
   if (!workspace?.workspaceSettings?.showCommunity) {
-    return (
-      <div className="flex justify-center items-center w-full h-56">
-        <LoaderCircle className="animate-spin stroke-icon-brand" />
-      </div>
-    );
+    return <Loading className="w-full h-56" />;
   }
   return (
     <>
@@ -59,9 +55,7 @@ const Community = () => {
       </div>
       <div className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full">
         {isLoadingUsersInWorkspace ? (
-          <div className="flex justify-center items-center w-full min-h-56">
-            <LoaderCircle className="animate-spin stroke-brand-600" />
-          </div>
+          <Loading className="w-full min-h-56" />
         ) : (
           usersInWorkspace?.data.usersInWorkspace?.map((user, index) => {
             const isLastItem =

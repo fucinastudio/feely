@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 
-import Loading from '@/app/[org]/loading';
+import Loading from '@/app/loading';
 import UserTab from '@/app/[org]/userTab';
 import { checkWorkspaceExistanceServer } from '@/app/api/apiServerActions/workspaceApiServerActions';
 import protectRoute from '@/utils/protectedRoute';
@@ -45,7 +45,7 @@ export default async function RootLayout({
     redirect('/');
   } else
     return (
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<Loading className="w-screen h-screen" />}>
         <WorkspaceProvider org={org}>
           <AuthProvider>
             <Navbar />

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import Loading from '@/app/[org]/(pages)/loading';
+import Loading from '@/app/loading';
 import { Separator } from '@fucina/ui';
 
 export default async function RootLayout({
@@ -18,7 +18,9 @@ export default async function RootLayout({
         <h2 className="text-heading-section">Community</h2>
       </div>
       <Separator />
-      <Suspense fallback={<Loading />}>{children}</Suspense>
+      <Suspense fallback={<Loading className="min-h-[80vh] size-full" />}>
+        {children}
+      </Suspense>
     </div>
   );
 }

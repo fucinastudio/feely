@@ -4,7 +4,7 @@ import React, { FormEvent, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderCircle, PenSquare, Trash2, Save } from 'lucide-react';
+import { PenSquare, Trash2, Save } from 'lucide-react';
 
 import {
   Button,
@@ -23,6 +23,7 @@ import {
 } from '@/app/api/controllers/topicController';
 import { TopicType } from '@/types/topic';
 import { useWorkspace } from '@/context/workspaceContext';
+import Loading from '@/app/loading';
 
 interface IProps {
   topic: TopicType;
@@ -146,9 +147,7 @@ const EditTopicCard = ({ topic }: IProps) => {
       </Form>
       <div className="flex items-center gap-1">
         {isLoadingPatchTopic || isLoadingDeleteTopic ? (
-          <div className="flex justify-center items-center size-9">
-            <LoaderCircle className="animate-spin size-4 stroke-icon-brand" />
-          </div>
+          <Loading className="size-9" />
         ) : isEditing ? (
           <Tooltip content="Save changes">
             <Button variant="text" icon onClick={handleSave}>

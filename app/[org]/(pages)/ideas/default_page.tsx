@@ -2,13 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { LoaderCircle, Inbox } from 'lucide-react';
+import { Inbox } from 'lucide-react';
 
 import { Button, Card, Separator } from '@fucina/ui';
 import { useGetIdeasByWorkspaceName } from '@/app/api/controllers/ideaController';
 import IdeaCard from '@/app/[org]/(pages)/ideas/components/idea';
 import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/[org]/(pages)/loading';
+import Loading from '@/app/loading';
 import useMainPageFilters from '@/components/filters/filters';
 import FiltersComponentObject from '@/components/filters/filtersComponent';
 
@@ -36,11 +36,7 @@ const Ideas = () => {
     }
   );
   if (!workspace?.workspaceSettings?.showIdeas) {
-    return (
-      <div className="flex justify-center items-center w-full h-56">
-        <LoaderCircle className="animate-spin stroke-icon-brand" />
-      </div>
-    );
+    return <Loading className="w-full h-56" />;
   }
   return (
     <>
@@ -48,7 +44,7 @@ const Ideas = () => {
       <FiltersComponentObject {...filterObjectAttributes} />
       <Card className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full">
         {!statuses || !topics || isLoadingIdeas ? (
-          <Loading />
+          <Loading className="min-h-[80vh] size-full" />
         ) : ideas?.data.ideas.length === 0 ? (
           <div className="flex flex-col justify-center items-center gap-3 p-10 w-full text-description">
             <Inbox className="size-8 stroke-icon" />

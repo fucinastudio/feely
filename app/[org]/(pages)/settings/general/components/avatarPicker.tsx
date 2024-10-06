@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQueryClient } from 'react-query';
-import { LoaderCircle } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
 import FileUploadButton from '@/components/fileUploadButton';

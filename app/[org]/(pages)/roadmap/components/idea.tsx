@@ -68,16 +68,7 @@ const IdeaCard = ({ idea, org }: IProps) => {
         }}
       >
         <ChevronUp size={24} />
-        {/* {isLoadingVoteIdea ? (
-          <div className="flex justify-center items-center w-full h-[22px]">
-            <LoaderCircle
-              size={16}
-              className="animate-spin stroke-icon-brand"
-            />
-          </div>
-        ) : ( */}
         <p className="text-md">{votedCountToShow}</p>
-        {/* )} */}
       </Toggle>
     </button>
   );

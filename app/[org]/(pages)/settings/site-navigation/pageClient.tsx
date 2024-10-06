@@ -4,11 +4,10 @@ import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoaderCircle } from 'lucide-react';
 
 import { Button, Switch, Form, FormField } from '@fucina/ui';
 import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/[org]/(pages)/account/settings/loading';
+import Loading from '@/app/loading';
 import { usePatchWorkspaceSettings } from '@/app/api/controllers/workspaceSettingsController';
 
 function SiteNavigation() {
@@ -64,7 +63,7 @@ function SiteNavigation() {
           </p>
         </div>
         {isLoadingWorkspace ? (
-          <Loading />
+          <Loading className="min-h-[60vh] size-full" />
         ) : (
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -110,11 +109,13 @@ function SiteNavigation() {
                 />
               </div>
               <div className="flex justify-end items-center border-default px-5 md:px-6 py-4 border-t w-full">
-                {isLoading ? (
-                  <LoaderCircle className="animate-spin stroke-icon" />
-                ) : (
-                  <Button variant="primary">Save</Button>
-                )}
+                <Button
+                  isLoading={isLoading}
+                  loadingText="Wait a sec..."
+                  variant="primary"
+                >
+                  Save
+                </Button>
               </div>
             </form>
           </Form>

@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 
 import { Separator } from '@fucina/ui';
-import Loading from '@/app/[org]/(pages)/settings/loading';
+import Loading from '@/app/loading';
 import SettingsNavbar from '@/components/org/settings-navbar';
 
 export default function RootLayout({
@@ -17,7 +17,9 @@ export default function RootLayout({
       <Separator />
       <div className="flex md:flex-row flex-col items-start gap-4 md:gap-10">
         <SettingsNavbar />
-        <Suspense fallback={<Loading />}>{children}</Suspense>
+        <Suspense fallback={<Loading className="min-h-[60vh] size-full" />}>
+          {children}
+        </Suspense>
       </div>
     </div>
   );
