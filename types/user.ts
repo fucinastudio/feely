@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from '@prisma/client';
 
 export type IUserSelectionObject = {
   select: {
@@ -16,4 +16,5 @@ export type UserType = Prisma.usersGetPayload<{
   };
 }>;
 
-export type UserTypeWithPoints = UserType & Prisma.userInWorkspaceGetPayload<{}>;
+export type UserTypeWithPoints = UserType &
+  Prisma.userInWorkspaceGetPayload<{}>;

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import {
   LogOut,
   Settings,
@@ -14,11 +14,13 @@ import {
   Sun,
   Moon,
   Monitor,
-} from "lucide-react";
+  CircleFadingPlus,
+  Map,
+} from 'lucide-react';
 
-import { logoutUser } from "@/app/api/apiServerActions/userApiServerActions";
-import { useAuth } from "@/context/authContext";
-import { useWorkspace } from "@/context/workspaceContext";
+import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
+import { useAuth } from '@/context/authContext';
+import { useWorkspace } from '@/context/workspaceContext';
 import {
   Avatar,
   AvatarFallback,
@@ -49,9 +51,9 @@ import {
   DropdownMenuSubMenuContent,
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
-} from "@fucina/ui";
-import { cn, focusRing } from "@fucina/utils";
-import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
+} from '@fucina/ui';
+import { cn, focusRing } from '@fucina/utils';
+import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
 
 const Navbar = () => {
   const { setTheme, theme } = useTheme();
@@ -61,13 +63,13 @@ const Navbar = () => {
   const orgLetter = org[0];
   // Function to check if the route is active
   const isActive = (route: string) => {
-    return pathname?.split("/")[2] === route;
+    return pathname?.split('/')[2] === route;
   };
   const { user, isAdmin } = useAuth();
 
   const handleClickButton = () => {
     if (workspace?.logoUrl) {
-      window.open(workspace?.logoUrl, "_blank");
+      window.open(workspace?.logoUrl, '_blank');
     }
   };
   return (
@@ -76,12 +78,12 @@ const Navbar = () => {
         <div className="flex justify-center items-center space-x-4 h-9">
           <button
             onClick={handleClickButton}
-            className={cn("rounded", focusRing)}
+            className={cn('rounded', focusRing)}
           >
             <div className="flex justify-center items-center space-x-2 h-9">
               <Avatar size="md">
                 <AvatarImage src={workspace?.imageUrl} alt={org} />
-                <AvatarFallback className="uppercase">
+                <AvatarFallback className="capitalize">
                   {orgLetter}
                 </AvatarFallback>
               </Avatar>
@@ -108,7 +110,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("ideas")}>
+                      <NavigationMenuLink active={isActive('ideas')}>
                         Ideas
                       </NavigationMenuLink>
                     </Link>
@@ -122,7 +124,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("roadmap")}>
+                      <NavigationMenuLink active={isActive('roadmap')}>
                         Roadmap
                       </NavigationMenuLink>
                     </Link>
@@ -136,7 +138,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("community")}>
+                      <NavigationMenuLink active={isActive('community')}>
                         Community
                       </NavigationMenuLink>
                     </Link>
@@ -150,7 +152,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("settings")}>
+                      <NavigationMenuLink active={isActive('settings')}>
                         Settings
                       </NavigationMenuLink>
                     </Link>
@@ -162,14 +164,14 @@ const Navbar = () => {
         </div>
         <div className="md:flex space-x-2 hidden">
           <DropdownMenu>
-            <DropdownMenuTrigger className={cn("rounded-full", focusRing)}>
+            <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
               <Avatar size="lg" className="hover:cursor-pointer">
                 <AvatarImage
                   src={user?.image_url ?? undefined}
                   alt={user?.name ?? undefined}
                 />
-                <AvatarFallback className="uppercase">
-                  {user?.name?.slice(0, 1)}
+                <AvatarFallback className="capitalize">
+                  {user?.name?.[0]}
                 </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
@@ -208,8 +210,8 @@ const Navbar = () => {
                               src={workspace?.imageUrl ?? undefined}
                               alt={workspace?.externalName ?? undefined}
                             />
-                            <AvatarFallback className="uppercase">
-                              {workspace?.externalName?.slice(0, 1)}
+                            <AvatarFallback className="capitalize">
+                              {workspace?.externalName?.[0]}
                             </AvatarFallback>
                           </Avatar>
                           <span>Fucina</span>
@@ -220,8 +222,8 @@ const Navbar = () => {
                               src={workspace?.imageUrl ?? undefined}
                               alt={workspace?.externalName ?? undefined}
                             />
-                            <AvatarFallback className="uppercase">
-                              {workspace?.externalName?.slice(0, 1)}
+                            <AvatarFallback className="capitalize">
+                              {workspace?.externalName?.[0]}
                             </AvatarFallback>
                           </Avatar>
                           <span>Pedro</span>
@@ -237,11 +239,11 @@ const Navbar = () => {
                 )}
                 <DropdownMenuSubMenu>
                   <DropdownMenuSubMenuTrigger>
-                    {theme === "dark" ? (
+                    {theme === 'dark' ? (
                       <>
                         <Moon /> <span>Theme</span>
                       </>
-                    ) : theme === "light" ? (
+                    ) : theme === 'light' ? (
                       <>
                         <Sun /> <span>Theme</span>
                       </>
@@ -255,21 +257,21 @@ const Navbar = () => {
                     <DropdownMenuRadioGroup value={theme}>
                       <DropdownMenuRadioItem
                         value="light"
-                        onClick={() => setTheme("light")}
+                        onClick={() => setTheme('light')}
                       >
                         <Sun />
                         <span>Light</span>
                       </DropdownMenuRadioItem>
                       <DropdownMenuRadioItem
                         value="dark"
-                        onClick={() => setTheme("dark")}
+                        onClick={() => setTheme('dark')}
                       >
                         <Moon />
                         <span>Dark</span>
                       </DropdownMenuRadioItem>
                       <DropdownMenuRadioItem
                         value="system"
-                        onClick={() => setTheme("system")}
+                        onClick={() => setTheme('system')}
                       >
                         <Monitor />
                         <span>System</span>
@@ -277,6 +279,24 @@ const Navbar = () => {
                     </DropdownMenuRadioGroup>
                   </DropdownMenuSubMenuContent>
                 </DropdownMenuSubMenu>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <Link href={'https://app.feely.so/feely/ideas'} target="_blank">
+                  <DropdownMenuItem>
+                    <CircleFadingPlus />
+                    <span>Feature requests</span>
+                  </DropdownMenuItem>
+                </Link>
+                <Link
+                  href={`https://app.feely.so/feely/roadmap`}
+                  target="_blank"
+                >
+                  <DropdownMenuItem>
+                    <Map />
+                    <span>Roadmap</span>
+                  </DropdownMenuItem>
+                </Link>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -317,7 +337,7 @@ const Navbar = () => {
                         <SheetClose asChild>
                           <Link href={`/${org}/ideas`} scroll={false}>
                             <NavigationMenuLink
-                              active={isActive("ideas")}
+                              active={isActive('ideas')}
                               className="justify-start w-full"
                             >
                               Ideas
@@ -331,7 +351,7 @@ const Navbar = () => {
                         <SheetClose asChild>
                           <Link href={`/${org}/roadmap`} scroll={false}>
                             <NavigationMenuLink
-                              active={isActive("roadmap")}
+                              active={isActive('roadmap')}
                               className="justify-start w-full"
                             >
                               Roadmap
@@ -345,7 +365,7 @@ const Navbar = () => {
                         <SheetClose asChild>
                           <Link href={`/${org}/community`} scroll={false}>
                             <NavigationMenuLink
-                              active={isActive("community")}
+                              active={isActive('community')}
                               className="justify-start w-full"
                             >
                               Community
@@ -362,7 +382,7 @@ const Navbar = () => {
                             scroll={false}
                           >
                             <NavigationMenuLink
-                              active={isActive("settings")}
+                              active={isActive('settings')}
                               className="justify-start w-full"
                             >
                               Settings
@@ -397,7 +417,7 @@ const Navbar = () => {
                         scroll={false}
                       >
                         <NavigationMenuLink
-                          active={isActive("account")}
+                          active={isActive('account')}
                           className="justify-start w-full"
                         >
                           <Settings />
@@ -405,6 +425,27 @@ const Navbar = () => {
                         </NavigationMenuLink>
                       </Link>
                     </SheetClose>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+              <Separator orientation="horizontal" className="my-4" />
+              <NavigationMenu className="w-full">
+                <NavigationMenuList orientation="vertical" className="w-full">
+                  <NavigationMenuItem className="w-full">
+                    <Link href="https://app.feely.so/ideas" target="_blank">
+                      <NavigationMenuLink className="justify-start w-full">
+                        <CircleFadingPlus />
+                        Feature requests
+                      </NavigationMenuLink>
+                    </Link>
+                  </NavigationMenuItem>
+                  <NavigationMenuItem className="w-full">
+                    <Link href="https://app.feely.so/roadmap" target="_blank">
+                      <NavigationMenuLink className="justify-start w-full">
+                        <Map />
+                        Roadmap
+                      </NavigationMenuLink>
+                    </Link>
                   </NavigationMenuItem>
                 </NavigationMenuList>
               </NavigationMenu>

@@ -1,14 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
-import client, { FeelyRequest } from "@/app/api/apiClient";
+import client, { FeelyRequest } from '@/app/api/apiClient';
 import {
   IGetUserByIdDTO,
   IPatchUser,
-} from "@/app/api/apiServerActions/userApiServerActions";
-import { Endpoints } from "@/app/api/endpoints";
-import { IGetUserDTO } from "@/types/DTO/getUserDTO";
-import { IGetUserInWorkspaceDTO } from "@/types/DTO/getUserInWorkspaceDTO";
-import { UserType, UserTypeWithPoints } from "@/types/user";
+} from '@/app/api/apiServerActions/userApiServerActions';
+import { Endpoints } from '@/app/api/endpoints';
+import { IGetUserDTO } from '@/types/DTO/getUserDTO';
+import { IGetUserInWorkspaceDTO } from '@/types/DTO/getUserInWorkspaceDTO';
+import { UserType, UserTypeWithPoints } from '@/types/user';
 
 export const useGetUser = (params: IGetUserDTO, enabled = true) => {
   const urlParams = new URLSearchParams({
@@ -17,7 +17,7 @@ export const useGetUser = (params: IGetUserDTO, enabled = true) => {
   const request: FeelyRequest = {
     url: `${Endpoints.user.main}?${urlParams.toString()}`,
     config: {
-      method: "get",
+      method: 'get',
     },
   };
   const requestConfig = {
@@ -47,7 +47,7 @@ export const useGetUserById = (params: IGetUserByIdDTO, enabled = true) => {
   const request: FeelyRequest = {
     url: `${Endpoints.user.byId}?${urlParams.toString()}`,
     config: {
-      method: "get",
+      method: 'get',
     },
   };
   const requestConfig = {
@@ -81,7 +81,7 @@ export const useGetUsersForWorkspace = (
   const request: FeelyRequest = {
     url: `${Endpoints.user.workspace}?${urlParams.toString()}`,
     config: {
-      method: "get",
+      method: 'get',
     },
   };
   const requestConfig = {
@@ -109,7 +109,7 @@ export const usePatchUser = () => {
     const req: FeelyRequest = {
       url: Endpoints.user.main,
       config: {
-        method: "PATCH",
+        method: 'PATCH',
         data: JSON.stringify({ data: patchUser }),
       },
     };

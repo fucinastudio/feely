@@ -1,7 +1,5 @@
 import { Prisma } from '@prisma/client';
 
-import { CommentType } from '@/types/comment';
-
 export type IWorkspaceSelectionObject = {
   include: {
     owner: true;

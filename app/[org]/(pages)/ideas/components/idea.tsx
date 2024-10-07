@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { ChevronUp, Dot, MessageSquare } from "lucide-react";
+import React, { useMemo } from 'react';
+import { useRouter } from 'next/navigation';
+import { ChevronUp, MessageSquare, HeartHandshake, Dot } from 'lucide-react';
 
 import {
   Avatar,
@@ -12,14 +12,14 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   Toggle,
-} from "@fucina/ui";
-import { useVoteIdea } from "@/app/api/controllers/ideaController";
-import { StatusTagIdea } from "@/utils/parseStatus";
-import { IdeaType } from "@/types/idea";
-import { useOptimistic } from "@/utils/useOptimistic";
-import { useAuth } from "@/context/authContext";
-import { cn, focusRing } from "@fucina/utils";
-import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
+} from '@fucina/ui';
+import { useVoteIdea } from '@/app/api/controllers/ideaController';
+import { StatusTagIdea } from '@/utils/parseStatus';
+import { IdeaType } from '@/types/idea';
+import { useOptimistic } from '@/utils/useOptimistic';
+import { useAuth } from '@/context/authContext';
+import { cn, focusRing } from '@fucina/utils';
+import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
 
 interface IProps {
   idea: IdeaType;
@@ -57,20 +57,22 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
     <button
       key={idea.id}
       className={cn(
-        "flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer",
+        'flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer',
         focusRing
       )}
       onClick={() => handleClickIdea(idea.id)}
     >
-      <Avatar size="xl" className="sm:flex hidden mt-1">
-        <AvatarImage
-          src={idea.author.image_url ?? undefined}
-          alt={idea.author.name ?? undefined}
-        />
-        <AvatarFallback>
-          {idea.author.name ? idea.author.name[0] : undefined}
-        </AvatarFallback>
-      </Avatar>
+      {!profile && (
+        <Avatar size="xl" className="sm:flex hidden mt-1">
+          <AvatarImage
+            src={idea.author.image_url ?? undefined}
+            alt={idea.author.name ?? undefined}
+          />
+          <AvatarFallback className="capitalize">
+            {idea.author.name ? idea.author.name[0] : undefined}
+          </AvatarFallback>
+        </Avatar>
+      )}
       <div className="flex flex-col space-y-1 pr-4 w-full">
         <div className="flex justify-between items-center">
           <h1 className="line-clamp-1 pr-2 text-lg-semibold">{idea.title}</h1>
@@ -89,10 +91,10 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
                   ev.preventDefault();
                 }}
               >
-                by{" "}
+                by{' '}
                 <UserProfileLinkComponent
                   className={cn(
-                    "flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4",
+                    'flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4',
                     focusRing
                   )}
                   userId={idea.authorId}
@@ -100,7 +102,7 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
                   {idea.author.name}
                 </UserProfileLinkComponent>
                 <HoverCard>
-                  <HoverCardTrigger asChild className="sm:flex hidden">
+                  <HoverCardTrigger className="sm:flex hidden">
                     <UserProfileLinkComponent
                       className="text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
                       userId={idea.authorId}
@@ -115,18 +117,17 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
                           src={idea?.author.image_url ?? undefined}
                           alt={idea?.author.name ?? undefined}
                         />
-                        <AvatarFallback>
+                        <AvatarFallback className="capitalize">
                           {idea.author.name ? idea.author.name[0] : undefined}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col gap-0.5">
-                        <p className="font-semibold text-md">
+                        <p className="font-semibold text-md text">
                           {idea.author.name}
                         </p>
-                        <div className="flex justify-start items-center gap-0 w-fit text-description text-sm">
-                          <p>🪬 {idea.author.email} karmas</p>
-                          <Dot />
-                          <p>🏅 7 badges</p>
+                        <div className="flex justify-start items-center gap-1 text-description text-sm">
+                          <HeartHandshake className="size-[14px]" />
+                          <p>7 Karmas</p>
                         </div>
                       </div>
                     </div>

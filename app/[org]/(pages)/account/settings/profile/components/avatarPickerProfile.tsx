@@ -40,7 +40,9 @@ const AvatarPickerProfile = () => {
     <div className="flex justify-start items-center gap-4">
       <Avatar className="text-heading-subsection size-20">
         <AvatarImage src={user?.image_url || undefined}></AvatarImage>
-        <AvatarFallback className="text-3xl">{user?.name?.[0]}</AvatarFallback>
+        <AvatarFallback className="text-3xl capitalize">
+          {user?.name?.[0]}
+        </AvatarFallback>
       </Avatar>
       <FileUploadButton onSelectFile={onSelectFile} />
     </div>

@@ -3,7 +3,7 @@
 import React from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { Dot, X } from 'lucide-react';
+import { HeartHandshake, X } from 'lucide-react';
 
 import {
   Avatar,
@@ -95,26 +95,22 @@ const UserTab = () => {
                 </div>
               ) : (
                 <div className="flex justify-start items-center gap-3">
-                  <Avatar
-                    size="xl"
-                    className="sm:flex border-default hidden border size-14"
-                  >
+                  <Avatar size="xl" className="sm:flex hidden size-14">
                     <AvatarImage
                       src={user?.image_url ?? undefined}
                       alt={user?.name ?? undefined}
                       className="size-14"
                     />
-                    <AvatarFallback className="size-14">
+                    <AvatarFallback className="capitalize size-14">
                       {user?.name ? user?.name[0] : undefined}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex flex-col gap-1">
                     <SheetTitle>{user?.name}</SheetTitle>
                     <SheetDescription>
-                      <div className="flex justify-start items-center gap-0 text-description text-sm">
-                        <p>🪬 {user?.email} karmas</p>
-                        <Dot />
-                        <p>🏅 7 badges</p>
+                      <div className="flex justify-start items-center gap-1 text-description text-sm">
+                        <HeartHandshake className="size-4" />
+                        <p>7 Karmas</p>
                       </div>
                     </SheetDescription>
                   </div>
@@ -128,14 +124,17 @@ const UserTab = () => {
             </SheetClose>
           </div>
           <SheetBody>
-            <Tabs defaultValue="badges" className="p-0">
+            <Tabs defaultValue="ideas" className="p-0">
               <TabsList>
-                <TabsTrigger value="badges">Badges</TabsTrigger>
                 <TabsTrigger value="ideas">Ideas</TabsTrigger>
+                <TabsTrigger
+                  value="badges"
+                  disabled
+                  className="cursor-not-allowed"
+                >
+                  Badges
+                </TabsTrigger>
               </TabsList>
-              <TabsContent value="badges" className="p-0">
-                <Loading className="p-10 w-full" />
-              </TabsContent>
               <TabsContent value="ideas" className="space-y-1 p-0">
                 {(isLoadingIdeaByUserInWorkspace || isLoadingGetUserById) && (
                   <Loading className="p-10 w-full" />
@@ -151,6 +150,9 @@ const UserTab = () => {
                     </>
                   );
                 })}
+              </TabsContent>
+              <TabsContent value="badges" className="p-0">
+                <Loading className="p-10 w-full" />
               </TabsContent>
             </Tabs>
           </SheetBody>

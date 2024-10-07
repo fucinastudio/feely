@@ -86,7 +86,7 @@ export const mapNeutral = (value: NeutralColorType) => {
     case 'gray':
       return 'bg-gray-600';
     case 'neutral':
-      return 'bg-neutral-600';
+      return 'bg-[#525252]';
     case 'slate':
       return 'bg-slate-600';
     case 'stone':

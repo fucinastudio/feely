@@ -137,7 +137,7 @@ const CommentCard = ({ comment }: IProps) => {
             src={comment.author.image_url ?? undefined}
             alt={comment.author.name ?? undefined}
           />
-          <AvatarFallback>
+          <AvatarFallback className="capitalize">
             {comment.author.name ? comment.author.name[0] : undefined}
           </AvatarFallback>
         </Avatar>
@@ -194,7 +194,7 @@ const CommentCard = ({ comment }: IProps) => {
                   src={comment.author.image_url ?? undefined}
                   alt={comment.author.name ?? undefined}
                 />
-                <AvatarFallback>
+                <AvatarFallback className="capitalize">
                   {comment.author.name ? comment.author.name[0] : undefined}
                 </AvatarFallback>
               </Avatar>
@@ -235,7 +235,7 @@ const CommentCard = ({ comment }: IProps) => {
                     src={childComment.author.image_url ?? undefined}
                     alt={childComment.author.name ?? undefined}
                   />
-                  <AvatarFallback>
+                  <AvatarFallback className="capitalize">
                     {childComment.author.name
                       ? childComment.author.name[0]
                       : undefined}

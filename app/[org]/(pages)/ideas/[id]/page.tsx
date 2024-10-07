@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronUp, Dot, Inbox } from "lucide-react";
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChevronUp, HeartHandshake, Inbox } from 'lucide-react';
 
 import {
   Button,
@@ -34,22 +34,22 @@ import {
   HoverCardContent,
   SelectGroupLabel,
   SelectGroup,
-} from "@fucina/ui";
+} from '@fucina/ui';
 import {
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
-} from "@/app/api/controllers/ideaController";
-import { useCreateComment } from "@/app/api/controllers/commentController";
+} from '@/app/api/controllers/ideaController';
+import { useCreateComment } from '@/app/api/controllers/commentController';
 import CommentCard, {
   OptimisticComment,
-} from "@/app/[org]/(pages)/ideas/[id]/components/comment";
-import { useAuth } from "@/context/authContext";
-import { useWorkspace } from "@/context/workspaceContext";
-import Loading from "@/app/loading";
-import { useOptimistic } from "@/utils/useOptimistic";
-import { CommentType } from "@/types/comment";
-import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
+} from '@/app/[org]/(pages)/ideas/[id]/components/comment';
+import { useAuth } from '@/context/authContext';
+import { useWorkspace } from '@/context/workspaceContext';
+import Loading from '@/app/loading';
+import { useOptimistic } from '@/utils/useOptimistic';
+import { CommentType } from '@/types/comment';
+import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
 
 export interface IPropsIdeaPage {
   params: {
@@ -66,7 +66,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const pathName = usePathname();
 
   const handleClose = () => {
-    router.push(pathName?.substring(0, pathName?.lastIndexOf("/")) ?? "/");
+    router.push(pathName?.substring(0, pathName?.lastIndexOf('/')) ?? '/');
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
@@ -75,7 +75,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     return ideaData?.data.idea;
   }, [ideaData]);
 
-  const [comment, setComment] = useState<string>("");
+  const [comment, setComment] = useState<string>('');
 
   const { mutateAsync: createComment, isLoading: isLoadingCreateComment } =
     useCreateComment();
@@ -102,7 +102,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         });
       }
       const content = comment;
-      setComment("");
+      setComment('');
       const res = await createComment({
         ideaId: id,
         comment: content,
@@ -221,7 +221,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                           src={idea.author.image_url ?? undefined}
                           alt={idea.author.name ?? undefined}
                         />
-                        <AvatarFallback>
+                        <AvatarFallback className="capitalize">
                           {idea.author.name ? idea.author.name[0] : undefined}
                         </AvatarFallback>
                       </Avatar>
@@ -229,8 +229,8 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                     </UserProfileLinkComponent>
                   </Button>
                   <HoverCard>
-                    <HoverCardTrigger asChild className="sm:flex hidden">
-                      <Button variant="link" asChild>
+                    <HoverCardTrigger className="sm:flex hidden">
+                      <Button variant="link">
                         <UserProfileLinkComponent
                           userId={idea.authorId}
                           className="flex items-center gap-2"
@@ -240,7 +240,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                               src={idea.author.image_url ?? undefined}
                               alt={idea.author.name ?? undefined}
                             />
-                            <AvatarFallback>
+                            <AvatarFallback className="capitalize">
                               {idea.author.name
                                 ? idea.author.name[0]
                                 : undefined}
@@ -257,18 +257,17 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                             src={idea?.author.image_url ?? undefined}
                             alt={idea?.author.name ?? undefined}
                           />
-                          <AvatarFallback>
+                          <AvatarFallback className="capitalize">
                             {idea.author.name ? idea.author.name[0] : undefined}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col gap-0.5">
-                          <p className="font-semibold text-md">
+                          <p className="font-semibold text-md text">
                             {idea.author.name}
                           </p>
-                          <div className="flex justify-start items-center gap-0 w-fit text-description text-sm">
-                            <p>🪬 {idea.author.email} karmas</p>
-                            <Dot />
-                            <p>🏅 7 badges</p>
+                          <div className="flex justify-start items-center gap-1 text-description text-sm">
+                            <HeartHandshake className="size-[14px]" />
+                            <p>7 Karmas</p>
                           </div>
                         </div>
                       </div>
@@ -333,7 +332,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       <Button variant="text">
                         <span className="flex justify-start items-center gap-2">
                           {idea.voters.length === 0 ? (
-                            "0 Voters"
+                            '0 Voters'
                           ) : (
                             <>
                               <div className="flex justify-start items-center -space-x-1.5">
@@ -343,7 +342,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                                       src={voter.user.image_url ?? undefined}
                                       alt={voter.user.name ?? undefined}
                                     />
-                                    <AvatarFallback>
+                                    <AvatarFallback className="capitalize">
                                       {voter.user.name
                                         ? voter.user.name[0]
                                         : undefined}
@@ -376,7 +375,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                                     src={voter.user.image_url ?? undefined}
                                     alt={voter.user.name ?? undefined}
                                   />
-                                  <AvatarFallback>
+                                  <AvatarFallback className="capitalize">
                                     {voter.user.name
                                       ? voter.user.name[0]
                                       : undefined}
@@ -400,7 +399,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       src={user?.image_url ?? undefined}
                       alt={user?.name ?? undefined}
                     />
-                    <AvatarFallback>
+                    <AvatarFallback className="capitalize">
                       {user?.name ? user?.name[0] : undefined}
                     </AvatarFallback>
                   </Avatar>

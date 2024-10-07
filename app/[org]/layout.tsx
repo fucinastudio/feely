@@ -1,22 +1,23 @@
-import { Suspense } from "react";
-import { redirect } from "next/navigation";
-import type { Metadata } from "next";
+import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 
-import Loading from "@/app/loading";
-import UserTab from "@/app/[org]/userTab";
+import Loading from '@/app/loading';
+import UserTab from '@/app/[org]/userTab';
 import {
   checkWorkspaceExistanceServer,
   getWorkspaceByName,
-} from "@/app/api/apiServerActions/workspaceApiServerActions";
-import protectRoute from "@/utils/protectedRoute";
-import { WorkspaceProvider } from "@/context/workspaceContext";
-import { AuthProvider } from "@/context/authContext";
-import Navbar from "@/components/org/navbar";
+} from '@/app/api/apiServerActions/workspaceApiServerActions';
+import protectRoute from '@/utils/protectedRoute';
+import { WorkspaceProvider } from '@/context/workspaceContext';
+import { AuthProvider } from '@/context/authContext';
+import Navbar from '@/components/org/navbar';
+import BrandBadge from '@/components/org/brand-badge';
 
 async function getOrgData(org: string) {
   const workspace = await getWorkspaceByName(org);
   if (!workspace) {
-    throw new Error("Not found");
+    throw new Error('Not found');
   }
   return { name: workspace?.externalName || org };
 }
@@ -44,7 +45,7 @@ export default async function RootLayout({
   const user = await protectRoute(`/${org}`);
   const exists = await checkWorkspaceExistanceServer(org);
   if (!exists) {
-    redirect("/");
+    redirect('/');
   } else
     return (
       <Suspense fallback={<Loading className="w-screen h-screen" />}>
@@ -57,6 +58,7 @@ export default async function RootLayout({
                 {children}
               </div>
             </div>
+            <BrandBadge />
           </AuthProvider>
         </WorkspaceProvider>
       </Suspense>
