@@ -10,6 +10,7 @@ import { IGetIdeasByWorkspaceName } from "@/types/DTO/getIdeasByWorkspaceNameDTO
 import { IdeaType } from "@/types/idea";
 import { createClient } from "@/utils/supabase/server";
 import prisma from "@/prisma/client";
+import { getPointsToModify } from "@/utils/utils";
 
 export interface ICreateIdea {
   org: string;
@@ -424,7 +425,9 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
   let response: {
     idea: {
       workspaceId: string;
+      authorId: string;
     };
+    created_at: Date;
   };
   if (!body.isVoted) {
     response = await prisma.votedIdea.delete({
@@ -438,6 +441,51 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
         idea: true,
       },
     });
+    if (response.idea.authorId && response.idea.authorId !== user.id) {
+      const { applyToWeekly, applyToMonthly, applyToQuarterly, applyToYearly } =
+        getPointsToModify(response.created_at);
+      await prisma.userInWorkspace.update({
+        where: {
+          userId_workspaceId: {
+            userId: response.idea.authorId,
+            workspaceId: response.idea.workspaceId,
+          },
+        },
+        data: {
+          points: {
+            decrement: 1,
+          },
+          ...(applyToWeekly
+            ? {
+                pointsInWeek: {
+                  decrement: 1,
+                },
+              }
+            : {}),
+          ...(applyToMonthly
+            ? {
+                pointsInMonth: {
+                  decrement: 1,
+                },
+              }
+            : {}),
+          ...(applyToQuarterly
+            ? {
+                pointsInQuarter: {
+                  decrement: 1,
+                },
+              }
+            : {}),
+          ...(applyToYearly
+            ? {
+                pointsInYear: {
+                  decrement: 1,
+                },
+              }
+            : {}),
+        },
+      });
+    }
   } else {
     response = await prisma.votedIdea.create({
       data: {
@@ -448,6 +496,51 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
         idea: true,
       },
     });
+    if (response.idea.authorId && response.idea.authorId !== user.id) {
+      const { applyToWeekly, applyToMonthly, applyToQuarterly, applyToYearly } =
+        getPointsToModify(new Date());
+      await prisma.userInWorkspace.update({
+        where: {
+          userId_workspaceId: {
+            userId: response.idea.authorId,
+            workspaceId: response.idea.workspaceId,
+          },
+        },
+        data: {
+          points: {
+            increment: 1,
+          },
+          ...(applyToWeekly
+            ? {
+                pointsInWeek: {
+                  increment: 1,
+                },
+              }
+            : {}),
+          ...(applyToMonthly
+            ? {
+                pointsInMonth: {
+                  increment: 1,
+                },
+              }
+            : {}),
+          ...(applyToQuarterly
+            ? {
+                pointsInQuarter: {
+                  increment: 1,
+                },
+              }
+            : {}),
+          ...(applyToYearly
+            ? {
+                pointsInYear: {
+                  increment: 1,
+                },
+              }
+            : {}),
+        },
+      });
+    }
   }
   const _createAssociation = await prisma.userInWorkspace.upsert({
     create: {

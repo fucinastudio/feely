@@ -117,10 +117,11 @@ model idea {
 }
 
 model votedIdea {
-  ideaId String
-  userId String
-  idea   idea   @relation(fields: [ideaId], references: [id])
-  user   users  @relation(fields: [userId], references: [id])
+  ideaId     String
+  userId     String
+  idea       idea     @relation(fields: [ideaId], references: [id])
+  user       users    @relation(fields: [userId], references: [id])
+  created_at DateTime @default(now())
 
   @@id([ideaId, userId])
 }
@@ -140,10 +141,11 @@ model comment {
 }
 
 model votedComment {
-  commentId String
-  userId    String
-  comment   comment @relation(fields: [commentId], references: [id])
-  user      users   @relation(fields: [userId], references: [id])
+  commentId  String
+  userId     String
+  comment    comment  @relation(fields: [commentId], references: [id])
+  user       users    @relation(fields: [userId], references: [id])
+  created_at DateTime @default(now())
 
   @@id([commentId, userId])
 }
