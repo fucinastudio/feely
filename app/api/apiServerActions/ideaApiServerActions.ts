@@ -11,6 +11,7 @@ import { IdeaType } from "@/types/idea";
 import { createClient } from "@/utils/supabase/server";
 import prisma from "@/prisma/client";
 import { getPointsToModify } from "@/utils/utils";
+import { Constants } from "@/utils/constants";
 
 export interface ICreateIdea {
   org: string;
@@ -442,6 +443,7 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
       },
     });
     if (response.idea.authorId && response.idea.authorId !== user.id) {
+      const pointsToGrant = Constants.pointsForReceivedUpvote;
       const { applyToWeekly, applyToMonthly, applyToQuarterly, applyToYearly } =
         getPointsToModify(response.created_at);
       await prisma.userInWorkspace.update({
@@ -453,33 +455,33 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
         },
         data: {
           points: {
-            decrement: 1,
+            decrement: pointsToGrant,
           },
           ...(applyToWeekly
             ? {
                 pointsInWeek: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
           ...(applyToMonthly
             ? {
                 pointsInMonth: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
           ...(applyToQuarterly
             ? {
                 pointsInQuarter: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
           ...(applyToYearly
             ? {
                 pointsInYear: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
@@ -497,6 +499,8 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
       },
     });
     if (response.idea.authorId && response.idea.authorId !== user.id) {
+      const pointsToGrant = Constants.pointsForReceivedUpvote;
+
       await prisma.userInWorkspace.update({
         where: {
           userId_workspaceId: {
@@ -506,19 +510,19 @@ export const voteIdea = async (body: IVoteIdea, access_token?: string) => {
         },
         data: {
           points: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInWeek: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInMonth: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInQuarter: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInYear: {
-            increment: 1,
+            increment: pointsToGrant,
           },
         },
       });
@@ -574,6 +578,9 @@ export const patchIdea = async ({
     where: {
       id: ideaId,
     },
+    include: {
+      status: true,
+    },
   });
   if (!idea) {
     return {
@@ -593,6 +600,8 @@ export const patchIdea = async ({
       error: "Unauthorized user",
     };
   }
+  //Null if status not changed, true if status changed to completed, false otherwise
+  let isNewStatusCompleted: boolean | null = null;
   //Check if statusId and topicId are valid
   if (statusId) {
     const status = await prisma.status.findFirst({
@@ -606,6 +615,10 @@ export const patchIdea = async ({
         isSuccess: false,
         error: "Status not found",
       };
+    } else if (status?.order === 3) {
+      isNewStatusCompleted = true;
+    } else {
+      isNewStatusCompleted = false;
     }
   }
   if (topicId) {
@@ -622,20 +635,112 @@ export const patchIdea = async ({
       };
     }
   }
-  const _ideaUpdated = await prisma.idea.update({
+  //Previous status for the points
+  const previousStatus = idea.status;
+  const ideaUpdated = await prisma.idea.update({
     where: {
       id: ideaId,
     },
     data: {
       statusId: statusId ? statusId : undefined,
       topicId: topicId ? topicId : undefined,
+      ...(isNewStatusCompleted
+        ? { completed_at: new Date() }
+        : isNewStatusCompleted === false
+        ? { completed_at: null }
+        : {}),
+    },
+    include: {
+      status: true,
     },
   });
-  if (!idea) {
+  if (!ideaUpdated) {
     return {
       isSuccess: false,
     };
   } else {
+    //Grant points if moved to completed
+    //=======================NOTE=======================
+    //FOR THE MOMENT WE CANNOT CHANGE THE STATUSES, SO WE CONSIDER THE NUMBER 3 (COMPLEPTED) AS THE ONE THAT GRANTS POINTS
+    //=======================NOTE=======================
+    if (ideaUpdated.status?.order === 3 && previousStatus?.order !== 3) {
+      const pointsToGrant = Constants.pointsForCompletedIdea;
+      await prisma.userInWorkspace.update({
+        where: {
+          userId_workspaceId: {
+            userId: idea.authorId,
+            workspaceId: idea.workspaceId,
+          },
+        },
+        data: {
+          points: {
+            increment: pointsToGrant,
+          },
+          pointsInWeek: {
+            increment: pointsToGrant,
+          },
+          pointsInMonth: {
+            increment: pointsToGrant,
+          },
+          pointsInQuarter: {
+            increment: pointsToGrant,
+          },
+          pointsInYear: {
+            increment: pointsToGrant,
+          },
+        },
+      });
+    } else if (
+      previousStatus?.order === 3 &&
+      ideaUpdated.status?.order !== 3 &&
+      idea.completed_at
+    ) {
+      //Remove the points if moved from completed
+      const pointsToGrant = Constants.pointsForCompletedIdea;
+      const { applyToWeekly, applyToMonthly, applyToQuarterly, applyToYearly } =
+        getPointsToModify(idea.completed_at);
+      await prisma.userInWorkspace.update({
+        where: {
+          userId_workspaceId: {
+            userId: idea.authorId,
+            workspaceId: idea.workspaceId,
+          },
+        },
+        data: {
+          points: {
+            decrement: pointsToGrant,
+          },
+          ...(applyToWeekly
+            ? {
+                pointsInWeek: {
+                  decrement: pointsToGrant,
+                },
+              }
+            : {}),
+          ...(applyToMonthly
+            ? {
+                pointsInMonth: {
+                  decrement: pointsToGrant,
+                },
+              }
+            : {}),
+          ...(applyToQuarterly
+            ? {
+                pointsInQuarter: {
+                  decrement: pointsToGrant,
+                },
+              }
+            : {}),
+          ...(applyToYearly
+            ? {
+                pointsInYear: {
+                  decrement: pointsToGrant,
+                },
+              }
+            : {}),
+        },
+      });
+    }
     return {
       isSuccess: true,
     };

@@ -6,6 +6,7 @@ import { createClient } from "@/utils/supabase/server";
 import { ICreateComment } from "@/app/api/controllers/commentController";
 import prisma from "@/prisma/client";
 import { getPointsToModify } from "@/utils/utils";
+import { Constants } from "@/utils/constants";
 
 export const createComment = async (
   comment: ICreateComment,
@@ -129,6 +130,8 @@ export const voteComment = async (
       },
     });
     if (response.comment.authorId && response.comment.authorId !== user.id) {
+      const pointsToGrant = Constants.pointsForReceivedUpvote;
+
       const { applyToWeekly, applyToMonthly, applyToQuarterly, applyToYearly } =
         getPointsToModify(response.created_at);
       await prisma.userInWorkspace.update({
@@ -140,33 +143,33 @@ export const voteComment = async (
         },
         data: {
           points: {
-            decrement: 1,
+            decrement: pointsToGrant,
           },
           ...(applyToWeekly
             ? {
                 pointsInWeek: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
           ...(applyToMonthly
             ? {
                 pointsInMonth: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
           ...(applyToQuarterly
             ? {
                 pointsInQuarter: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
           ...(applyToYearly
             ? {
                 pointsInYear: {
-                  decrement: 1,
+                  decrement: pointsToGrant,
                 },
               }
             : {}),
@@ -191,6 +194,7 @@ export const voteComment = async (
       response.comment.idea.authorId &&
       response.comment.idea.authorId !== user.id
     ) {
+      const pointsToGrant = Constants.pointsForReceivedUpvote;
       await prisma.userInWorkspace.update({
         where: {
           userId_workspaceId: {
@@ -200,19 +204,19 @@ export const voteComment = async (
         },
         data: {
           points: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInWeek: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInMonth: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInQuarter: {
-            increment: 1,
+            increment: pointsToGrant,
           },
           pointsInYear: {
-            increment: 1,
+            increment: pointsToGrant,
           },
         },
       });

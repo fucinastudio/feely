@@ -99,21 +99,23 @@ model status {
 }
 
 model idea {
-  id          String      @id @default(uuid())
-  title       String
-  description String
-  created_at  DateTime    @default(now())
-  updated_at  DateTime    @updatedAt
-  workspaceId String
-  authorId    String
-  topicId     String
-  statusId    String?
-  comments    comment[]
-  author      users       @relation(fields: [authorId], references: [id])
-  status      status?     @relation(fields: [statusId], references: [id])
-  topic       topic       @relation(fields: [topicId], references: [id])
-  workspace   workspace   @relation(fields: [workspaceId], references: [id])
-  voters      votedIdea[]
+  id           String      @id @default(uuid())
+  title        String
+  description  String
+  created_at   DateTime    @default(now())
+  updated_at   DateTime    @updatedAt
+  workspaceId  String
+  authorId     String
+  topicId      String
+  statusId     String?
+  //Usefull to grant the points, expecially to remove them, so that we know were to remove points from
+  completed_at DateTime?
+  comments     comment[]
+  author       users       @relation(fields: [authorId], references: [id])
+  status       status?     @relation(fields: [statusId], references: [id])
+  topic        topic       @relation(fields: [topicId], references: [id])
+  workspace    workspace   @relation(fields: [workspaceId], references: [id])
+  voters       votedIdea[]
 }
 
 model votedIdea {
