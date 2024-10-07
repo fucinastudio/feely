@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   LogOut,
   Settings,
@@ -14,11 +14,11 @@ import {
   Sun,
   Moon,
   Monitor,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
-import { useAuth } from '@/context/authContext';
-import { useWorkspace } from '@/context/workspaceContext';
+import { logoutUser } from "@/app/api/apiServerActions/userApiServerActions";
+import { useAuth } from "@/context/authContext";
+import { useWorkspace } from "@/context/workspaceContext";
 import {
   Avatar,
   AvatarFallback,
@@ -49,9 +49,9 @@ import {
   DropdownMenuSubMenuContent,
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
-} from '@fucina/ui';
-import useOpenUserTab from '@/utils/useOpenUserTab';
-import { cn, focusRing } from '@fucina/utils';
+} from "@fucina/ui";
+import { cn, focusRing } from "@fucina/utils";
+import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
 
 const Navbar = () => {
   const { setTheme, theme } = useTheme();
@@ -61,23 +61,22 @@ const Navbar = () => {
   const orgLetter = org[0];
   // Function to check if the route is active
   const isActive = (route: string) => {
-    return pathname?.split('/')[2] === route;
+    return pathname?.split("/")[2] === route;
   };
   const { user, isAdmin } = useAuth();
 
   const handleClickButton = () => {
     if (workspace?.logoUrl) {
-      window.open(workspace?.logoUrl, '_blank');
+      window.open(workspace?.logoUrl, "_blank");
     }
   };
-  const userPageLink = useOpenUserTab({ userId: user?.id ?? null });
   return (
     <div className="z-50 fixed flex justify-center items-center border-default bg-background border-b w-full h-14">
       <div className="flex justify-between items-center mx-auto px-5 sm:px-10 w-full max-w-screen-xl">
         <div className="flex justify-center items-center space-x-4 h-9">
           <button
             onClick={handleClickButton}
-            className={cn('rounded', focusRing)}
+            className={cn("rounded", focusRing)}
           >
             <div className="flex justify-center items-center space-x-2 h-9">
               <Avatar size="md">
@@ -109,7 +108,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('ideas')}>
+                      <NavigationMenuLink active={isActive("ideas")}>
                         Ideas
                       </NavigationMenuLink>
                     </Link>
@@ -123,7 +122,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('roadmap')}>
+                      <NavigationMenuLink active={isActive("roadmap")}>
                         Roadmap
                       </NavigationMenuLink>
                     </Link>
@@ -137,7 +136,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('community')}>
+                      <NavigationMenuLink active={isActive("community")}>
                         Community
                       </NavigationMenuLink>
                     </Link>
@@ -151,7 +150,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('settings')}>
+                      <NavigationMenuLink active={isActive("settings")}>
                         Settings
                       </NavigationMenuLink>
                     </Link>
@@ -163,7 +162,7 @@ const Navbar = () => {
         </div>
         <div className="md:flex space-x-2 hidden">
           <DropdownMenu>
-            <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
+            <DropdownMenuTrigger className={cn("rounded-full", focusRing)}>
               <Avatar size="lg" className="hover:cursor-pointer">
                 <AvatarImage
                   src={user?.image_url ?? undefined}
@@ -183,12 +182,12 @@ const Navbar = () => {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <Link href={userPageLink}>
+                <UserProfileLinkComponent userId={user?.id ?? null}>
                   <DropdownMenuItem>
                     <User />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                </Link>
+                </UserProfileLinkComponent>
                 <Link href={`/${org}/account/settings/profile`} scroll={false}>
                   <DropdownMenuItem>
                     <Settings />
@@ -238,11 +237,11 @@ const Navbar = () => {
                 )}
                 <DropdownMenuSubMenu>
                   <DropdownMenuSubMenuTrigger>
-                    {theme === 'dark' ? (
+                    {theme === "dark" ? (
                       <>
                         <Moon /> <span>Theme</span>
                       </>
-                    ) : theme === 'light' ? (
+                    ) : theme === "light" ? (
                       <>
                         <Sun /> <span>Theme</span>
                       </>
@@ -256,21 +255,21 @@ const Navbar = () => {
                     <DropdownMenuRadioGroup value={theme}>
                       <DropdownMenuRadioItem
                         value="light"
-                        onClick={() => setTheme('light')}
+                        onClick={() => setTheme("light")}
                       >
                         <Sun />
                         <span>Light</span>
                       </DropdownMenuRadioItem>
                       <DropdownMenuRadioItem
                         value="dark"
-                        onClick={() => setTheme('dark')}
+                        onClick={() => setTheme("dark")}
                       >
                         <Moon />
                         <span>Dark</span>
                       </DropdownMenuRadioItem>
                       <DropdownMenuRadioItem
                         value="system"
-                        onClick={() => setTheme('system')}
+                        onClick={() => setTheme("system")}
                       >
                         <Monitor />
                         <span>System</span>
@@ -318,7 +317,7 @@ const Navbar = () => {
                         <SheetClose asChild>
                           <Link href={`/${org}/ideas`} scroll={false}>
                             <NavigationMenuLink
-                              active={isActive('ideas')}
+                              active={isActive("ideas")}
                               className="justify-start w-full"
                             >
                               Ideas
@@ -332,7 +331,7 @@ const Navbar = () => {
                         <SheetClose asChild>
                           <Link href={`/${org}/roadmap`} scroll={false}>
                             <NavigationMenuLink
-                              active={isActive('roadmap')}
+                              active={isActive("roadmap")}
                               className="justify-start w-full"
                             >
                               Roadmap
@@ -346,7 +345,7 @@ const Navbar = () => {
                         <SheetClose asChild>
                           <Link href={`/${org}/community`} scroll={false}>
                             <NavigationMenuLink
-                              active={isActive('community')}
+                              active={isActive("community")}
                               className="justify-start w-full"
                             >
                               Community
@@ -363,7 +362,7 @@ const Navbar = () => {
                             scroll={false}
                           >
                             <NavigationMenuLink
-                              active={isActive('settings')}
+                              active={isActive("settings")}
                               className="justify-start w-full"
                             >
                               Settings
@@ -379,8 +378,8 @@ const Navbar = () => {
               <NavigationMenu className="w-full">
                 <NavigationMenuList orientation="vertical" className="w-full">
                   <NavigationMenuItem className="w-full">
-                    <Link
-                      href={userPageLink}
+                    <UserProfileLinkComponent
+                      userId={user?.id ?? null}
                       scroll={false}
                       legacyBehavior
                       passHref
@@ -389,7 +388,7 @@ const Navbar = () => {
                         <User />
                         Profile
                       </NavigationMenuLink>
-                    </Link>
+                    </UserProfileLinkComponent>
                   </NavigationMenuItem>
                   <NavigationMenuItem className="w-full">
                     <SheetClose asChild>
@@ -398,7 +397,7 @@ const Navbar = () => {
                         scroll={false}
                       >
                         <NavigationMenuLink
-                          active={isActive('account')}
+                          active={isActive("account")}
                           className="justify-start w-full"
                         >
                           <Settings />

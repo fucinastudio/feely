@@ -4,7 +4,7 @@ import React from "react";
 
 interface IProps {
   children: React.ReactNode;
-  userId: string;
+  userId: string | null;
   className?: string;
 }
 

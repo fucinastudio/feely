@@ -1,9 +1,8 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { ChevronUp, Dot, MessageSquare } from 'lucide-react';
+import React, { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { ChevronUp, Dot, MessageSquare } from "lucide-react";
 
 import {
   Avatar,
@@ -13,14 +12,14 @@ import {
   HoverCardContent,
   HoverCardTrigger,
   Toggle,
-} from '@fucina/ui';
-import { useVoteIdea } from '@/app/api/controllers/ideaController';
-import { StatusTagIdea } from '@/utils/parseStatus';
-import { IdeaType } from '@/types/idea';
-import useOpenUserTab from '@/utils/useOpenUserTab';
-import { useOptimistic } from '@/utils/useOptimistic';
-import { useAuth } from '@/context/authContext';
-import { cn, focusRing } from '@fucina/utils';
+} from "@fucina/ui";
+import { useVoteIdea } from "@/app/api/controllers/ideaController";
+import { StatusTagIdea } from "@/utils/parseStatus";
+import { IdeaType } from "@/types/idea";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { useAuth } from "@/context/authContext";
+import { cn, focusRing } from "@fucina/utils";
+import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
 
 interface IProps {
   idea: IdeaType;
@@ -40,7 +39,6 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
   const handleVoteIdea = (isVoted: boolean) => {
     voteIdea({ id: idea.id, isVoted: isVoted });
   };
-  const userPageLink = useOpenUserTab({ userId: idea.authorId });
 
   const [isVoted, setIsVoted] = useOptimistic({
     mainState: idea.isVoted,
@@ -59,7 +57,7 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
     <button
       key={idea.id}
       className={cn(
-        'flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer',
+        "flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer",
         focusRing
       )}
       onClick={() => handleClickIdea(idea.id)}
@@ -91,24 +89,24 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
                   ev.preventDefault();
                 }}
               >
-                by{' '}
-                <Link
+                by{" "}
+                <UserProfileLinkComponent
                   className={cn(
-                    'flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4',
+                    "flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4",
                     focusRing
                   )}
-                  href={userPageLink}
+                  userId={idea.authorId}
                 >
                   {idea.author.name}
-                </Link>
+                </UserProfileLinkComponent>
                 <HoverCard>
                   <HoverCardTrigger asChild className="sm:flex hidden">
-                    <Link
+                    <UserProfileLinkComponent
                       className="text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
-                      href={userPageLink}
+                      userId={idea.authorId}
                     >
                       {idea.author.name}
-                    </Link>
+                    </UserProfileLinkComponent>
                   </HoverCardTrigger>
                   <HoverCardContent className="w-fit">
                     <div className="flex items-center gap-2">

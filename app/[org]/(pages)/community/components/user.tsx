@@ -1,12 +1,11 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { Dot } from 'lucide-react';
+import React from "react";
+import { Dot } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
-import { cn, focusRing } from '@fucina/utils';
-import useOpenUserTab from '@/utils/useOpenUserTab';
+import { Avatar, AvatarFallback, AvatarImage } from "@fucina/ui";
+import { cn, focusRing } from "@fucina/utils";
+import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
 
 interface IProps {
   id: string;
@@ -25,15 +24,14 @@ const UserCard = ({
   image_url,
   correctedPoints,
 }: IProps) => {
-  const userPageLink = useOpenUserTab({ userId: id });
   return (
-    <Link
+    <UserProfileLinkComponent
       key={id}
       className={cn(
-        'flex gap-2 items-center hover:bg-item-active active:bg-item-selected py-3 pr-3 pl-2 rounded-md w-full cursor-pointer',
+        "flex gap-2 items-center hover:bg-item-active active:bg-item-selected py-3 pr-3 pl-2 rounded-md w-full cursor-pointer",
         focusRing
       )}
-      href={userPageLink}
+      userId={id}
     >
       <div className="flex justify-center items-center w-8 sm:w-10 h-8">
         <span className="text-center text-description text-heading-body">
@@ -57,7 +55,7 @@ const UserCard = ({
           {correctedPoints} 🪬
         </span>
       </div>
-    </Link>
+    </UserProfileLinkComponent>
   );
 };
 

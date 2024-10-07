@@ -1,6 +1,5 @@
-import { useAuth } from "@/context/authContext";
-import { usePathname, useSearchParams } from "next/navigation";
 import React, { useCallback, useMemo } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 interface IProps {
   userId: string | null;
