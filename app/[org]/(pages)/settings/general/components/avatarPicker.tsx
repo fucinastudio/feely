@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { useQueryClient } from 'react-query';
+import React, { useState } from "react";
+import { useQueryClient } from "react-query";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
-import FileUploadButton from '@/components/fileUploadButton';
-import { createClient } from '@/utils/supabase/client';
-import { Endpoints } from '@/app/api/endpoints';
-import { useWorkspace } from '@/context/workspaceContext';
+import { Avatar, AvatarFallback, AvatarImage } from "@fucina/ui";
+import FileUploadButton from "@/components/fileUploadButton";
+import { createClient } from "@/utils/supabase/client";
+import { Endpoints } from "@/app/api/endpoints";
+import { useWorkspace } from "@/context/workspaceContext";
 
 const AvatarPicker = () => {
-  const { workspace } = useWorkspace();
+  const { workspace, onChangeImage } = useWorkspace();
   const [isLoadingImage, setIsLoadingImage] = useState(false);
   const queryClient = useQueryClient();
   const onSelectFile = async (file: File) => {
@@ -19,14 +19,15 @@ const AvatarPicker = () => {
     try {
       const supabase = createClient();
       const res = await supabase.storage
-        .from('images')
+        .from("images")
         .upload(workspace.id, file, {
           upsert: true,
-          cacheControl: '3600',
+          cacheControl: "3600",
         });
+      onChangeImage();
       queryClient.invalidateQueries([Endpoints.workspace.main]);
     } catch (e) {
-      console.log('Error', e);
+      console.log("Error", e);
     } finally {
       setIsLoadingImage(false);
     }

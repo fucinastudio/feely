@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
+import React, { useEffect } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Button,
@@ -17,8 +17,8 @@ import {
   Form,
   FormField,
   Label,
-} from '@fucina/ui';
-import { cn } from '@fucina/utils';
+} from "@fucina/ui";
+import { cn } from "@fucina/utils";
 import {
   changePrimaryColor,
   changeNeutralColor,
@@ -28,15 +28,15 @@ import {
   NeutralColorOptions,
   mapPrimary,
   mapNeutral,
-} from '@/utils/themes';
-import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/loading';
-import { usePatchWorkspaceSettings } from '@/app/api/controllers/workspaceSettingsController';
+} from "@/utils/themes";
+import { useWorkspace } from "@/context/workspaceContext";
+import Loading from "@/app/loading";
+import { usePatchWorkspaceSettings } from "@/app/api/controllers/workspaceSettingsController";
+import { useOptimistic } from "@/utils/useOptimistic";
 
 const Theme = () => {
   const { workspace, isLoadingWorkspace } = useWorkspace();
 
-  //Zod form for the 3 switches with 3 booleans
   const FormSchema = z.object({
     primaryColor: z.enum(PrimaryColorOptions),
     neutralColor: z.enum(NeutralColorOptions),
@@ -47,10 +47,10 @@ const Theme = () => {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       primaryColor: (workspace?.workspaceSettings?.primaryColor ??
-        'blue') as PrimaryColorType,
+        "blue") as PrimaryColorType,
       neutralColor: (workspace?.workspaceSettings?.neutralColor ??
-        'zinc') as NeutralColorType,
-      fontFamily: workspace?.workspaceSettings?.fontFamily ?? 'geist',
+        "zinc") as NeutralColorType,
+      fontFamily: workspace?.workspaceSettings?.fontFamily ?? "geist",
     },
   });
 
@@ -58,10 +58,10 @@ const Theme = () => {
     if (!workspace) return;
     form.reset({
       primaryColor: (workspace?.workspaceSettings?.primaryColor ??
-        'blue') as PrimaryColorType,
+        "blue") as PrimaryColorType,
       neutralColor: (workspace?.workspaceSettings?.neutralColor ??
-        'zinc') as NeutralColorType,
-      fontFamily: workspace?.workspaceSettings?.fontFamily ?? 'geist',
+        "zinc") as NeutralColorType,
+      fontFamily: workspace?.workspaceSettings?.fontFamily ?? "geist",
     });
   }, [workspace]);
 
@@ -79,17 +79,41 @@ const Theme = () => {
       });
       window.location.reload();
     } catch (e) {
-      console.log('Error', e);
+      console.log("Error", e);
     }
   };
 
-  const handlePrimaryColorChange = (value: PrimaryColorType) => {
+  const handleChangeValuePrimaryColor = (value: PrimaryColorType) => {
     changePrimaryColor(value);
+    form.setValue("primaryColor", value);
   };
 
-  const handleNeutralColorChange = (value: NeutralColorType) => {
+  const handleChangeValueNeutralColor = (value: NeutralColorType) => {
     changeNeutralColor(value);
+    form.setValue("neutralColor", value);
   };
+
+  const [optimisticPrimaryColor, handleChangeOptimisticPrimaryColor] =
+    useOptimistic({
+      mainState: (workspace?.workspaceSettings?.primaryColor ??
+        "blue") as PrimaryColorType,
+      callOnChange: handleChangeValuePrimaryColor,
+    });
+
+  const [optimisticNeutralColor, handleChangeOptimisticNeutralColor] =
+    useOptimistic({
+      mainState: (workspace?.workspaceSettings?.neutralColor ??
+        "zinc") as NeutralColorType,
+      callOnChange: handleChangeValueNeutralColor,
+    });
+
+  const [optimisticFontFamily, handleChangeOptimisticFontFamily] =
+    useOptimistic({
+      mainState: workspace?.workspaceSettings?.fontFamily ?? "geist",
+      callOnChange: (value: string) => {
+        form.setValue("fontFamily", value);
+      },
+    });
 
   return (
     <div className="flex flex-col gap-5 md:gap-6 w-full">
@@ -110,14 +134,14 @@ const Theme = () => {
                   control={form.control}
                   name="primaryColor"
                   render={({ field }) => (
-                    <div className="flex flex-col gap-3" key={field.value}>
+                    <div
+                      className="flex flex-col gap-3"
+                      key={optimisticPrimaryColor}
+                    >
                       <Label>Primary Color</Label>
                       <Select
-                        value={field.value}
-                        onValueChange={(value: PrimaryColorType) => {
-                          handlePrimaryColorChange(value);
-                          field.onChange(value);
-                        }}
+                        value={optimisticPrimaryColor}
+                        onValueChange={handleChangeOptimisticPrimaryColor}
                       >
                         <SelectTrigger className="w-full md:w-96">
                           <SelectValue />
@@ -155,14 +179,14 @@ const Theme = () => {
                   control={form.control}
                   name="neutralColor"
                   render={({ field }) => (
-                    <div className="flex flex-col gap-3" key={field.value}>
+                    <div
+                      className="flex flex-col gap-3"
+                      key={optimisticNeutralColor}
+                    >
                       <Label>Neutral Color</Label>
                       <Select
-                        value={field.value}
-                        onValueChange={(value: NeutralColorType) => {
-                          handleNeutralColorChange(value);
-                          field.onChange(value);
-                        }}
+                        value={optimisticNeutralColor}
+                        onValueChange={handleChangeOptimisticNeutralColor}
                       >
                         <SelectTrigger className="w-full md:w-96">
                           <SelectValue />
@@ -200,13 +224,14 @@ const Theme = () => {
                   control={form.control}
                   name="fontFamily"
                   render={({ field }) => (
-                    <div className="flex flex-col gap-3" key={field.value}>
+                    <div
+                      className="flex flex-col gap-3"
+                      key={optimisticFontFamily}
+                    >
                       <Label>Font family</Label>
                       <Select
-                        value={field.value}
-                        onValueChange={(value: string) => {
-                          field.onChange(value);
-                        }}
+                        value={optimisticFontFamily}
+                        onValueChange={handleChangeOptimisticFontFamily}
                       >
                         <SelectTrigger className="w-full md:w-96">
                           <SelectValue />
