@@ -4,7 +4,7 @@ import { ToastProvider } from '@fucina/ui';
 import { ThemeProvider } from '@/components/theme-provider';
 import ReactQueryProvider from '@/context/queryClient';
 
-import { sans, brand, logo } from '@/styles/fonts/font';
+import { sans, geist, inter, brand, logo } from '@/styles/fonts/font';
 import '@/styles/globals.css';
 
 export const metadata: Metadata = {
@@ -19,7 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${sans.variable} ${brand.variable} ${logo.variable}`}>
+      <body
+        className={`${sans.variable} ${brand.variable} ${logo.variable} ${inter.variable} ${geist.variable} font-sans`}
+      >
         <ReactQueryProvider>
           <ThemeProvider
             attribute="class"

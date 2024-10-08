@@ -16,6 +16,10 @@ const config: Pick<Config, 'presets'> = {
       theme: {
         extend: {
           ...sharedConfig?.theme?.extend,
+          fontFamily: {
+            inter: ['var(--font-inter)'],
+            geist: ['var(--font-geist-sans)'],
+          },
         },
       },
     },

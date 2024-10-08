@@ -99,3 +99,16 @@ export const mapNeutral = (value: NeutralColorType) => {
 export const changeNeutralColor = (theme: NeutralColorType) => {
   document.querySelector('html')?.setAttribute('data-neutralColor', theme);
 };
+
+export type fontFamilyOptions = 'sans' | 'inter' | 'geist';
+
+export const FontFamilyOptions = ['sans', 'inter', 'geist'] as const;
+
+export type FontFamilyTypes = typeof FontFamilyOptions;
+export type FontFamilyType = FontFamilyTypes[number];
+
+export function changeFontFamily(fontFamily: string = 'sans') {
+  const body = document.body;
+  body.classList.remove('font-sans', 'font-inter', 'font-geist');
+  body.classList.add(`font-${fontFamily}`);
+}
