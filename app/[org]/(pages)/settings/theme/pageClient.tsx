@@ -253,7 +253,7 @@ const Theme = () => {
                                 <SelectItem
                                   key={fontFamily}
                                   value={fontFamily}
-                                  className="h-9"
+                                  className="h-9 capitalize"
                                 >
                                   {fontFamily}
                                 </SelectItem>

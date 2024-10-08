@@ -19,6 +19,10 @@ const config: Pick<Config, 'presets'> = {
           fontFamily: {
             inter: ['var(--font-inter)'],
             geist: ['var(--font-geist-sans)'],
+            poppins: ['var(--font-poppins)'],
+            roboto: ['var(--font-roboto)'],
+            worksans: ['var(--font-worksans)'],
+            raleway: ['var(--font-raleway)'],
           },
         },
       },
