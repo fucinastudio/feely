@@ -1,16 +1,12 @@
-import type { Metadata } from 'next';
-
 import { ToastProvider } from '@fucina/ui';
 import { ThemeProvider } from '@/components/theme-provider';
 import ReactQueryProvider from '@/context/queryClient';
+import { metadata } from '@/lib/metadata';
 
-import { sans, brand, logo } from '@/styles/fonts/font';
+import { getFontClasses } from '@/styles/fonts/font';
 import '@/styles/globals.css';
 
-export const metadata: Metadata = {
-  title: 'Feely - User feedbacks get real by being rewarded',
-  description: 'User feedbacks get real by being rewarded',
-};
+export { metadata };
 
 export default function RootLayout({
   children,
@@ -18,8 +14,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${sans.variable} ${brand.variable} ${logo.variable}`}>
+    <html lang="en" suppressHydrationWarning className="font-sans">
+      <body className={getFontClasses()}>
         <ReactQueryProvider>
           <ThemeProvider
             attribute="class"

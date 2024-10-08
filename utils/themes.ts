@@ -99,3 +99,36 @@ export const mapNeutral = (value: NeutralColorType) => {
 export const changeNeutralColor = (theme: NeutralColorType) => {
   document.querySelector('html')?.setAttribute('data-neutralColor', theme);
 };
+
+export type fontFamilyOptions =
+  | 'inter'
+  | 'geist'
+  | 'poppins'
+  | 'roboto'
+  | 'worksans'
+  | 'raleway';
+
+export const FontFamilyOptions = [
+  'inter',
+  'geist',
+  'poppins',
+  'roboto',
+  'worksans',
+  'raleway',
+] as const;
+
+export type FontFamilyTypes = typeof FontFamilyOptions;
+export type FontFamilyType = FontFamilyTypes[number];
+
+export function changeFontFamily(fontFamily: string = 'sans') {
+  const body = document.body;
+  body.classList.remove(
+    'font-inter',
+    'font-geist',
+    'font-poppins',
+    'font-roboto',
+    'font-worksans',
+    'font-raleway'
+  );
+  body.classList.add(`font-${fontFamily}`);
+}

@@ -305,15 +305,3 @@ html[data-neutralColor='stone'] {
   --color-neutral-900: #1c1917;
   --color-neutral-950: #0c0a09;
 }
-
-/* FONT */
-html[data-font='geist'] {
-  --font-theme: var(--font-geist-sans);
-}
-html[data-font='inter'] {
-  --font-theme: var(--font-inter);
-}
-
-html[data-font='roboto'] {
-  --font-theme: var(--font-roboto);
-}

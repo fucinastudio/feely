@@ -28,6 +28,9 @@ import {
   NeutralColorOptions,
   mapPrimary,
   mapNeutral,
+  changeFontFamily,
+  FontFamilyType,
+  FontFamilyOptions,
 } from '@/utils/themes';
 import { useWorkspace } from '@/context/workspaceContext';
 import Loading from '@/app/loading';
@@ -40,7 +43,7 @@ const Theme = () => {
   const FormSchema = z.object({
     primaryColor: z.enum(PrimaryColorOptions),
     neutralColor: z.enum(NeutralColorOptions),
-    fontFamily: z.string(),
+    fontFamily: z.enum(FontFamilyOptions),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -50,7 +53,8 @@ const Theme = () => {
         'blue') as PrimaryColorType,
       neutralColor: (workspace?.workspaceSettings?.neutralColor ??
         'zinc') as NeutralColorType,
-      fontFamily: workspace?.workspaceSettings?.fontFamily ?? 'geist',
+      fontFamily: (workspace?.workspaceSettings?.fontFamily ??
+        'sans') as FontFamilyType,
     },
   });
 
@@ -61,7 +65,8 @@ const Theme = () => {
         'blue') as PrimaryColorType,
       neutralColor: (workspace?.workspaceSettings?.neutralColor ??
         'zinc') as NeutralColorType,
-      fontFamily: workspace?.workspaceSettings?.fontFamily ?? 'geist',
+      fontFamily: (workspace?.workspaceSettings?.fontFamily ??
+        'sans') as FontFamilyType,
     });
   }, [workspace]);
 
@@ -93,6 +98,11 @@ const Theme = () => {
     form.setValue('neutralColor', value);
   };
 
+  const handleChangeFontFamily = (value: FontFamilyType) => {
+    changeFontFamily(value);
+    form.setValue('fontFamily', value);
+  };
+
   const [optimisticPrimaryColor, handleChangeOptimisticPrimaryColor] =
     useOptimistic({
       mainState: (workspace?.workspaceSettings?.primaryColor ??
@@ -109,10 +119,9 @@ const Theme = () => {
 
   const [optimisticFontFamily, handleChangeOptimisticFontFamily] =
     useOptimistic({
-      mainState: workspace?.workspaceSettings?.fontFamily ?? 'geist',
-      callOnChange: (value: string) => {
-        form.setValue('fontFamily', value);
-      },
+      mainState: (workspace?.workspaceSettings?.fontFamily ??
+        'sans') as FontFamilyType,
+      callOnChange: handleChangeFontFamily,
     });
 
   return (
@@ -220,7 +229,6 @@ const Theme = () => {
                     </div>
                   )}
                 />
-                {/* 
                 <FormField
                   control={form.control}
                   name="fontFamily"
@@ -234,25 +242,29 @@ const Theme = () => {
                         value={optimisticFontFamily}
                         onValueChange={handleChangeOptimisticFontFamily}
                       >
-                        <SelectTrigger className="w-full md:w-96">
+                        <SelectTrigger className="w-full md:w-96 capitalize">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
                             <SelectGroupLabel>Font family</SelectGroupLabel>
-                            <SelectItem value="geist" className="h-9">
-                              Geist
-                            </SelectItem>
-                            <SelectItem value="inter" className="h-9">
-                              Inter
-                            </SelectItem>
+                            {FontFamilyOptions.map((fontFamily) => {
+                              return (
+                                <SelectItem
+                                  key={fontFamily}
+                                  value={fontFamily}
+                                  className="h-9 capitalize"
+                                >
+                                  {fontFamily}
+                                </SelectItem>
+                              );
+                            })}
                           </SelectGroup>
                         </SelectContent>
                       </Select>
                     </div>
                   )}
                 />
-                */}
               </div>
               <div className="flex justify-end items-center border-default px-5 md:px-6 py-4 border-t w-full">
                 <Button
