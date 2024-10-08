@@ -361,7 +361,22 @@ export const getIdeaById = async ({
       id: ideaId,
     },
     include: {
-      author: true,
+      author: {
+        include: {
+          userInWorkspace: {
+            where: {
+              //This is inefficient. We should improve in the future
+              workspace: {
+                ideas: {
+                  some: {
+                    id: ideaId,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       status: true,
       topic: true,
       voters: {
