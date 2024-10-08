@@ -171,7 +171,15 @@ export const getIdeasByWorkspaceName = async ({
         : {}),
     },
     include: {
-      author: true,
+      author: {
+        include: {
+          userInWorkspace: {
+            where: {
+              workspaceId: workspace.id,
+            },
+          },
+        },
+      },
       status: true,
       topic: true,
       _count: {
@@ -265,7 +273,15 @@ export const getIdeasByUserInWorkspace = async ({
       authorId: userId,
     },
     include: {
-      author: true,
+      author: {
+        include: {
+          userInWorkspace: {
+            where: {
+              workspaceId: workspace.id,
+            },
+          },
+        },
+      },
       status: true,
       topic: true,
       _count: {

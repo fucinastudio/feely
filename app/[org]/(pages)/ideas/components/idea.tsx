@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
-import { useRouter } from 'next/navigation';
-import { ChevronUp, MessageSquare, Dot } from 'lucide-react';
+import React, { useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { ChevronUp, MessageSquare, Dot } from "lucide-react";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
-import { useVoteIdea } from '@/app/api/controllers/ideaController';
-import { StatusTagIdea } from '@/utils/parseStatus';
-import { IdeaType } from '@/types/idea';
-import { useOptimistic } from '@/utils/useOptimistic';
-import { useAuth } from '@/context/authContext';
-import { cn, focusRing } from '@fucina/utils';
-import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
-import HoverCardUser from '@/components/org/hover-card-user';
-import { ConfettiButton } from '@/components/confetti';
+import { Avatar, AvatarFallback, AvatarImage } from "@fucina/ui";
+import { useVoteIdea } from "@/app/api/controllers/ideaController";
+import { StatusTagIdea } from "@/utils/parseStatus";
+import { IdeaType } from "@/types/idea";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { useAuth } from "@/context/authContext";
+import { cn, focusRing } from "@fucina/utils";
+import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
+import HoverCardUser from "@/components/org/hover-card-user";
+import { ConfettiButton } from "@/components/confetti";
 
 interface IProps {
   idea: IdeaType;
@@ -51,7 +51,7 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
     <button
       key={idea.id}
       className={cn(
-        'flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer',
+        "flex gap-3 hover:bg-item-active active:bg-item-selected p-4 text-left rounded-md w-full cursor-pointer",
         focusRing
       )}
       onClick={() => handleClickIdea(idea.id)}
@@ -85,7 +85,7 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
                   ev.preventDefault();
                 }}
               >
-                by{' '}
+                by{" "}
                 <UserProfileLinkComponent
                   className="flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
                   userId={idea.authorId}
@@ -107,6 +107,7 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
                     idea.author.name ? idea.author.name[0] : undefined
                   }
                   author={idea.author.name}
+                  points={idea.author.userInWorkspace.at(0)?.points ?? null}
                 />
               </p>
               <Dot className="sm:flex hidden" />

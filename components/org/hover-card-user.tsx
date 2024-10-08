@@ -1,5 +1,5 @@
-import React from 'react';
-import { HeartHandshake } from 'lucide-react';
+import React from "react";
+import { HeartHandshake } from "lucide-react";
 
 import {
   Avatar,
@@ -8,7 +8,7 @@ import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
-} from '@fucina/ui';
+} from "@fucina/ui";
 
 interface HoverCardUserProps {
   trigger: React.ReactNode;
@@ -16,6 +16,7 @@ interface HoverCardUserProps {
   imageAlt: string | undefined;
   imageFallback: string | undefined;
   author: string | null;
+  points: number | null;
 }
 
 export default function HoverCardUser({
@@ -24,6 +25,7 @@ export default function HoverCardUser({
   imageAlt,
   imageFallback,
   author,
+  points,
 }: HoverCardUserProps) {
   return (
     <HoverCard>
@@ -40,7 +42,7 @@ export default function HoverCardUser({
             <p className="font-semibold text-md text">{author}</p>
             <div className="flex justify-start items-center gap-1 text-description text-sm">
               <HeartHandshake className="size-[14px]" />
-              <p>7 Karmas</p>
+              <p>{points ?? 0} Karmas</p>
             </div>
           </div>
         </div>

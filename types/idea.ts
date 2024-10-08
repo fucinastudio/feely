@@ -1,10 +1,16 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
-import { CommentType } from '@/types/comment';
+import { CommentType } from "@/types/comment";
 
 export type IIdeaSelectionObject = {
   include: {
-    author: true;
+    author: {
+      include: {
+        userInWorkspace: {
+          take: 1;
+        };
+      };
+    };
     status: true;
     topic: true;
     voters: {
