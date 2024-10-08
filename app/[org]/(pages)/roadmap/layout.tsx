@@ -23,7 +23,7 @@ export default async function RootLayout({
         </Button>
       </div>
       <Separator />
-      <Suspense fallback={<Loading className="min-h-[80vh] size-full" />}>
+      <Suspense fallback={<Loading className="min-h-[60vh] size-full" />}>
         <RoadmapPage />
         {children}
       </Suspense>

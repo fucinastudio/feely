@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Inbox } from 'lucide-react';
 
 import { Button, Card, Separator } from '@fucina/ui';
 import { useGetIdeasByWorkspaceName } from '@/app/api/controllers/ideaController';
@@ -11,6 +10,7 @@ import { useWorkspace } from '@/context/workspaceContext';
 import Loading from '@/app/loading';
 import useMainPageFilters from '@/components/filters/filters';
 import FiltersComponentObject from '@/components/filters/filtersComponent';
+import IdeasEmpty from '@/components/org/ideas-empty';
 
 const Ideas = () => {
   const { org, workspace, statuses, topics } = useWorkspace();
@@ -36,7 +36,7 @@ const Ideas = () => {
     }
   );
   if (!workspace?.workspaceSettings?.showIdeas) {
-    return <Loading className="w-full h-56" />;
+    return <Loading className="w-full min-h-[60vh]" />;
   }
   return (
     <>
@@ -44,23 +44,17 @@ const Ideas = () => {
       <FiltersComponentObject {...filterObjectAttributes} />
       <Card className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full">
         {!statuses || !topics || isLoadingIdeas ? (
-          <Loading className="min-h-[80vh] size-full" />
+          <Loading className="min-h-[60vh] size-full" />
         ) : ideas?.data.ideas.length === 0 ? (
-          <div className="flex flex-col justify-center items-center gap-3 p-10 w-full text-description">
-            <Inbox className="size-8 stroke-icon" />
-            <div className="flex flex-col gap-1 w-full">
-              <h3 className="font-semibold text-center text-lg">
-                No ideas found
-              </h3>
-              <p className="text-center">
-                There are no ideas in this workspace. You can create the first
-                one.
-              </p>
-            </div>
-            <Button variant="secondary" className="mt-3" asChild>
-              <Link href={`/${org}/ideas/new_idea`}>Create new idea</Link>
-            </Button>
-          </div>
+          <IdeasEmpty
+            title="No ideas found"
+            description="Be brave. Leave the first one."
+            button={
+              <Button variant="secondary" className="mt-3" asChild>
+                <Link href={`/${org}/ideas/new_idea`}>New idea</Link>
+              </Button>
+            }
+          />
         ) : (
           ideas?.data.ideas.map((idea, index) => {
             const isLastItem = index === ideas.data.ideas.length - 1;

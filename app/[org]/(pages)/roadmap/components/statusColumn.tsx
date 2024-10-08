@@ -9,6 +9,7 @@ import Loading from '@/app/loading';
 import { IdeaType } from '@/types/idea';
 import { StatusTagColumn } from '@/utils/parseStatus';
 import { useWorkspace } from '@/context/workspaceContext';
+import IdeasEmpty from '@/components/org/ideas-empty';
 
 interface IProps {
   status: string;
@@ -31,25 +32,17 @@ const StatusColumn = ({ status, ideas }: IProps) => {
         <StatusTagColumn status={status} />
       </div>
       {!ideas ? (
-        <Loading className="w-full h-56" />
+        <Loading className="min-h-[40vh] size-full" />
       ) : ideas.length === 0 ? (
-        <>
-          <div className="flex flex-col justify-center items-center gap-3 p-8 w-full text-description">
-            <Inbox className="size-8 stroke-icon" />
-            <div className="flex flex-col gap-1 w-full">
-              <h3 className="font-semibold text-center text-lg">
-                No ideas found
-              </h3>
-              <p className="text-center">
-                There are no ideas in this workspace. You can create the first
-                one.
-              </p>
-            </div>
+        <IdeasEmpty
+          title="No ideas found"
+          description="Be brave. Leave the first one."
+          button={
             <Button variant="secondary" className="mt-3" asChild>
-              <Link href={`/${org}/roadmap/new_idea`}>Create new idea</Link>
+              <Link href={`/${org}/roadmap/new_idea`}>New idea</Link>
             </Button>
-          </div>
-        </>
+          }
+        />
       ) : (
         <>
           {ideas.map((idea, index) => {

@@ -32,7 +32,7 @@ const Community = () => {
     );
 
   if (!workspace?.workspaceSettings?.showCommunity) {
-    return <Loading className="w-full h-56" />;
+    return <Loading className="w-full min-h-[60vh]" />;
   }
   return (
     <>
@@ -55,7 +55,7 @@ const Community = () => {
       </div>
       <div className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full">
         {isLoadingUsersInWorkspace ? (
-          <Loading className="w-full min-h-56" />
+          <Loading className="w-full min-h-[60vh]" />
         ) : (
           usersInWorkspace?.data.usersInWorkspace?.map((user, index) => {
             const isLastItem =

@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { useMemo, useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { ChevronUp, HeartHandshake, Inbox } from 'lucide-react';
+import React, { useMemo, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { ChevronUp, Inbox } from "lucide-react";
 
 import {
   Button,
@@ -34,22 +34,23 @@ import {
   HoverCardContent,
   SelectGroupLabel,
   SelectGroup,
-} from '@fucina/ui';
+} from "@fucina/ui";
 import {
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
-} from '@/app/api/controllers/ideaController';
-import { useCreateComment } from '@/app/api/controllers/commentController';
+} from "@/app/api/controllers/ideaController";
+import { useCreateComment } from "@/app/api/controllers/commentController";
 import CommentCard, {
   OptimisticComment,
-} from '@/app/[org]/(pages)/ideas/[id]/components/comment';
-import { useAuth } from '@/context/authContext';
-import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/loading';
-import { useOptimistic } from '@/utils/useOptimistic';
-import { CommentType } from '@/types/comment';
-import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+} from "@/app/[org]/(pages)/ideas/[id]/components/comment";
+import { useAuth } from "@/context/authContext";
+import { useWorkspace } from "@/context/workspaceContext";
+import Loading from "@/app/loading";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { CommentType } from "@/types/comment";
+import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
+import HoverCardUser from "@/components/org/hover-card-user";
 
 export interface IPropsIdeaPage {
   params: {
@@ -66,7 +67,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const pathName = usePathname();
 
   const handleClose = () => {
-    router.push(pathName?.substring(0, pathName?.lastIndexOf('/')) ?? '/');
+    router.push(pathName?.substring(0, pathName?.lastIndexOf("/")) ?? "/");
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
@@ -75,7 +76,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     return ideaData?.data.idea;
   }, [ideaData]);
 
-  const [comment, setComment] = useState<string>('');
+  const [comment, setComment] = useState<string>("");
 
   const { mutateAsync: createComment, isLoading: isLoadingCreateComment } =
     useCreateComment();
@@ -102,7 +103,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         });
       }
       const content = comment;
-      setComment('');
+      setComment("");
       const res = await createComment({
         ideaId: id,
         comment: content,
@@ -228,8 +229,8 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       {idea.author.name}
                     </UserProfileLinkComponent>
                   </Button>
-                  <HoverCard>
-                    <HoverCardTrigger className="sm:flex hidden">
+                  <HoverCardUser
+                    trigger={
                       <Button variant="link">
                         <UserProfileLinkComponent
                           userId={idea.authorId}
@@ -249,30 +250,15 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                           {idea.author.name}
                         </UserProfileLinkComponent>
                       </Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-fit">
-                      <div className="flex items-center gap-2">
-                        <Avatar size="xl">
-                          <AvatarImage
-                            src={idea?.author.image_url ?? undefined}
-                            alt={idea?.author.name ?? undefined}
-                          />
-                          <AvatarFallback className="capitalize">
-                            {idea.author.name ? idea.author.name[0] : undefined}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col gap-0.5">
-                          <p className="font-semibold text-md text">
-                            {idea.author.name}
-                          </p>
-                          <div className="flex justify-start items-center gap-1 text-description text-sm">
-                            <HeartHandshake className="size-[14px]" />
-                            <p>7 Karmas</p>
-                          </div>
-                        </div>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
+                    }
+                    imageSrc={idea?.author.image_url ?? undefined}
+                    imageAlt={idea?.author.name ?? undefined}
+                    imageFallback={
+                      idea.author.name ? idea.author.name[0] : undefined
+                    }
+                    author={idea.author.name}
+                    points={idea.author.userInWorkspace.at(0)?.points ?? null}
+                  />
                 </div>
                 <div className="flex sm:flex-row flex-col items-start sm:items-center gap-1 sm:gap-4 w-full sm:h-9">
                   <p className="px-3 sm:px-0 min-w-20 text-description text-md">
@@ -332,7 +318,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       <Button variant="text">
                         <span className="flex justify-start items-center gap-2">
                           {idea.voters.length === 0 ? (
-                            '0 Voters'
+                            "0 Voters"
                           ) : (
                             <>
                               <div className="flex justify-start items-center -space-x-1.5">

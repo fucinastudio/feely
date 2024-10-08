@@ -87,7 +87,7 @@ const Navbar = () => {
                   {orgLetter}
                 </AvatarFallback>
               </Avatar>
-              <h1 className="text-heading-body">
+              <h1 className="text-heading-body capitalize">
                 {workspace?.externalName ?? org}
               </h1>
             </div>
@@ -196,6 +196,7 @@ const Navbar = () => {
                     <span>Settings</span>
                   </DropdownMenuItem>
                 </Link>
+                {/*
                 {isAdmin && (
                   <DropdownMenuSubMenu>
                     <DropdownMenuSubMenuTrigger>
@@ -237,6 +238,7 @@ const Navbar = () => {
                     </DropdownMenuSubMenuContent>
                   </DropdownMenuSubMenu>
                 )}
+                */}
                 <DropdownMenuSubMenu>
                   <DropdownMenuSubMenuTrigger>
                     {theme === 'dark' ? (
@@ -312,164 +314,169 @@ const Navbar = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <Sheet>
-          <SheetTrigger className="flex md:hidden">
-            <Button variant="secondary" icon>
-              <Menu />
-            </Button>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>{workspace?.externalName ?? org}</SheetTitle>
-            </SheetHeader>
-            <SheetBody className="w-full">
-              {isLoadingWorkspace ? (
-                <div className="flex flex-col justify-start gap-1.5 w-full">
-                  <Skeleton className="w-20 h-7" />
-                  <Skeleton className="w-20 h-7" />
-                  <Skeleton className="w-20 h-7" />
-                </div>
-              ) : (
+        <div className="flex md:hidden">
+          <Sheet>
+            <SheetTrigger>
+              <Button variant="secondary" icon>
+                <Menu />
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>{workspace?.externalName ?? org}</SheetTitle>
+              </SheetHeader>
+              <SheetBody className="w-full">
+                {isLoadingWorkspace ? (
+                  <div className="flex flex-col justify-start gap-1.5 w-full">
+                    <Skeleton className="w-20 h-7" />
+                    <Skeleton className="w-20 h-7" />
+                    <Skeleton className="w-20 h-7" />
+                  </div>
+                ) : (
+                  <NavigationMenu className="w-full">
+                    <NavigationMenuList
+                      orientation="vertical"
+                      className="w-full"
+                    >
+                      {workspace?.workspaceSettings?.showIdeas && (
+                        <NavigationMenuItem className="w-full">
+                          <SheetClose asChild>
+                            <Link href={`/${org}/ideas`} scroll={false}>
+                              <NavigationMenuLink
+                                active={isActive('ideas')}
+                                className="justify-start w-full"
+                              >
+                                Ideas
+                              </NavigationMenuLink>
+                            </Link>
+                          </SheetClose>
+                        </NavigationMenuItem>
+                      )}
+                      {workspace?.workspaceSettings?.showRoadmap && (
+                        <NavigationMenuItem className="w-full">
+                          <SheetClose asChild>
+                            <Link href={`/${org}/roadmap`} scroll={false}>
+                              <NavigationMenuLink
+                                active={isActive('roadmap')}
+                                className="justify-start w-full"
+                              >
+                                Roadmap
+                              </NavigationMenuLink>
+                            </Link>
+                          </SheetClose>
+                        </NavigationMenuItem>
+                      )}
+                      {workspace?.workspaceSettings?.showCommunity && (
+                        <NavigationMenuItem className="w-full">
+                          <SheetClose asChild>
+                            <Link href={`/${org}/community`} scroll={false}>
+                              <NavigationMenuLink
+                                active={isActive('community')}
+                                className="justify-start w-full"
+                              >
+                                Community
+                              </NavigationMenuLink>
+                            </Link>
+                          </SheetClose>
+                        </NavigationMenuItem>
+                      )}
+                      {isAdmin && (
+                        <NavigationMenuItem className="w-full">
+                          <SheetClose asChild>
+                            <Link
+                              href={`/${org}/settings/general`}
+                              scroll={false}
+                            >
+                              <NavigationMenuLink
+                                active={isActive('settings')}
+                                className="justify-start w-full"
+                              >
+                                Settings
+                              </NavigationMenuLink>
+                            </Link>
+                          </SheetClose>
+                        </NavigationMenuItem>
+                      )}
+                    </NavigationMenuList>
+                  </NavigationMenu>
+                )}
+                <Separator orientation="horizontal" className="my-4" />
                 <NavigationMenu className="w-full">
                   <NavigationMenuList orientation="vertical" className="w-full">
-                    {workspace?.workspaceSettings?.showIdeas && (
-                      <NavigationMenuItem className="w-full">
-                        <SheetClose asChild>
-                          <Link href={`/${org}/ideas`} scroll={false}>
-                            <NavigationMenuLink
-                              active={isActive('ideas')}
-                              className="justify-start w-full"
-                            >
-                              Ideas
-                            </NavigationMenuLink>
-                          </Link>
-                        </SheetClose>
-                      </NavigationMenuItem>
-                    )}
-                    {workspace?.workspaceSettings?.showRoadmap && (
-                      <NavigationMenuItem className="w-full">
-                        <SheetClose asChild>
-                          <Link href={`/${org}/roadmap`} scroll={false}>
-                            <NavigationMenuLink
-                              active={isActive('roadmap')}
-                              className="justify-start w-full"
-                            >
-                              Roadmap
-                            </NavigationMenuLink>
-                          </Link>
-                        </SheetClose>
-                      </NavigationMenuItem>
-                    )}
-                    {workspace?.workspaceSettings?.showCommunity && (
-                      <NavigationMenuItem className="w-full">
-                        <SheetClose asChild>
-                          <Link href={`/${org}/community`} scroll={false}>
-                            <NavigationMenuLink
-                              active={isActive('community')}
-                              className="justify-start w-full"
-                            >
-                              Community
-                            </NavigationMenuLink>
-                          </Link>
-                        </SheetClose>
-                      </NavigationMenuItem>
-                    )}
-                    {isAdmin && (
-                      <NavigationMenuItem className="w-full">
-                        <SheetClose asChild>
-                          <Link
-                            href={`/${org}/settings/general`}
-                            scroll={false}
+                    <NavigationMenuItem className="w-full">
+                      <UserProfileLinkComponent
+                        userId={user?.id ?? null}
+                        scroll={false}
+                        legacyBehavior
+                        passHref
+                      >
+                        <NavigationMenuLink className="justify-start w-full">
+                          <User />
+                          Profile
+                        </NavigationMenuLink>
+                      </UserProfileLinkComponent>
+                    </NavigationMenuItem>
+                    <NavigationMenuItem className="w-full">
+                      <SheetClose asChild>
+                        <Link
+                          href={`/${org}/account/settings/profile`}
+                          scroll={false}
+                        >
+                          <NavigationMenuLink
+                            active={isActive('account')}
+                            className="justify-start w-full"
                           >
-                            <NavigationMenuLink
-                              active={isActive('settings')}
-                              className="justify-start w-full"
-                            >
-                              Settings
-                            </NavigationMenuLink>
-                          </Link>
-                        </SheetClose>
-                      </NavigationMenuItem>
-                    )}
+                            <Settings />
+                            Account Settings
+                          </NavigationMenuLink>
+                        </Link>
+                      </SheetClose>
+                    </NavigationMenuItem>
                   </NavigationMenuList>
                 </NavigationMenu>
-              )}
-              <Separator orientation="horizontal" className="my-4" />
-              <NavigationMenu className="w-full">
-                <NavigationMenuList orientation="vertical" className="w-full">
-                  <NavigationMenuItem className="w-full">
-                    <UserProfileLinkComponent
-                      userId={user?.id ?? null}
-                      scroll={false}
-                      legacyBehavior
-                      passHref
-                    >
-                      <NavigationMenuLink className="justify-start w-full">
-                        <User />
-                        Profile
-                      </NavigationMenuLink>
-                    </UserProfileLinkComponent>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem className="w-full">
-                    <SheetClose asChild>
-                      <Link
-                        href={`/${org}/account/settings/profile`}
-                        scroll={false}
-                      >
-                        <NavigationMenuLink
-                          active={isActive('account')}
-                          className="justify-start w-full"
-                        >
-                          <Settings />
-                          Account Settings
+                <Separator orientation="horizontal" className="my-4" />
+                <NavigationMenu className="w-full">
+                  <NavigationMenuList orientation="vertical" className="w-full">
+                    <NavigationMenuItem className="w-full">
+                      <Link href="https://app.feely.so/ideas" target="_blank">
+                        <NavigationMenuLink className="justify-start w-full">
+                          <CircleFadingPlus />
+                          Feature requests
                         </NavigationMenuLink>
                       </Link>
-                    </SheetClose>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-              <Separator orientation="horizontal" className="my-4" />
-              <NavigationMenu className="w-full">
-                <NavigationMenuList orientation="vertical" className="w-full">
-                  <NavigationMenuItem className="w-full">
-                    <Link href="https://app.feely.so/ideas" target="_blank">
-                      <NavigationMenuLink className="justify-start w-full">
-                        <CircleFadingPlus />
-                        Feature requests
+                    </NavigationMenuItem>
+                    <NavigationMenuItem className="w-full">
+                      <Link href="https://app.feely.so/roadmap" target="_blank">
+                        <NavigationMenuLink className="justify-start w-full">
+                          <Map />
+                          Roadmap
+                        </NavigationMenuLink>
+                      </Link>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+                <Separator orientation="horizontal" className="my-4" />
+                <NavigationMenu className="w-full">
+                  <NavigationMenuList orientation="vertical" className="w-full">
+                    <NavigationMenuItem className="w-full">
+                      <NavigationMenuLink
+                        onClick={async (e: any) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          await logoutUser();
+                        }}
+                        className="justify-start w-full"
+                      >
+                        <LogOut />
+                        Log out
                       </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                  <NavigationMenuItem className="w-full">
-                    <Link href="https://app.feely.so/roadmap" target="_blank">
-                      <NavigationMenuLink className="justify-start w-full">
-                        <Map />
-                        Roadmap
-                      </NavigationMenuLink>
-                    </Link>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-              <Separator orientation="horizontal" className="my-4" />
-              <NavigationMenu className="w-full">
-                <NavigationMenuList orientation="vertical" className="w-full">
-                  <NavigationMenuItem className="w-full">
-                    <NavigationMenuLink
-                      onClick={async (e: any) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        await logoutUser();
-                      }}
-                      className="justify-start w-full"
-                    >
-                      <LogOut />
-                      Log out
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                </NavigationMenuList>
-              </NavigationMenu>
-            </SheetBody>
-          </SheetContent>
-        </Sheet>
+                    </NavigationMenuItem>
+                  </NavigationMenuList>
+                </NavigationMenu>
+              </SheetBody>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </div>
   );

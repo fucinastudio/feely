@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import { HeartHandshake, X } from 'lucide-react';
+import React from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { HeartHandshake, X } from "lucide-react";
 
 import {
   Avatar,
@@ -22,23 +22,23 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@fucina/ui';
-import { useGetIdeaByUserInWorkspace } from '@/app/api/controllers/ideaController';
-import { useGetUserById } from '@/app/api/controllers/userController';
-import { useWorkspace } from '@/context/workspaceContext';
-import IdeaCard from '@/app/[org]/(pages)/ideas/components/idea';
-import Loading from '@/app/loading';
+} from "@fucina/ui";
+import { useGetIdeaByUserInWorkspace } from "@/app/api/controllers/ideaController";
+import { useGetUserById } from "@/app/api/controllers/userController";
+import { useWorkspace } from "@/context/workspaceContext";
+import IdeaCard from "@/app/[org]/(pages)/ideas/components/idea";
+import Loading from "@/app/loading";
 
 const UserTab = () => {
   const { workspace, org } = useWorkspace();
   const searchParams = useSearchParams();
-  const userId = searchParams?.get('user');
+  const userId = searchParams?.get("user");
   const router = useRouter();
   const handleClose = () => {
     if (searchParams) {
       const newParams = new URLSearchParams(searchParams);
-      newParams.delete('user');
-      router.push(window.location.pathname + '?' + newParams.toString());
+      newParams.delete("user");
+      router.push(window.location.pathname + "?" + newParams.toString());
     } else {
       router.push(window.location.pathname);
     }
@@ -50,8 +50,8 @@ const UserTab = () => {
     isLoading: isLoadingGetUserById,
   } = useGetUserById(
     {
-      workspaceId: workspace?.id ?? '',
-      userId: userId ?? '',
+      workspaceId: workspace?.id ?? "",
+      userId: userId ?? "",
     },
     !!userId && !!workspace?.id
   );
@@ -64,7 +64,7 @@ const UserTab = () => {
   } = useGetIdeaByUserInWorkspace(
     {
       userId: userId!,
-      workspaceId: workspace?.id ?? '',
+      workspaceId: workspace?.id ?? "",
     },
     !!user && !!userId && !!workspace
   );
@@ -110,7 +110,7 @@ const UserTab = () => {
                     <SheetDescription>
                       <div className="flex justify-start items-center gap-1 text-description text-sm">
                         <HeartHandshake className="size-4" />
-                        <p>7 Karmas</p>
+                        <p>{user?.points} Karmas</p>
                       </div>
                     </SheetDescription>
                   </div>

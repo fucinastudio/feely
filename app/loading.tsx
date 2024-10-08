@@ -9,7 +9,7 @@ interface LoadingProps {
 
 export default function Loading({ className }: LoadingProps) {
   return (
-    <div className={cn('flex justify-center items-center', className)}>
+    <div className={cn('flex justify-center min-h-60 items-center', className)}>
       <LoaderCircle className="animate-spin stroke-icon-brand" />
     </div>
   );

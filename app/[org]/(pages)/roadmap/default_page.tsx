@@ -48,7 +48,7 @@ const RoadmapPage = () => {
   }, [selectedStatuses, statuses]);
 
   if (!workspace || !workspace.workspaceSettings?.showRoadmap) {
-    return <Loading className="w-full h-56" />;
+    return <Loading className="min-h-[60vh] size-full" />;
   }
 
   return (
@@ -57,9 +57,9 @@ const RoadmapPage = () => {
       <div className="gap-4 grid grid-cols-1 md:grid-cols-3 w-full">
         {!statusesToRender || !statuses ? (
           <>
-            <Skeleton className="w-full h-80" />
-            <Skeleton className="w-full h-80" />
-            <Skeleton className="w-full h-80" />
+            <Skeleton className="w-full min-h-[60vh]" />
+            <Skeleton className="w-full min-h-[60vh]" />
+            <Skeleton className="w-full min-h-[60vh]" />
           </>
         ) : (
           statusesToRender.map((status) => {

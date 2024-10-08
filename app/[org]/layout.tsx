@@ -48,7 +48,9 @@ export default async function RootLayout({
     redirect('/');
   } else
     return (
-      <Suspense fallback={<Loading className="w-screen h-screen" />}>
+      <Suspense
+        fallback={<Loading className="min-w-screen min-h-screen size-full" />}
+      >
         <WorkspaceProvider org={org}>
           <AuthProvider>
             <Navbar />

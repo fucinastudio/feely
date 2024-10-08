@@ -242,7 +242,7 @@ const Theme = () => {
                         value={optimisticFontFamily}
                         onValueChange={handleChangeOptimisticFontFamily}
                       >
-                        <SelectTrigger className="w-full md:w-96">
+                        <SelectTrigger className="w-full md:w-96 capitalize">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
