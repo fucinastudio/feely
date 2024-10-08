@@ -10,6 +10,7 @@ import { useVoteIdea } from '@/app/api/controllers/ideaController';
 import { useOptimistic } from '@/utils/useOptimistic';
 import { useAuth } from '@/context/authContext';
 import { cn, focusRing } from '@fucina/utils';
+import { ConfettiButton } from '@/components/confetti';
 
 interface IProps {
   idea: IdeaType;
@@ -57,19 +58,10 @@ const IdeaCard = ({ idea, org }: IProps) => {
         <h1 className="line-clamp-3 text-lg-semibold">{idea.title}</h1>
         <p className="text-description text-md">{idea.topic.name}</p>
       </div>
-      <Toggle
-        aria-label="vote"
-        className="flex flex-col justify-items-center items-center gap-0 space-y-0 p-1 w-11 h-14"
-        pressed={isVoted}
-        onClick={(ev) => {
-          ev.stopPropagation();
-          ev.preventDefault();
-          setIsVoted(!isVoted);
-        }}
-      >
+      <ConfettiButton pressed={isVoted} setIsVoted={() => setIsVoted(!isVoted)}>
         <ChevronUp size={24} />
         <p className="text-md">{votedCountToShow}</p>
-      </Toggle>
+      </ConfettiButton>
     </button>
   );
 };

@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronUp, HeartHandshake, Inbox } from 'lucide-react';
+import { ChevronUp, Inbox } from 'lucide-react';
 
 import {
   Button,
@@ -50,6 +50,7 @@ import Loading from '@/app/loading';
 import { useOptimistic } from '@/utils/useOptimistic';
 import { CommentType } from '@/types/comment';
 import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+import HoverCardUser from '@/components/org/hover-card-user';
 
 export interface IPropsIdeaPage {
   params: {
@@ -228,8 +229,8 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       {idea.author.name}
                     </UserProfileLinkComponent>
                   </Button>
-                  <HoverCard>
-                    <HoverCardTrigger className="sm:flex hidden">
+                  <HoverCardUser
+                    trigger={
                       <Button variant="link">
                         <UserProfileLinkComponent
                           userId={idea.authorId}
@@ -249,30 +250,14 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                           {idea.author.name}
                         </UserProfileLinkComponent>
                       </Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-fit">
-                      <div className="flex items-center gap-2">
-                        <Avatar size="xl">
-                          <AvatarImage
-                            src={idea?.author.image_url ?? undefined}
-                            alt={idea?.author.name ?? undefined}
-                          />
-                          <AvatarFallback className="capitalize">
-                            {idea.author.name ? idea.author.name[0] : undefined}
-                          </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col gap-0.5">
-                          <p className="font-semibold text-md text">
-                            {idea.author.name}
-                          </p>
-                          <div className="flex justify-start items-center gap-1 text-description text-sm">
-                            <HeartHandshake className="size-[14px]" />
-                            <p>7 Karmas</p>
-                          </div>
-                        </div>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
+                    }
+                    imageSrc={idea?.author.image_url ?? undefined}
+                    imageAlt={idea?.author.name ?? undefined}
+                    imageFallback={
+                      idea.author.name ? idea.author.name[0] : undefined
+                    }
+                    author={idea.author.name}
+                  />
                 </div>
                 <div className="flex sm:flex-row flex-col items-start sm:items-center gap-1 sm:gap-4 w-full sm:h-9">
                   <p className="px-3 sm:px-0 min-w-20 text-description text-md">

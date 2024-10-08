@@ -65,11 +65,7 @@ const WorkspaceInputField = () => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Input
-                  placeholder="Your workspace name"
-                  {...field}
-                  className="w-full"
-                />
+                <Input placeholder="workspace" {...field} className="w-full" />
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -10,7 +10,7 @@ const Signup = async () => {
           Welcome to <span className="brand-gradient">Feely</span>
         </h1>
         <p className="w-full text-description text-left text-md sm:text-center">
-          Let&apos;s start by seting up your company.
+          Let&apos;s start by seting up your workspace.
         </p>
       </div>
       <WorkspaceInputField />

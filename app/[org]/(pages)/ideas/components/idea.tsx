@@ -2,17 +2,9 @@
 
 import React, { useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import { ChevronUp, MessageSquare, HeartHandshake, Dot } from 'lucide-react';
+import { ChevronUp, MessageSquare, Dot } from 'lucide-react';
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-  Toggle,
-} from '@fucina/ui';
+import { Avatar, AvatarFallback, AvatarImage } from '@fucina/ui';
 import { useVoteIdea } from '@/app/api/controllers/ideaController';
 import { StatusTagIdea } from '@/utils/parseStatus';
 import { IdeaType } from '@/types/idea';
@@ -20,6 +12,8 @@ import { useOptimistic } from '@/utils/useOptimistic';
 import { useAuth } from '@/context/authContext';
 import { cn, focusRing } from '@fucina/utils';
 import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+import HoverCardUser from '@/components/org/hover-card-user';
+import { ConfettiButton } from '@/components/confetti';
 
 interface IProps {
   idea: IdeaType;
@@ -93,46 +87,27 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
               >
                 by{' '}
                 <UserProfileLinkComponent
-                  className={cn(
-                    'flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4',
-                    focusRing
-                  )}
+                  className="flex sm:hidden text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
                   userId={idea.authorId}
                 >
                   {idea.author.name}
                 </UserProfileLinkComponent>
-                <HoverCard>
-                  <HoverCardTrigger className="sm:flex hidden">
+                <HoverCardUser
+                  trigger={
                     <UserProfileLinkComponent
                       className="text-brand text-sm-medium hover:text-brand-hover active:text-brand-active underline underline-offset-4"
                       userId={idea.authorId}
                     >
                       {idea.author.name}
                     </UserProfileLinkComponent>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-fit">
-                    <div className="flex items-center gap-2">
-                      <Avatar size="xl">
-                        <AvatarImage
-                          src={idea?.author.image_url ?? undefined}
-                          alt={idea?.author.name ?? undefined}
-                        />
-                        <AvatarFallback className="capitalize">
-                          {idea.author.name ? idea.author.name[0] : undefined}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col gap-0.5">
-                        <p className="font-semibold text-md text">
-                          {idea.author.name}
-                        </p>
-                        <div className="flex justify-start items-center gap-1 text-description text-sm">
-                          <HeartHandshake className="size-[14px]" />
-                          <p>7 Karmas</p>
-                        </div>
-                      </div>
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
+                  }
+                  imageSrc={idea?.author.image_url ?? undefined}
+                  imageAlt={idea?.author.name ?? undefined}
+                  imageFallback={
+                    idea.author.name ? idea.author.name[0] : undefined
+                  }
+                  author={idea.author.name}
+                />
               </p>
               <Dot className="sm:flex hidden" />
             </>
@@ -148,19 +123,10 @@ const IdeaCard = ({ profile, idea, org }: IProps) => {
           </p>
         </div>
       </div>
-      <Toggle
-        aria-label="vote"
-        className="flex flex-col justify-items-center items-center gap-0 space-y-0 p-1 w-11 h-14"
-        pressed={isVoted}
-        onClick={(ev) => {
-          ev.stopPropagation();
-          ev.preventDefault();
-          setIsVoted(!isVoted);
-        }}
-      >
+      <ConfettiButton pressed={isVoted} setIsVoted={() => setIsVoted(!isVoted)}>
         <ChevronUp size={24} />
         <p className="text-md">{votedCountToShow}</p>
-      </Toggle>
+      </ConfettiButton>
     </button>
   );
 };
