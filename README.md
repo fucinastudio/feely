@@ -7,6 +7,7 @@
 <p align="center">
     User feedbacks get real by being rewarded
     <br />
+    <br />
     <a href="https://feely.so"><strong>Learn more »</strong></a>
 </p>
 
@@ -15,9 +16,7 @@
 ## Introduction
 
 Feely is a spot where user thoughts become a treasure.
-
 More than giving users a voice: it's encouraging them to listen to each other, through conversations and rewarding.
-
 The result? A product actually built for your people. And they will feel part of it.
 
 ## Features

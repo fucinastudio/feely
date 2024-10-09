@@ -13,7 +13,7 @@
     "vercel-build": "prisma generate && prisma migrate deploy && next build"
   },
   "dependencies": {
-    "@fucina/tailwind": "^0.0.5",
+    "@fucina/tailwind": "0.0.7",
     "@fucina/ui": "0.0.16",
     "@fucina/utils": "^0.0.5",
     "@prisma/client": "^5.18.0",
