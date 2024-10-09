@@ -1,3 +1,5 @@
+import { Analytics } from '@vercel/analytics/react';
+
 import { ToastProvider } from '@fucina/ui';
 import { ThemeProvider } from '@/components/theme-provider';
 import ReactQueryProvider from '@/context/queryClient';
@@ -27,6 +29,7 @@ export default function RootLayout({
           </ThemeProvider>
         </ReactQueryProvider>
         <ToastProvider />
+        <Analytics />
       </body>
     </html>
   );
