@@ -37,4 +37,4 @@ The result? A product actually built for your people. And they will feel part of
 
 ## License
 
-Inspired by [Plausible](https://plausible.io/), Feely is open-source under the GNU Affero General Public License Version 3 (AGPLv3) or any later version. You can [find it here](https://github.com/fucinastudio/feely/blob/main/LICENSE.md).
+Inspired by [Plausible](https://plausible.io/), Feely is open-source under the GNU Affero General Public License Version 3 (AGPLv3) or any later version. You can [find it here](https://github.com/fucinastudio/feely/blob/main/LICENCE.md).
