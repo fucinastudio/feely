@@ -76,6 +76,7 @@ model userInWorkspaceAwards {
   workspaceId     String
   userInWorkspace userInWorkspace @relation(fields: [userId, workspaceId], references: [userId, workspaceId])
   awardType       AwardType
+  position        Int
   awardedAt       DateTime        @default(now())
 }
 

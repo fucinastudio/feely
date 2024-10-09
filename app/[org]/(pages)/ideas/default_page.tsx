@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
+import React from "react";
+import Link from "next/link";
 
-import { Button, Card, Separator } from '@fucina/ui';
-import { useGetIdeasByWorkspaceName } from '@/app/api/controllers/ideaController';
-import IdeaCard from '@/app/[org]/(pages)/ideas/components/idea';
-import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/loading';
-import useMainPageFilters from '@/components/filters/filters';
-import FiltersComponentObject from '@/components/filters/filtersComponent';
-import IdeasEmpty from '@/components/org/ideas-empty';
+import { Button, Card, Separator } from "@fucina/ui";
+import { useGetIdeasByWorkspaceName } from "@/app/api/controllers/ideaController";
+import IdeaCard from "@/app/[org]/(pages)/ideas/components/idea";
+import { useWorkspace } from "@/context/workspaceContext";
+import Loading from "@/app/loading";
+import useMainPageFilters from "@/components/filters/filters";
+import FiltersComponentObject from "@/components/filters/filtersComponent";
+import IdeasEmpty from "@/components/org/ideas-empty";
 
 const Ideas = () => {
   const { org, workspace, statuses, topics } = useWorkspace();
