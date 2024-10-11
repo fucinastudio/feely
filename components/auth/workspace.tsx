@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import React from "react";
+import { useRouter } from "next/navigation";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 
-import { useCheckWorkspaceExistance } from '@/app/api/controllers/workspaceController';
+import { useCheckWorkspaceExistance } from "@/app/api/controllers/workspaceController";
 import {
   Button,
   Input,
@@ -15,7 +15,7 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@fucina/ui';
+} from "@fucina/ui";
 
 const WorkspaceInputField = () => {
   const { mutateAsync: checkWorkspaceExistanceAsync } =
@@ -25,24 +25,23 @@ const WorkspaceInputField = () => {
     workspaceName: z
       .string()
       .min(2, {
-        message: 'The name of the workspace must be at least 2 characters.',
+        message: "The name of the workspace must be at least 2 characters.",
       })
       .regex(/^[a-zA-Z0-9-_]+$/, {
         message:
-          'Invalid input: only alphanumeric characters, hyphens, and underscores are allowed.',
+          "Invalid input: only alphanumeric characters, hyphens, and underscores are allowed.",
       })
       .refine(async (value) => {
         if (!value) return;
         const checkSimilar = await checkWorkspaceExistanceAsync(value);
-        console.log('Chec', checkSimilar);
         return !checkSimilar.data.exists;
-      }, 'This workspace name is already taken.'),
+      }, "This workspace name is already taken."),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      workspaceName: '',
+      workspaceName: "",
     },
   });
 

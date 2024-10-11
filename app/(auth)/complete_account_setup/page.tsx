@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
-import { Button, Separator, Card } from '@fucina/ui';
-import { useCreateWorkspace } from '@/app/api/controllers/workspaceController';
+import { Button, Separator, Card, toast } from "@fucina/ui";
+import { useCreateWorkspace } from "@/app/api/controllers/workspaceController";
 
 const CompleteAccountSetup = () => {
   const searchParams = useSearchParams();
-  const workspace = searchParams?.get('workspace');
+  const workspace = searchParams?.get("workspace");
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const { mutateAsync: createWorkspaceFunction } = useCreateWorkspace();
@@ -19,14 +19,16 @@ const CompleteAccountSetup = () => {
   const handleCreateWorkspace = async (workspace: string) => {
     try {
       const res = await createWorkspaceFunction(workspace);
-      console.log('Res', res);
+
       if (!res.data.name) {
         setError(res.data.message ?? null);
       } else {
         router.push(`/${res.data.name}`);
       }
     } catch (e: any) {
-      console.log('Error', e);
+      toast.error(e.response.data.message);
+
+      console.log("Error", e);
     }
   };
 
