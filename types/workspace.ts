@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
 export type IWorkspaceSelectionObject = {
   include: {
@@ -17,4 +17,7 @@ export type WorkspaceTypeWithWorkspaceSettings = Prisma.workspaceGetPayload<{
 }>;
 
 export type WorkspaceTypeWithImageAndSettings =
-  WorkspaceTypeWithWorkspaceSettings & { imageUrl: string };
+  WorkspaceTypeWithWorkspaceSettings & {
+    imageUrl: string;
+    isPro?: boolean | null;
+  };

@@ -22,7 +22,8 @@ export const checkWorkspaceExistanceServer = async (workspaceName: string) => {
 
 export const getWorkspaceByName = async (
   workspaceName: string,
-  retrieveImage = false
+  retrieveImage = false,
+  checkIfPro = false
 ) => {
   const res = await prisma.workspace.findFirst({
     where: {
@@ -32,13 +33,26 @@ export const getWorkspaceByName = async (
       workspaceSettings: true,
     },
   });
+  let workspaceSubscription = null;
+  if (checkIfPro) {
+    workspaceSubscription = await prisma.subscription.findFirst({
+      where: {
+        workspace_id: res?.id,
+        status: "active",
+      },
+    });
+  }
   if (res) {
     if (retrieveImage) {
       const supabase = createClient();
       const image = supabase.storage.from("images").getPublicUrl(res?.id);
-      return { ...res, imageUrl: image.data.publicUrl };
+      return {
+        ...res,
+        imageUrl: image.data.publicUrl,
+        isPro: !!workspaceSubscription,
+      };
     }
-    return res;
+    return { ...res, isPro: !!workspaceSubscription };
   }
   return null;
 };

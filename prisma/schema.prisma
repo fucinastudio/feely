@@ -35,6 +35,8 @@ model workspace {
   owner             users              @relation(fields: [ownerId], references: [id])
   workspaceSettings workspaceSettings?
   userInWorkspace   userInWorkspace[]
+  customer          customer?
+  subscription      subscription[]
 }
 
 model workspaceSettings {
@@ -151,4 +153,77 @@ model votedComment {
   created_at DateTime @default(now())
 
   @@id([commentId, userId])
+}
+
+model customer {
+  workspace_id       String    @id @default(uuid())
+  stripe_customer_id String
+  workspace          workspace @relation(fields: [workspace_id], references: [id])
+}
+
+model product {
+  id          String  @id @default(uuid())
+  active      Boolean @default(true)
+  name        String
+  description String?
+  image       String?
+  metadata    Json
+}
+
+enum PricingType {
+  one_time
+  recurring
+}
+
+enum PricingPlanInterval {
+  day
+  week
+  month
+  year
+}
+
+model price {
+  id                String               @id @default(uuid())
+  active            Boolean              @default(true)
+  product_id        String
+  description       String
+  unit_amount       Int?
+  currency          String
+  type              PricingType
+  interval          PricingPlanInterval?
+  interval_count    Int?
+  trial_period_days Int
+  metadata          Json?
+  subscription      subscription[]
+}
+
+enum subscription_status {
+  trialing
+  active
+  canceled
+  incomplete
+  incomplete_expired
+  past_due
+  unpaid
+  paused
+}
+
+model subscription {
+  id                   String              @id @default(uuid())
+  workspace_id         String
+  status               subscription_status
+  metadata             Json
+  price_id             String
+  quantity             Int
+  cancel_at_period_end Boolean
+  created              DateTime            @default(now())
+  current_period_start DateTime            @default(now())
+  current_period_end   DateTime            @default(now())
+  ended_at             DateTime?
+  cancel_at            DateTime?
+  canceled_at          DateTime?
+  trial_start          DateTime?
+  trial_end            DateTime?
+  workspace            workspace           @relation(fields: [workspace_id], references: [id])
+  price                price               @relation(fields: [price_id], references: [id])
 }
