@@ -112,7 +112,7 @@ const Ideas = () => {
         </>
       ) : (
         prices.map((price) => (
-          <Button onClick={() => handleClick(price)}>
+          <Button onClick={() => handleClick(price)} key={price.id}>
             {price.id} {price.unit_amount}
           </Button>
         ))

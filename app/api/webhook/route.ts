@@ -21,12 +21,6 @@ const relevantEvents = new Set([
   "customer.subscription.deleted",
 ]);
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
-
 export async function POST(req: Request) {
   const body = await req.text();
   const sig = req.headers.get("stripe-signature") as string;
