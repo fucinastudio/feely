@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React, { FormEvent, useEffect } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import React, { FormEvent, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import {
   Button,
@@ -14,15 +14,15 @@ import {
   FormField,
   FormItem,
   FormLabel,
-} from '@fucina/ui';
-import AvatarPickerProfile from '@/app/[org]/(pages)/account/settings/profile/components/avatarPickerProfile';
-import { useAuth } from '@/context/authContext';
-import { usePatchUser } from '@/app/api/controllers/userController';
-import Loading from '@/app/loading';
+} from "@fucina/ui";
+import AvatarPickerProfile from "@/app/[org]/(pages)/account/settings/profile/components/avatarPickerProfile";
+import { useAuth } from "@/context/authContext";
+import { usePatchUser } from "@/app/api/controllers/userController";
+import Loading from "@/app/loading";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
-    message: 'Name must be at least 2 characters.',
+    message: "Name must be at least 2 characters.",
   }),
 });
 
@@ -31,14 +31,14 @@ function SettingsProfile() {
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      name: user?.name ?? '',
+      name: user?.name ?? "",
       // email: "",
     },
   });
 
   useEffect(() => {
     form.reset({
-      name: user?.name ?? '',
+      name: user?.name ?? "",
     });
   }, [user]);
 
@@ -52,7 +52,7 @@ function SettingsProfile() {
         if (!user?.id) return;
         const response = await patchUserAsync({
           id: user.id,
-          name: form.getValues('name'),
+          name: form.getValues("name"),
         });
       } catch (error) {
         console.error(error);
@@ -105,7 +105,8 @@ function SettingsProfile() {
           </form>
         </Form>
       </div>
-      <div className="border-danger bg-card border rounded-lg w-full overflow-hidden">
+      {/*To be implemented */}
+      {/* <div className="border-danger bg-card border rounded-lg w-full overflow-hidden">
         <div className="p-5 md:p-6 border-b border-b-danger">
           <h2 className="text-heading-subsection">Delete Account</h2>
           <p className="text-description text-md">
@@ -117,7 +118,7 @@ function SettingsProfile() {
         <div className="flex justify-end items-center bg-danger-subtlest px-5 md:px-6 py-4 w-full">
           <Button variant="danger">Delete account</Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
