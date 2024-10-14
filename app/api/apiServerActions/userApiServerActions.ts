@@ -54,15 +54,37 @@ export const getUser = async ({
   }
   let isAdmin = false;
   if (current_org) {
-    const userWorkspace = await prisma.workspace.findFirst({
+    const workspaceId = await prisma.workspace.findFirst({
       where: {
         name: check_option === "name" ? current_org : undefined,
         id: check_option === "id" ? current_org : undefined,
-        ownerId: user.id,
+      },
+      select: {
+        id: true,
       },
     });
-    if (userWorkspace) {
-      isAdmin = userWorkspace.ownerId === user.id;
+    if (workspaceId?.id) {
+      const userWorkspace = await prisma.workspace.findFirst({
+        where: {
+          id: workspaceId.id,
+          OR: [
+            {
+              ownerId: user.id,
+            },
+            {
+              workspaceAdmin: {
+                some: {
+                  workspaceId: workspaceId.id,
+                  userId: user.id,
+                },
+              },
+            },
+          ],
+        },
+      });
+      if (userWorkspace) {
+        isAdmin = true;
+      }
     }
   }
   return {

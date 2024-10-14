@@ -20,6 +20,7 @@ model users {
   voted           votedIdea[]
   workspaces      workspace[]
   userInWorkspace userInWorkspace[]
+  workspaceAdmin  workspaceAdmin[]
 }
 
 model workspace {
@@ -37,6 +38,16 @@ model workspace {
   userInWorkspace   userInWorkspace[]
   customer          customer?
   subscription      subscription[]
+  workspaceAdmin    workspaceAdmin[]
+}
+
+model workspaceAdmin {
+  userId      String
+  workspaceId String
+  user        users     @relation(fields: [userId], references: [id])
+  workspace   workspace @relation(fields: [workspaceId], references: [id])
+
+  @@id([userId, workspaceId])
 }
 
 model workspaceSettings {
