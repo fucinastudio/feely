@@ -31,6 +31,17 @@ const SettingsNavbar = () => {
         variant="text"
         asChild
         className={`${
+          isActive('settings/members') ? 'text-brand' : ''
+        } w-full justify-start`}
+      >
+        <Link href={`/${org}/settings/members`} scroll={false}>
+          Members
+        </Link>
+      </Button>
+      <Button
+        variant="text"
+        asChild
+        className={`${
           isActive('settings/topics') ? 'text-brand' : ''
         } w-full justify-start`}
       >
@@ -56,9 +67,10 @@ const SettingsNavbar = () => {
           isActive('settings/site-navigation') ? 'text-brand' : ''
         } w-full justify-start`}
       >
-        <Link href={`/${org}/settings/site-navigation`} scroll={false}>
-          Site navigation
-        </Link>
+        <Link href={`/${org}/settings/site-navigation`}>Site navigation</Link>
+      </Button>
+      <Button variant="text" asChild className="justify-start w-full">
+        <Link href="#">Billing</Link>
       </Button>
     </div>
   );

@@ -16,6 +16,8 @@ import {
   Monitor,
   CircleFadingPlus,
   Map,
+  CheckCircle,
+  Clock,
 } from 'lucide-react';
 
 import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
@@ -51,6 +53,19 @@ import {
   DropdownMenuSubMenuContent,
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  Label,
+  Input,
+  DialogClose,
+  Tag,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@fucina/ui';
 import { cn, focusRing } from '@fucina/utils';
 import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
@@ -163,156 +178,264 @@ const Navbar = () => {
           )}
         </div>
         <div className="md:flex space-x-2 hidden">
-          <DropdownMenu>
-            <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
-              <Avatar size="lg" className="hover:cursor-pointer">
-                <AvatarImage
-                  src={user?.image_url ?? undefined}
-                  alt={user?.name ?? undefined}
-                />
-                <AvatarFallback className="capitalize">
-                  {user?.name?.[0]}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="pt-1 pb-0 h-7 !text">
-                {user?.name}
-              </DropdownMenuLabel>
-              <DropdownMenuLabel className="pt-0 pb-1 h-7 !font-normal text-md">
-                {user?.email}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <UserProfileLinkComponent userId={user?.id ?? null}>
-                  <DropdownMenuItem>
-                    <User />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                </UserProfileLinkComponent>
-                <Link href={`/${org}/account/settings/profile`} scroll={false}>
-                  <DropdownMenuItem>
-                    <Settings />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                </Link>
-                {/*
-                {isAdmin && (
+          {/* SOLO SE IL CURRENT WORKSPACE È FREE */}
+          <Dialog>
+            <DialogTrigger>
+              <Button variant="secondary">Upgrade plan</Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Do more with Feely</DialogTitle>
+                <DialogDescription>
+                  Upgrade to access advanced features designed for growing
+                  teams.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col items-start gap-3 pt-4">
+                <ToggleGroup
+                  defaultValue="month"
+                  type="single"
+                  className="w-full"
+                >
+                  <ToggleGroupItem
+                    value="month"
+                    aria-label="Pay monthly"
+                    className="w-full"
+                  >
+                    Pay monthly
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value="year"
+                    aria-label="Pay yearly"
+                    className="w-full"
+                  >
+                    Pay yearly
+                  </ToggleGroupItem>
+                </ToggleGroup>
+                <div className="flex flex-col gap-4 border-default p-5 border rounded w-full">
+                  <div className="flex justify-between items-center gap-2">
+                    <p className="text-brand text-heading-body uppercase">
+                      Pro plan
+                    </p>
+                    <div className="flex items-end gap-0.5">
+                      <p className="text-heading-section">25€</p>
+                      <span className="pb-0.5 text-description text-sm">
+                        /per month
+                      </span>
+                    </div>
+                  </div>
+                  <Separator />
+                  <div className="flex flex-col items-start gap-3 p-1">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="text-brand size-5" />
+                      <span>Remove Feely branding</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="text-brand size-5" />
+                      <span>Collaboration</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-description">
+                      <Clock className="size-5" />
+                      <span>More Pro features coming soon...</span>
+                    </div>
+                  </div>
+                  <Separator />
+                  <Button className="w-full">Upgrade to Pro</Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
+                <Avatar size="lg" className="hover:cursor-pointer">
+                  <AvatarImage
+                    src={user?.image_url ?? undefined}
+                    alt={user?.name ?? undefined}
+                  />
+                  <AvatarFallback className="capitalize">
+                    {user?.name?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="pt-1 pb-0 h-7 !text">
+                  {user?.name}
+                </DropdownMenuLabel>
+                <DropdownMenuLabel className="pt-0 pb-1 h-7 !font-normal text-md">
+                  {user?.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <UserProfileLinkComponent userId={user?.id ?? null}>
+                    <DropdownMenuItem>
+                      <User />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                  </UserProfileLinkComponent>
+                  <Link
+                    href={`/${org}/account/settings/profile`}
+                    scroll={false}
+                  >
+                    <DropdownMenuItem>
+                      <Settings />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  {isAdmin && (
+                    <DropdownMenuSubMenu>
+                      <DropdownMenuSubMenuTrigger>
+                        <Grip />
+                        <span>Workspaces</span>
+                      </DropdownMenuSubMenuTrigger>
+                      <DropdownMenuSubMenuContent className="w-64">
+                        <DropdownMenuRadioGroup value="fucina">
+                          <DropdownMenuRadioItem value="fucina">
+                            <Avatar size="sm">
+                              <AvatarImage
+                                src={workspace?.imageUrl ?? undefined}
+                                alt={workspace?.externalName ?? undefined}
+                              />
+                              <AvatarFallback className="capitalize">
+                                {workspace?.externalName?.[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex justify-between items-center gap-2 w-full">
+                              <span>Fucina</span>
+                              <Tag variant="brand">Pro</Tag>
+                            </div>
+                          </DropdownMenuRadioItem>
+                          <DropdownMenuRadioItem value="pedro">
+                            <Avatar size="sm">
+                              <AvatarImage
+                                src={workspace?.imageUrl ?? undefined}
+                                alt={workspace?.externalName ?? undefined}
+                              />
+                              <AvatarFallback className="capitalize">
+                                {workspace?.externalName?.[0]}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex justify-between items-center gap-2 w-full">
+                              <span>Pedro</span>
+                              <Tag>Free</Tag>
+                            </div>
+                          </DropdownMenuRadioItem>
+                        </DropdownMenuRadioGroup>
+                        <DropdownMenuSeparator />
+                        <DialogTrigger asChild>
+                          <DropdownMenuItem>
+                            <CirclePlus />
+                            <span>Create new Workspace</span>
+                          </DropdownMenuItem>
+                        </DialogTrigger>
+                      </DropdownMenuSubMenuContent>
+                    </DropdownMenuSubMenu>
+                  )}
                   <DropdownMenuSubMenu>
                     <DropdownMenuSubMenuTrigger>
-                      <Grip />
-                      <span>Workspaces</span>
+                      {theme === 'dark' ? (
+                        <>
+                          <Moon /> <span>Theme</span>
+                        </>
+                      ) : theme === 'light' ? (
+                        <>
+                          <Sun /> <span>Theme</span>
+                        </>
+                      ) : (
+                        <>
+                          <Monitor /> <span>Theme</span>
+                        </>
+                      )}
                     </DropdownMenuSubMenuTrigger>
-                    <DropdownMenuSubMenuContent className="w-64">
-                      <DropdownMenuRadioGroup value="fucina">
-                        <DropdownMenuRadioItem value="fucina">
-                          <Avatar size="sm">
-                            <AvatarImage
-                              src={workspace?.imageUrl ?? undefined}
-                              alt={workspace?.externalName ?? undefined}
-                            />
-                            <AvatarFallback className="capitalize">
-                              {workspace?.externalName?.[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>Fucina</span>
+                    <DropdownMenuSubMenuContent className="w-40">
+                      <DropdownMenuRadioGroup value={theme}>
+                        <DropdownMenuRadioItem
+                          value="light"
+                          onClick={() => setTheme('light')}
+                        >
+                          <Sun />
+                          <span>Light</span>
                         </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="pedro">
-                          <Avatar size="sm">
-                            <AvatarImage
-                              src={workspace?.imageUrl ?? undefined}
-                              alt={workspace?.externalName ?? undefined}
-                            />
-                            <AvatarFallback className="capitalize">
-                              {workspace?.externalName?.[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>Pedro</span>
+                        <DropdownMenuRadioItem
+                          value="dark"
+                          onClick={() => setTheme('dark')}
+                        >
+                          <Moon />
+                          <span>Dark</span>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="system"
+                          onClick={() => setTheme('system')}
+                        >
+                          <Monitor />
+                          <span>System</span>
                         </DropdownMenuRadioItem>
                       </DropdownMenuRadioGroup>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <CirclePlus />
-                        <span>Create new Workspace</span>
-                      </DropdownMenuItem>
                     </DropdownMenuSubMenuContent>
                   </DropdownMenuSubMenu>
-                )}
-                */}
-                <DropdownMenuSubMenu>
-                  <DropdownMenuSubMenuTrigger>
-                    {theme === 'dark' ? (
-                      <>
-                        <Moon /> <span>Theme</span>
-                      </>
-                    ) : theme === 'light' ? (
-                      <>
-                        <Sun /> <span>Theme</span>
-                      </>
-                    ) : (
-                      <>
-                        <Monitor /> <span>Theme</span>
-                      </>
-                    )}
-                  </DropdownMenuSubMenuTrigger>
-                  <DropdownMenuSubMenuContent className="w-40">
-                    <DropdownMenuRadioGroup value={theme}>
-                      <DropdownMenuRadioItem
-                        value="light"
-                        onClick={() => setTheme('light')}
-                      >
-                        <Sun />
-                        <span>Light</span>
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem
-                        value="dark"
-                        onClick={() => setTheme('dark')}
-                      >
-                        <Moon />
-                        <span>Dark</span>
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem
-                        value="system"
-                        onClick={() => setTheme('system')}
-                      >
-                        <Monitor />
-                        <span>System</span>
-                      </DropdownMenuRadioItem>
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuSubMenuContent>
-                </DropdownMenuSubMenu>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <Link href={'https://app.feely.so/feely/ideas'} target="_blank">
-                  <DropdownMenuItem>
-                    <CircleFadingPlus />
-                    <span>Feature requests</span>
-                  </DropdownMenuItem>
-                </Link>
-                <Link
-                  href={`https://app.feely.so/feely/roadmap`}
-                  target="_blank"
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <Link
+                    href={'https://app.feely.so/feely/ideas'}
+                    target="_blank"
+                  >
+                    <DropdownMenuItem>
+                      <CircleFadingPlus />
+                      <span>Feature requests</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link
+                    href={`https://app.feely.so/feely/roadmap`}
+                    target="_blank"
+                  >
+                    <DropdownMenuItem>
+                      <Map />
+                      <span>Roadmap</span>
+                    </DropdownMenuItem>
+                  </Link>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={async (e: any) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    await logoutUser();
+                  }}
                 >
-                  <DropdownMenuItem>
-                    <Map />
-                    <span>Roadmap</span>
-                  </DropdownMenuItem>
-                </Link>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={async (e: any) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  await logoutUser();
-                }}
-              >
-                <LogOut />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <LogOut />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogContent className="max-w-96">
+              <DialogHeader>
+                <DialogTitle>Create a new workspace</DialogTitle>
+                <DialogDescription>
+                  Continue to start collaborating on PRO
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col items-start gap-2 pt-6 pb-8">
+                <Label htmlFor="workspace" className="text-right">
+                  Workspace name
+                </Label>
+                <Input
+                  id="workspace"
+                  placeholder="your-workspace"
+                  className="col-span-3"
+                />
+                <p className="text-description text-sm">
+                  Continuing will start a monthly PRO plan subscription.
+                </p>
+              </div>
+              <DialogFooter>
+                <DialogClose asChild>
+                  <Button variant="secondary">Cancel</Button>
+                </DialogClose>
+                <Button type="submit">Confirm</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
         <div className="flex md:hidden">
           <Sheet>
