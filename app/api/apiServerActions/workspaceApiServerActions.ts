@@ -342,8 +342,15 @@ export const getWorkspaceByUser = async () => {
 
 export const terminatePeriodForWorkspaceAndGrantAwards = async (
   workspaceId: string,
-  period: AwardType
+  period: AwardType,
+  password: string
 ) => {
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return {
+      isSuccess: false,
+      error: "Unauthorized",
+    };
+  }
   const workspace = await prisma.workspace.findFirst({
     where: {
       id: workspaceId,
@@ -432,8 +439,15 @@ export const terminatePeriodForWorkspaceAndGrantAwards = async (
 
 //Function that can be used to terminate a period for all workspaces, calculating awards and resetting points
 export const terminatePeriodForAllWorkspacesAndGrantAwards = async (
-  period: AwardType
+  period: AwardType,
+  password: string
 ) => {
+  if (password !== process.env.ADMIN_PASSWORD) {
+    return {
+      isSuccess: false,
+      error: "Unauthorized",
+    };
+  }
   const workspaces = await prisma.workspace.findMany();
   if (!workspaces) {
     return {
@@ -442,7 +456,11 @@ export const terminatePeriodForAllWorkspacesAndGrantAwards = async (
     };
   }
   for (const workspace of workspaces) {
-    await terminatePeriodForWorkspaceAndGrantAwards(workspace.id, period);
+    await terminatePeriodForWorkspaceAndGrantAwards(
+      workspace.id,
+      period,
+      password
+    );
   }
   return {
     isSuccess: true,

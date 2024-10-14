@@ -194,7 +194,8 @@ function General() {
         </Form>
       </div>
 
-      <div className="border-danger bg-card border rounded-lg w-full overflow-hidden">
+      {/*To be implemented */}
+      {/* <div className="border-danger bg-card border rounded-lg w-full overflow-hidden">
         <div className="flex flex-col gap-1 p-5 md:p-6 border-b border-b-danger">
           <h2 className="text-heading-subsection">Delete Company</h2>
           <p className="text-description text-md">
@@ -206,7 +207,7 @@ function General() {
         <div className="flex justify-end items-center bg-danger-subtlest px-5 md:px-6 py-4 w-full">
           <Button variant="danger">Delete company</Button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
