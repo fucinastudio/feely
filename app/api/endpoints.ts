@@ -13,6 +13,9 @@ export const Endpoints = {
       user: "api/idea/workspace/user",
     },
   },
+  price: {
+    main: "api/price",
+  },
   status: {
     main: "api/status",
   },

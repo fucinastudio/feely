@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 
 import { Button, Card, Separator } from "@fucina/ui";
@@ -13,12 +13,11 @@ import FiltersComponentObject from "@/components/filters/filtersComponent";
 import IdeasEmpty from "@/components/org/ideas-empty";
 import { checkoutWithStripe, createStripePortal } from "@/utils/stripe/server";
 import { Prisma } from "@prisma/client";
-import { getPrices } from "@/app/api/apiServerActions/priceApiServerAction";
 import { getStripe } from "@/utils/stripe/client";
-import { useRouter } from "next/navigation";
+import { useGetPrices } from "@/app/api/controllers/priceController";
 
 const Ideas = () => {
-  const { org, workspace, statuses, topics } = useWorkspace();
+  const { org, workspace, statuses, topics, isProWorkspace } = useWorkspace();
 
   const {
     filterObjectAttributes,
@@ -41,16 +40,14 @@ const Ideas = () => {
     }
   );
 
-  const [prices, setPrices] = useState<Prisma.priceGetPayload<{}>[]>([]);
+  const { data: pricesFromDb } = useGetPrices();
 
-  useEffect(() => {
-    const handle = async () => {
-      const prices = await getPrices();
-      console.log("Prices", prices.data);
-      setPrices(prices.data ?? []);
-    };
-    handle();
-  }, []);
+  const prices = useMemo(() => {
+    if (!pricesFromDb) {
+      return [];
+    }
+    return pricesFromDb.data.prices;
+  }, [pricesFromDb]);
 
   const handleClick = async (price: Prisma.priceGetPayload<{}>) => {
     if (!workspace) {
@@ -83,16 +80,13 @@ const Ideas = () => {
     const stripe = await getStripe();
     stripe?.redirectToCheckout({ sessionId });
   };
-  const router = useRouter();
   const handleClickCustomerPortal = async () => {
     if (!workspace) return;
-    console.log("Customer portal");
     try {
       const url = await createStripePortal(
         workspace?.id,
         window.location.pathname
       );
-      console.log("Url", url);
       window.open(url, "_blank");
     } catch (error) {
       console.log("Error", error);
@@ -106,14 +100,15 @@ const Ideas = () => {
     <>
       {/*Filters */}
       <FiltersComponentObject {...filterObjectAttributes} />
-      {workspace.isPro ? (
+      {isProWorkspace ? (
         <>
           <Button onClick={handleClickCustomerPortal}>Customer portal</Button>
         </>
       ) : (
         prices.map((price) => (
           <Button onClick={() => handleClick(price)} key={price.id}>
-            {price.id} {price.unit_amount}
+            {price.product.name} {((price.unit_amount ?? 0) / 100).toFixed(2)}{" "}
+            {price.currency}/{price.interval}
           </Button>
         ))
       )}
