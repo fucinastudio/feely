@@ -16,8 +16,7 @@ import {
   Monitor,
   CircleFadingPlus,
   Map,
-  CheckCircle,
-  Clock,
+  CircleFadingArrowUp,
 } from 'lucide-react';
 
 import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
@@ -54,21 +53,15 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
   Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-  Label,
-  Input,
-  DialogClose,
   Tag,
-  ToggleGroup,
-  ToggleGroupItem,
 } from '@fucina/ui';
 import { cn, focusRing } from '@fucina/utils';
 import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+import UpgradePlan from '@/components/org/upgrade-plan';
+import {
+  NewWorkspaceContent,
+  NewWorkspaceTrigger,
+} from '@/components/org/new-workspace';
 
 const Navbar = () => {
   const { setTheme, theme } = useTheme();
@@ -179,72 +172,9 @@ const Navbar = () => {
         </div>
         <div className="md:flex space-x-2 hidden">
           {/* SOLO SE IL CURRENT WORKSPACE È FREE */}
-          <Dialog>
-            <DialogTrigger>
-              <Button variant="secondary">Upgrade plan</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Do more with Feely</DialogTitle>
-                <DialogDescription>
-                  Upgrade to access advanced features designed for growing
-                  teams.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex flex-col items-start gap-3 pt-4">
-                <ToggleGroup
-                  defaultValue="month"
-                  type="single"
-                  className="w-full"
-                >
-                  <ToggleGroupItem
-                    value="month"
-                    aria-label="Pay monthly"
-                    className="w-full"
-                  >
-                    Pay monthly
-                  </ToggleGroupItem>
-                  <ToggleGroupItem
-                    value="year"
-                    aria-label="Pay yearly"
-                    className="w-full"
-                  >
-                    Pay yearly
-                  </ToggleGroupItem>
-                </ToggleGroup>
-                <div className="flex flex-col gap-4 border-default p-5 border rounded w-full">
-                  <div className="flex justify-between items-center gap-2">
-                    <p className="text-brand text-heading-body uppercase">
-                      Pro plan
-                    </p>
-                    <div className="flex items-end gap-0.5">
-                      <p className="text-heading-section">25€</p>
-                      <span className="pb-0.5 text-description text-sm">
-                        /per month
-                      </span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex flex-col items-start gap-3 p-1">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="text-brand size-5" />
-                      <span>Remove Feely branding</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="text-brand size-5" />
-                      <span>Collaboration</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-description">
-                      <Clock className="size-5" />
-                      <span>More Pro features coming soon...</span>
-                    </div>
-                  </div>
-                  <Separator />
-                  <Button className="w-full">Upgrade to Pro</Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <UpgradePlan>
+            <Button variant="secondary">Upgrade plan</Button>
+          </UpgradePlan>
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
@@ -322,12 +252,12 @@ const Navbar = () => {
                           </DropdownMenuRadioItem>
                         </DropdownMenuRadioGroup>
                         <DropdownMenuSeparator />
-                        <DialogTrigger asChild>
+                        <NewWorkspaceTrigger>
                           <DropdownMenuItem>
                             <CirclePlus />
                             <span>Create new Workspace</span>
                           </DropdownMenuItem>
-                        </DialogTrigger>
+                        </NewWorkspaceTrigger>
                       </DropdownMenuSubMenuContent>
                     </DropdownMenuSubMenu>
                   )}
@@ -408,33 +338,7 @@ const Navbar = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <DialogContent className="max-w-96">
-              <DialogHeader>
-                <DialogTitle>Create a new workspace</DialogTitle>
-                <DialogDescription>
-                  Continue to start collaborating on PRO
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex flex-col items-start gap-2 pt-6 pb-8">
-                <Label htmlFor="workspace" className="text-right">
-                  Workspace name
-                </Label>
-                <Input
-                  id="workspace"
-                  placeholder="your-workspace"
-                  className="col-span-3"
-                />
-                <p className="text-description text-sm">
-                  Continuing will start a monthly PRO plan subscription.
-                </p>
-              </div>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button variant="secondary">Cancel</Button>
-                </DialogClose>
-                <Button type="submit">Confirm</Button>
-              </DialogFooter>
-            </DialogContent>
+            <NewWorkspaceContent />
           </Dialog>
         </div>
         <div className="flex md:hidden">
@@ -456,7 +360,7 @@ const Navbar = () => {
                     <Skeleton className="w-20 h-7" />
                   </div>
                 ) : (
-                  <NavigationMenu className="w-full">
+                  <NavigationMenu className="w-full [&>div]:w-full">
                     <NavigationMenuList
                       orientation="vertical"
                       className="w-full"
@@ -524,7 +428,7 @@ const Navbar = () => {
                   </NavigationMenu>
                 )}
                 <Separator orientation="horizontal" className="my-4" />
-                <NavigationMenu className="w-full">
+                <NavigationMenu className="w-full [&>div]:w-full">
                   <NavigationMenuList orientation="vertical" className="w-full">
                     <NavigationMenuItem className="w-full">
                       <UserProfileLinkComponent
@@ -555,10 +459,18 @@ const Navbar = () => {
                         </Link>
                       </SheetClose>
                     </NavigationMenuItem>
+                    <UpgradePlan>
+                      <NavigationMenuItem className="w-full">
+                        <NavigationMenuLink className="justify-start w-full">
+                          <CircleFadingArrowUp />
+                          Upgrade plan
+                        </NavigationMenuLink>
+                      </NavigationMenuItem>
+                    </UpgradePlan>
                   </NavigationMenuList>
                 </NavigationMenu>
                 <Separator orientation="horizontal" className="my-4" />
-                <NavigationMenu className="w-full">
+                <NavigationMenu className="w-full [&>div]:w-full">
                   <NavigationMenuList orientation="vertical" className="w-full">
                     <NavigationMenuItem className="w-full">
                       <Link href="https://app.feely.so/ideas" target="_blank">
@@ -579,7 +491,7 @@ const Navbar = () => {
                   </NavigationMenuList>
                 </NavigationMenu>
                 <Separator orientation="horizontal" className="my-4" />
-                <NavigationMenu className="w-full">
+                <NavigationMenu className="w-full [&>div]:w-full">
                   <NavigationMenuList orientation="vertical" className="w-full">
                     <NavigationMenuItem className="w-full">
                       <NavigationMenuLink

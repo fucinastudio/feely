@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@fucina/tailwind": "0.0.7",
-    "@fucina/ui": "0.0.16",
+    "@fucina/ui": "0.0.17",
     "@fucina/utils": "^0.0.5",
     "@prisma/client": "^5.18.0",
     "@react-three/drei": "^9.106.0",
