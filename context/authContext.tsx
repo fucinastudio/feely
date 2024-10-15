@@ -15,6 +15,7 @@ import { useWorkspace } from "@/context/workspaceContext";
 
 interface IAuthContext {
   isAdmin: boolean;
+  isOwner: boolean;
   user: UserType | null;
   isLoading: boolean;
 }
@@ -25,7 +26,7 @@ const AuthContext = createContext<IAuthContext | undefined>(undefined);
 AuthContext.displayName = "AuthContext";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { org, isLoadingWorkspace } = useWorkspace();
+  const { org, isLoadingWorkspace, workspace } = useWorkspace();
 
   const {
     data: user,
@@ -54,12 +55,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       : null;
   }, [user, randomNumber]);
-
   return (
     <AuthContext.Provider
       value={{
         isAdmin: user?.data.isAdmin ?? false,
         isLoading: isLoadingUser || isLoadingWorkspace,
+        isOwner: user?.data.user.id === workspace?.ownerId,
         user: userToExport,
       }}
     >

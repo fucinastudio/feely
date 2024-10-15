@@ -96,6 +96,68 @@ export const getUser = async ({
   };
 };
 
+export const isUserOwner = async ({
+  check_option = "name",
+  current_org,
+  access_token,
+}: IGetUserDTO & IAccessToken) => {
+  const supabase = createClient();
+  const currentUser = await supabase.auth.getUser(access_token);
+  if (!currentUser.data.user) {
+    return {
+      isSuccess: false,
+      error: "Session not found",
+    };
+  }
+  const user = await prisma.users.findFirst({
+    where: {
+      id: currentUser.data.user.id,
+    },
+    select: {
+      id: true,
+      email: true,
+      image_url: true,
+      name: true,
+    },
+  });
+  if (!user) {
+    return {
+      isSuccess: false,
+      error: "User not found",
+    };
+  }
+  let isOwner = false;
+  if (current_org) {
+    const workspaceId = await prisma.workspace.findFirst({
+      where: {
+        name: check_option === "name" ? current_org : undefined,
+        id: check_option === "id" ? current_org : undefined,
+      },
+      select: {
+        id: true,
+      },
+    });
+    if (workspaceId?.id) {
+      const userWorkspace = await prisma.workspace.findFirst({
+        where: {
+          id: workspaceId.id,
+          ownerId: user.id,
+        },
+      });
+      if (userWorkspace) {
+        isOwner = true;
+      }
+    }
+  }
+  return {
+    isSuccess: true,
+    data: {
+      user,
+      isOwner,
+    },
+  };
+};
+
 export interface IGetUserByIdDTO {
   workspaceId: string;
   userId: string;
@@ -155,6 +217,19 @@ export const isAdmin = async (body: IGetUserDTO & IAccessToken) => {
     return {
       isSuccess: false,
       error: "User is not an admin",
+    };
+  }
+  return {
+    isSuccess: true,
+  };
+};
+
+export const isOwner = async (body: IGetUserDTO & IAccessToken) => {
+  const user = await isUserOwner(body);
+  if (!user.data?.isOwner) {
+    return {
+      isSuccess: false,
+      error: "User is not an owner",
     };
   }
   return {

@@ -1,7 +1,10 @@
 "use server";
 
 import { IAccessToken } from "@/app/api/apiClient";
-import { isAdmin } from "@/app/api/apiServerActions/userApiServerActions";
+import {
+  isAdmin,
+  isOwner,
+} from "@/app/api/apiServerActions/userApiServerActions";
 import { IPatchWorkspace } from "@/app/api/controllers/workspaceController";
 import { createClient } from "@/utils/supabase/server";
 import prisma from "@/prisma/client";
@@ -269,7 +272,6 @@ export const uploadImageForWorkspace = async ({
   workspaceId: string;
   workspaceFile: File;
 } & IAccessToken) => {
-  console.log("Caled");
   const supabase = createClient();
   const currentUser = await supabase.auth.getUser(access_token);
   if (!currentUser.data.user) {
@@ -351,6 +353,175 @@ export const getWorkspaceByUser = async () => {
   return {
     isSuccess: true,
     workspace: workspace,
+  };
+};
+
+export const getWorkspaceAdmins = async ({
+  workspaceId,
+  access_token,
+}: { workspaceId: string } & IAccessToken) => {
+  const supabase = createClient();
+  const currentUser = await supabase.auth.getUser(access_token);
+  if (!currentUser.data.user) {
+    return {
+      isSuccess: false,
+      error: "Session not found",
+    };
+  }
+  const user = await prisma.users.findFirst({
+    where: {
+      id: currentUser.data.user.id,
+    },
+  });
+  if (!user) {
+    return {
+      isSuccess: false,
+      error: "User not found",
+    };
+  }
+  const isAdminResult = await isAdmin({
+    access_token,
+    check_option: "id",
+    current_org: workspaceId,
+  });
+  if (!isAdminResult.isSuccess) {
+    return {
+      isSuccess: false,
+      error: "Unauthorized",
+    };
+  }
+  const workspace = await prisma.workspace.findFirst({
+    where: {
+      id: workspaceId,
+    },
+    include: {
+      owner: true,
+    },
+  });
+  if (!workspace) {
+    return {
+      isSuccess: false,
+      error: "Workspace not found",
+    };
+  }
+  const admins = await prisma.workspaceAdmin.findMany({
+    where: {
+      workspaceId,
+    },
+    include: {
+      user: true,
+    },
+  });
+  return {
+    isSuccess: true,
+    data: [...admins.map((admin) => admin.user), workspace.owner],
+  };
+};
+
+export const deleteWorkspaceAdmin = async ({
+  workspaceId,
+  userId,
+  access_token,
+}: {
+  workspaceId: string;
+  userId: string;
+} & IAccessToken) => {
+  const supabase = createClient();
+  const currentUser = await supabase.auth.getUser(access_token);
+  if (!currentUser.data.user) {
+    return {
+      isSuccess: false,
+      error: "Session not found",
+    };
+  }
+  const user = await prisma.users.findFirst({
+    where: {
+      id: currentUser.data.user.id,
+    },
+  });
+  if (!user) {
+    return {
+      isSuccess: false,
+      error: "User not found",
+    };
+  }
+  const isOwnerResult = await isOwner({
+    access_token,
+    check_option: "id",
+    current_org: workspaceId,
+  });
+  if (!isOwnerResult.isSuccess) {
+    return {
+      isSuccess: false,
+      error: "Unauthorized",
+    };
+  }
+  await prisma.workspaceAdmin.deleteMany({
+    where: {
+      workspaceId,
+      userId,
+    },
+  });
+  return {
+    isSuccess: true,
+  };
+};
+
+export const addWorkspaceAdmins = async ({
+  workspaceId,
+  emails,
+  access_token,
+}: {
+  workspaceId: string;
+  emails: string[];
+} & IAccessToken) => {
+  const supabase = createClient();
+  const currentUser = await supabase.auth.getUser(access_token);
+  if (!currentUser.data.user) {
+    return {
+      isSuccess: false,
+      error: "Session not found",
+    };
+  }
+  const user = await prisma.users.findFirst({
+    where: {
+      id: currentUser.data.user.id,
+    },
+  });
+  if (!user) {
+    return {
+      isSuccess: false,
+      error: "User not found",
+    };
+  }
+  const isOwnerResult = await isOwner({
+    access_token,
+    check_option: "id",
+    current_org: workspaceId,
+  });
+  if (!isOwnerResult.isSuccess) {
+    return {
+      isSuccess: false,
+      error: "Unauthorized",
+    };
+  }
+  const users = await prisma.users.findMany({
+    where: {
+      email: {
+        in: emails,
+      },
+    },
+  });
+  const workspaceAdminCreated = await prisma.workspaceAdmin.createMany({
+    data: users.map((user) => ({
+      userId: user.id,
+      workspaceId,
+    })),
+    skipDuplicates: true,
+  });
+  return {
+    isSuccess: true,
+    count: workspaceAdminCreated.count,
   };
 };
 
