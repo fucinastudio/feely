@@ -4,7 +4,6 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Ellipsis } from 'lucide-react';
 
 import {
   Button,
@@ -19,26 +18,8 @@ import {
   FormField,
   Label,
   Input,
-  Table,
-  TableHeader,
-  TableRow,
-  TableHead,
-  TableBody,
-  TableCell,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuItem,
-  DropdownMenuContent,
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
 } from '@fucina/ui';
+import MemberTable from '@/components/org/member-table';
 
 const Members = () => {
   const FormSchema = z.object({
@@ -65,8 +46,8 @@ const Members = () => {
             }}
             className="space-y-8"
           >
-            <div className="flex flex-col gap-4 p-5 md:p-6 w-full">
-              <div className="flex flex-row gap-4 w-full">
+            <div className="flex flex-col gap-8 sm:gap-6 px-4 md:px-6 py-10 md:py-6 w-full">
+              <div className="flex sm:flex-row flex-col gap-4 border-default pb-8 sm:pb-0 border-b sm:border-b-0 w-full">
                 <FormField
                   control={form.control}
                   name="form"
@@ -118,7 +99,7 @@ const Members = () => {
                   )}
                 />
               </div>
-              <div className="flex flex-row gap-4 w-full">
+              <div className="flex sm:flex-row flex-col gap-4 border-default pb-8 sm:pb-0 border-b sm:border-b-0 w-full">
                 <FormField
                   control={form.control}
                   name="form"
@@ -170,63 +151,16 @@ const Members = () => {
                   )}
                 />
               </div>
-              <div className="flex justify-between items-center gap-2 pt-4 w-full">
+              <div className="flex justify-between items-center gap-2 sm:pt-4 w-full">
                 <Button variant="secondary">Add more</Button>
                 <Button>Invite</Button>
               </div>
             </div>
-            <div className="flex justify-end items-center border-default p-5 md:p-6 border-t w-full">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>User</TableHead>
-                    <TableHead>Mail</TableHead>
-                    <TableHead className="w-40">Role</TableHead>
-                    <TableHead></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  <TableRow key="key">
-                    <TableCell className="font-medium">
-                      Federico Kratter Thaler
-                    </TableCell>
-                    <TableCell>kkratterf@gmail.com</TableCell>
-                    <TableCell>Owner</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <Button variant="text" icon>
-                            <Ellipsis />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem>Delete user</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                  <TableRow key="key">
-                    <TableCell className="font-medium">-</TableCell>
-                    <TableCell>r.cornacchiari@gmail.com</TableCell>
-                    <TableCell>Admin</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <Button variant="text" icon>
-                            <Ellipsis />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem>Delete user</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              </Table>
-            </div>
           </form>
         </Form>
+        <div className="flex justify-start items-center border-default p-5 md:p-6 border-t w-full overflow-auto">
+          <MemberTable />
+        </div>
       </div>
     </div>
   );

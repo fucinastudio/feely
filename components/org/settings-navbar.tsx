@@ -5,7 +5,12 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 import { useWorkspace } from '@/context/workspaceContext';
-import { Button } from '@fucina/ui';
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+} from '@fucina/ui';
 
 const SettingsNavbar = () => {
   const { org } = useWorkspace();
@@ -15,64 +20,66 @@ const SettingsNavbar = () => {
   };
 
   return (
-    <div className="flex flex-col gap-1 md:gap-1 my-0 md:my-2 w-full md:w-56 min-w-56">
-      <Button
-        variant="text"
-        asChild
-        className={`${
-          isActive('settings/general') ? 'text-brand' : ''
-        } w-full justify-start`}
+    <NavigationMenu className="justify-start my-0 md:my-2 w-full md:w-56 min-w-56 [&>div]:w-full">
+      <NavigationMenuList
+        orientation="vertical"
+        className="gap-0 sm:gap-1 w-full"
       >
-        <Link href={`/${org}/settings/general`} scroll={false}>
-          General
-        </Link>
-      </Button>
-      <Button
-        variant="text"
-        asChild
-        className={`${
-          isActive('settings/members') ? 'text-brand' : ''
-        } w-full justify-start`}
-      >
-        <Link href={`/${org}/settings/members`} scroll={false}>
-          Members
-        </Link>
-      </Button>
-      <Button
-        variant="text"
-        asChild
-        className={`${
-          isActive('settings/topics') ? 'text-brand' : ''
-        } w-full justify-start`}
-      >
-        <Link href={`/${org}/settings/topics`} scroll={false}>
-          Topics
-        </Link>
-      </Button>
-      <Button
-        variant="text"
-        asChild
-        className={`${
-          isActive('settings/theme') ? 'text-brand' : ''
-        } w-full justify-start`}
-      >
-        <Link href={`/${org}/settings/theme`} scroll={false}>
-          Theme
-        </Link>
-      </Button>
-      <Button
-        variant="text"
-        asChild
-        className={`${
-          isActive('settings/site-navigation') ? 'text-brand' : ''
-        } w-full justify-start`}
-      >
-        <Link href={`/${org}/settings/site-navigation`}>Site navigation</Link>
-      </Button>
-      <Button variant="text" asChild className="justify-start w-full">
-        <Link href="#">Billing</Link>
-      </Button>
-    </div>
+        <NavigationMenuItem className="w-full">
+          <Link
+            href={`/${org}/settings/general`}
+            scroll={false}
+            legacyBehavior
+            passHref
+            className="w-full"
+          >
+            <NavigationMenuLink
+              active={isActive('settings/general')}
+              className="justify-start w-full"
+            >
+              General
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem className="w-full">
+          <Link href={`/${org}/settings/members`} legacyBehavior passHref>
+            <NavigationMenuLink
+              active={isActive('settings/members')}
+              className="justify-start w-full"
+            >
+              Members
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem className="w-full">
+          <Link href={`/${org}/settings/topics`} legacyBehavior passHref>
+            <NavigationMenuLink
+              active={isActive('settings/topics')}
+              className="justify-start w-full"
+            >
+              Topics
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem className="w-full">
+          <Link href={`/${org}/settings/theme`} legacyBehavior passHref>
+            <NavigationMenuLink
+              active={isActive('settings/theme')}
+              className="justify-start w-full"
+            >
+              Theme
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem className="w-full">
+          <Link href="#" legacyBehavior passHref>
+            <NavigationMenuLink className="justify-start w-full">
+              Billing
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 };
 
