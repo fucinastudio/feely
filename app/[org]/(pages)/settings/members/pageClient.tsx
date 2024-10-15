@@ -45,17 +45,19 @@ import {
   useDeleteWorkspaceAdmin,
   useGetWorkspaceAdmins,
 } from "@/app/api/controllers/workspaceController";
+import Loading from "@/app/loading";
 
 const Members = () => {
   const { workspace } = useWorkspace();
 
   const { isOwner } = useAuth();
-  const { data: workspaceAdmins } = useGetWorkspaceAdmins(
-    {
-      workspaceId: workspace?.id!,
-    },
-    !!workspace?.id
-  );
+  const { data: workspaceAdmins, isLoading: isLoadingWorkspaceAdmins } =
+    useGetWorkspaceAdmins(
+      {
+        workspaceId: workspace?.id!,
+      },
+      !!workspace?.id
+    );
 
   const { mutate: deleteWorkspaceAdmin } = useDeleteWorkspaceAdmin();
 
@@ -204,36 +206,46 @@ const Members = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {workspaceAdmins?.data.admins?.map((admin) => (
-                  <TableRow key={admin.id}>
-                    <TableCell className="font-medium">
-                      {admin.name ?? "-"}
-                    </TableCell>
-                    <TableCell>{admin.email}</TableCell>
-                    <TableCell>
-                      {admin.id === workspace?.ownerId ? "Owner" : "Admin"}
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <Button variant="text" icon>
-                            <Ellipsis />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-40">
-                          <DropdownMenuItem
-                            disabled={
-                              !isOwner || admin.id === workspace?.ownerId
-                            }
-                            onClick={() => handleDeleteWorkspaceAdmin(admin.id)}
-                          >
-                            Delete user
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                {isLoadingWorkspaceAdmins ? (
+                  <TableRow>
+                    <TableCell colSpan={4}>
+                      <Loading />
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  workspaceAdmins?.data.admins?.map((admin) => (
+                    <TableRow key={admin.id}>
+                      <TableCell className="font-medium">
+                        {admin.name ?? "-"}
+                      </TableCell>
+                      <TableCell>{admin.email}</TableCell>
+                      <TableCell>
+                        {admin.id === workspace?.ownerId ? "Owner" : "Admin"}
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger>
+                            <Button variant="text" icon>
+                              <Ellipsis />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-40">
+                            <DropdownMenuItem
+                              disabled={
+                                !isOwner || admin.id === workspace?.ownerId
+                              }
+                              onClick={() =>
+                                handleDeleteWorkspaceAdmin(admin.id)
+                              }
+                            >
+                              Delete user
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
