@@ -171,10 +171,11 @@ const Navbar = () => {
           )}
         </div>
         <div className="md:flex space-x-2 hidden">
-          {/* SOLO SE IL CURRENT WORKSPACE È FREE */}
-          <UpgradePlan>
-            <Button variant="secondary">Upgrade plan</Button>
-          </UpgradePlan>
+          {isAdmin && workspace?.isPro === false && (
+            <UpgradePlan>
+              <Button variant="secondary">Upgrade plan</Button>
+            </UpgradePlan>
+          )}
           <Dialog>
             <DropdownMenu>
               <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
@@ -459,14 +460,16 @@ const Navbar = () => {
                         </Link>
                       </SheetClose>
                     </NavigationMenuItem>
-                    <UpgradePlan>
-                      <NavigationMenuItem className="w-full">
-                        <NavigationMenuLink className="justify-start w-full">
-                          <CircleFadingArrowUp />
-                          Upgrade plan
-                        </NavigationMenuLink>
-                      </NavigationMenuItem>
-                    </UpgradePlan>
+                    {isAdmin && workspace?.isPro === false && (
+                      <UpgradePlan>
+                        <NavigationMenuItem className="w-full">
+                          <NavigationMenuLink className="justify-start w-full">
+                            <CircleFadingArrowUp />
+                            Upgrade plan
+                          </NavigationMenuLink>
+                        </NavigationMenuItem>
+                      </UpgradePlan>
+                    )}
                   </NavigationMenuList>
                 </NavigationMenu>
                 <Separator orientation="horizontal" className="my-4" />

@@ -1,19 +1,10 @@
-"use client";
+'use client';
 
-import React, { useCallback, useState } from "react";
-import { AlertTriangle, Ellipsis } from "lucide-react";
+import React, { useCallback, useState } from 'react';
+import { AlertTriangle, Ellipsis } from 'lucide-react';
 
 import {
   Button,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectGroupLabel,
-  SelectTrigger,
-  SelectValue,
-  Form,
-  FormField,
   Label,
   Input,
   Table,
@@ -26,26 +17,23 @@ import {
   DropdownMenuTrigger,
   DropdownMenuItem,
   DropdownMenuContent,
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
   Alert,
   toast,
-} from "@fucina/ui";
-import { useWorkspace } from "@/context/workspaceContext";
-import { useAuth } from "@/context/authContext";
+  Select,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+} from '@fucina/ui';
+import { useWorkspace } from '@/context/workspaceContext';
+import { useAuth } from '@/context/authContext';
 import {
   useAddWorkspaceAdmins,
   useDeleteWorkspaceAdmin,
   useGetWorkspaceAdmins,
-} from "@/app/api/controllers/workspaceController";
-import Loading from "@/app/loading";
+} from '@/app/api/controllers/workspaceController';
+import Loading from '@/app/loading';
 
 const Members = () => {
   const { workspace } = useWorkspace();
@@ -72,10 +60,10 @@ const Members = () => {
     [deleteWorkspaceAdmin, workspace]
   );
 
-  const [emails, setEmails] = useState<string[]>([""]);
+  const [emails, setEmails] = useState<string[]>(['']);
 
   const handleAddMoreEmail = useCallback(() => {
-    setEmails((prev) => [...prev, ""]);
+    setEmails((prev) => [...prev, '']);
   }, []);
 
   const {
@@ -85,7 +73,7 @@ const Members = () => {
 
   const handleInvite = async (emails: string[]) => {
     const emailsToSend = emails.filter(
-      (email) => email !== "" && email !== null
+      (email) => email !== '' && email !== null
     );
     if (emailsToSend.length === 0 || !workspace) return;
     const res = await addWorkspaceAdminsAsync({
@@ -93,8 +81,8 @@ const Members = () => {
       workspaceId: workspace.id,
     });
     if (res.data.isSuccess) {
-      setEmails([""]);
-      toast.success(`${res.data.count} users invited`);
+      setEmails(['']);
+      toast(`${res.data.count} users invited`);
     }
   };
 
@@ -110,16 +98,17 @@ const Members = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            console.log("Pedro");
+            console.log('Pedro');
           }}
-          className="space-y-8"
         >
           <div className="flex flex-col gap-4 p-5 md:p-6 w-full">
-            <Label>Email Address</Label>
-
             {emails.map((email, index) => (
-              <div className="flex flex-row gap-4 w-full" key={index}>
+              <div
+                className="flex sm:flex-row flex-col gap-4 border-default pb-5 sm:pb-0 border-b sm:border-b-0 w-full"
+                key={index}
+              >
                 <div className="flex flex-col gap-3 w-full" key="key">
+                  <Label>Email Address</Label>
                   <Input
                     placeholder="Email..."
                     value={email}
@@ -131,6 +120,21 @@ const Members = () => {
                       );
                     }}
                   />
+                </div>
+                <div className="flex flex-col gap-3 w-full" key="key">
+                  <Label>Role</Label>
+                  <Select disabled>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Admin" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="admin">Admin</SelectItem>
+                        <SelectItem value="owner">Owner</SelectItem>
+                        <SelectItem value="member">Member</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             ))}
@@ -175,7 +179,7 @@ const Members = () => {
                     </div>
                   )}
                 />*/}
-            <div className="flex justify-between items-center gap-2 pt-4 w-full">
+            <div className="flex justify-between items-center gap-2 pt-2 w-full">
               <Button
                 variant="secondary"
                 disabled={!isOwner}
@@ -187,12 +191,13 @@ const Members = () => {
                 disabled={!isOwner}
                 onClick={() => handleInvite(emails)}
                 isLoading={isLoadingAddWorkspaceAdmins}
+                loadingText="Wait a sec..."
               >
                 Invite
               </Button>
             </div>
-            <Alert variant="warning" title="Notice">
-              Only users that has already logged in this website can be invited
+            <Alert variant="warning" title="Attention!">
+              Only users that has already logged in this website can be invited.
             </Alert>
           </div>
           <div className="flex justify-end items-center border-default p-5 md:p-6 border-t w-full">
@@ -216,11 +221,11 @@ const Members = () => {
                   workspaceAdmins?.data.admins?.map((admin) => (
                     <TableRow key={admin.id}>
                       <TableCell className="font-medium">
-                        {admin.name ?? "-"}
+                        {admin.name ?? '-'}
                       </TableCell>
                       <TableCell>{admin.email}</TableCell>
                       <TableCell>
-                        {admin.id === workspace?.ownerId ? "Owner" : "Admin"}
+                        {admin.id === workspace?.ownerId ? 'Owner' : 'Admin'}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>

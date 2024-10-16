@@ -50,11 +50,11 @@ const Theme = () => {
     resolver: zodResolver(FormSchema),
     defaultValues: {
       primaryColor: (workspace?.workspaceSettings?.primaryColor ??
-        'blue') as PrimaryColorType,
+        'fuchsia') as PrimaryColorType,
       neutralColor: (workspace?.workspaceSettings?.neutralColor ??
         'zinc') as NeutralColorType,
       fontFamily: (workspace?.workspaceSettings?.fontFamily ??
-        'sans') as FontFamilyType,
+        'Inter') as FontFamilyType,
     },
   });
 
@@ -62,7 +62,7 @@ const Theme = () => {
     if (!workspace) return;
     form.reset({
       primaryColor: (workspace?.workspaceSettings?.primaryColor ??
-        'blue') as PrimaryColorType,
+        'fuchsia') as PrimaryColorType,
       neutralColor: (workspace?.workspaceSettings?.neutralColor ??
         'zinc') as NeutralColorType,
       fontFamily: (workspace?.workspaceSettings?.fontFamily ??
@@ -106,7 +106,7 @@ const Theme = () => {
   const [optimisticPrimaryColor, handleChangeOptimisticPrimaryColor] =
     useOptimistic({
       mainState: (workspace?.workspaceSettings?.primaryColor ??
-        'blue') as PrimaryColorType,
+        'fuchsia') as PrimaryColorType,
       callOnChange: handleChangeValuePrimaryColor,
     });
 
@@ -120,7 +120,7 @@ const Theme = () => {
   const [optimisticFontFamily, handleChangeOptimisticFontFamily] =
     useOptimistic({
       mainState: (workspace?.workspaceSettings?.fontFamily ??
-        'sans') as FontFamilyType,
+        'inter') as FontFamilyType,
       callOnChange: handleChangeFontFamily,
     });
 

@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useMemo, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronUp, Inbox } from "lucide-react";
+import React, { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChevronUp, Inbox } from 'lucide-react';
 
 import {
   Button,
@@ -34,23 +34,23 @@ import {
   HoverCardContent,
   SelectGroupLabel,
   SelectGroup,
-} from "@fucina/ui";
+} from '@fucina/ui';
 import {
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
-} from "@/app/api/controllers/ideaController";
-import { useCreateComment } from "@/app/api/controllers/commentController";
+} from '@/app/api/controllers/ideaController';
+import { useCreateComment } from '@/app/api/controllers/commentController';
 import CommentCard, {
   OptimisticComment,
-} from "@/app/[org]/(pages)/ideas/[id]/components/comment";
-import { useAuth } from "@/context/authContext";
-import { useWorkspace } from "@/context/workspaceContext";
-import Loading from "@/app/loading";
-import { useOptimistic } from "@/utils/useOptimistic";
-import { CommentType } from "@/types/comment";
-import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
-import HoverCardUser from "@/components/org/hover-card-user";
+} from '@/app/[org]/(pages)/ideas/[id]/components/comment';
+import { useAuth } from '@/context/authContext';
+import { useWorkspace } from '@/context/workspaceContext';
+import Loading from '@/app/loading';
+import { useOptimistic } from '@/utils/useOptimistic';
+import { CommentType } from '@/types/comment';
+import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+import HoverCardUser from '@/components/org/hover-card-user';
 
 export interface IPropsIdeaPage {
   params: {
@@ -67,7 +67,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const pathName = usePathname();
 
   const handleClose = () => {
-    router.push(pathName?.substring(0, pathName?.lastIndexOf("/")) ?? "/");
+    router.push(pathName?.substring(0, pathName?.lastIndexOf('/')) ?? '/');
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
@@ -76,7 +76,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     return ideaData?.data.idea;
   }, [ideaData]);
 
-  const [comment, setComment] = useState<string>("");
+  const [comment, setComment] = useState<string>('');
 
   const { mutateAsync: createComment, isLoading: isLoadingCreateComment } =
     useCreateComment();
@@ -103,7 +103,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         });
       }
       const content = comment;
-      setComment("");
+      setComment('');
       const res = await createComment({
         ideaId: id,
         comment: content,
@@ -212,7 +212,11 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   <p className="px-3 sm:px-0 min-w-20 text-description text-md">
                     Author
                   </p>
-                  <Button variant="link" asChild className="flex sm:hidden">
+                  <Button
+                    variant="link"
+                    asChild
+                    className="flex sm:hidden no-underline"
+                  >
                     <UserProfileLinkComponent
                       userId={idea.authorId}
                       className="flex items-center gap-2"
@@ -231,7 +235,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   </Button>
                   <HoverCardUser
                     trigger={
-                      <Button variant="link">
+                      <Button variant="link" asChild className="no-underline">
                         <UserProfileLinkComponent
                           userId={idea.authorId}
                           className="flex items-center gap-2"
@@ -318,7 +322,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       <Button variant="text">
                         <span className="flex justify-start items-center gap-2">
                           {idea.voters.length === 0 ? (
-                            "0 Voters"
+                            '0 Voters'
                           ) : (
                             <>
                               <div className="flex justify-start items-center -space-x-1.5">

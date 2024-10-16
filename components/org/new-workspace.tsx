@@ -26,9 +26,6 @@ const NewWorkspaceContent = () => {
     <DialogContent className="max-w-96">
       <DialogHeader>
         <DialogTitle>Create a new workspace</DialogTitle>
-        <DialogDescription>
-          Continue to start collaborating on PRO
-        </DialogDescription>
       </DialogHeader>
       <div className="flex flex-col items-start gap-2 pt-6 pb-8">
         <Label htmlFor="workspace" className="text-right">

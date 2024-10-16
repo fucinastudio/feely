@@ -72,6 +72,20 @@ const SettingsNavbar = () => {
           </Link>
         </NavigationMenuItem>
         <NavigationMenuItem className="w-full">
+          <Link
+            href={`/${org}/settings/site-navigation`}
+            legacyBehavior
+            passHref
+          >
+            <NavigationMenuLink
+              active={isActive('settings/site-navigation')}
+              className="justify-start w-full"
+            >
+              Site navigation
+            </NavigationMenuLink>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem className="w-full">
           <Link href="#" legacyBehavior passHref>
             <NavigationMenuLink className="justify-start w-full">
               Billing
