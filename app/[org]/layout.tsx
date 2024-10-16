@@ -12,6 +12,27 @@ import { WorkspaceProvider } from "@/context/workspaceContext";
 import { AuthProvider } from "@/context/authContext";
 import Navbar from "@/components/org/navbar";
 import BrandBadge from "@/components/org/brand-badge";
+import { Metadata } from "next";
+
+async function getOrgData(org: string) {
+  const workspace = await getWorkspaceByName(org);
+  if (!workspace) {
+    throw new Error("Not found");
+  }
+  return { name: workspace?.externalName || org };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { org: string };
+}): Promise<Metadata> {
+  console.log("Params", params);
+  const org = await getOrgData(params.org);
+  return {
+    title: `${org.name}`,
+  };
+}
 
 export default async function RootLayout({
   children,
