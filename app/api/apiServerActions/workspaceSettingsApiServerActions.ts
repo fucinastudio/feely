@@ -1,24 +1,27 @@
-'use server';
+"use server";
 
-import { Prisma } from '@prisma/client';
+import { Prisma } from "@prisma/client";
 
-import { IAccessToken } from '@/app/api/apiClient';
-import { isAdmin } from '@/app/api/apiServerActions/userApiServerActions';
-import { createClient } from '@/utils/supabase/server';
-import prisma from '@/prisma/client';
+import { IAccessToken } from "@/app/api/apiClient";
+import { isAdmin } from "@/app/api/apiServerActions/userApiServerActions";
+import { createClient } from "@/utils/supabase/server";
+import prisma from "@/prisma/client";
 
 export const getWorkspaceSettings = async (workspaceName: string) => {
   const res = await prisma.workspaceSettings.findFirst({
     where: {
       workspace: {
-        name: workspaceName,
+        name: {
+          equals: workspaceName,
+          mode: "insensitive",
+        },
       },
     },
   });
   if (!res) {
     return {
       isSuccess: false,
-      error: 'Workspace settings not found',
+      error: "Workspace settings not found",
     };
   }
 
@@ -44,7 +47,7 @@ export const patchWorkspaceSettings = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -55,29 +58,32 @@ export const patchWorkspaceSettings = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const isAdminRes = await isAdmin({
     access_token,
-    check_option: 'name',
+    check_option: "name",
     current_org: workspaceName,
   });
   if (!isAdminRes.isSuccess) {
     return {
       isSuccess: false,
-      error: 'Unauthorized',
+      error: "Unauthorized",
     };
   }
   const workspace = await prisma.workspace.findFirst({
     where: {
-      name: workspaceName,
+      name: {
+        equals: workspaceName,
+        mode: "insensitive",
+      },
     },
   });
   if (!workspace) {
     return {
       isSuccess: false,
-      error: 'Workspace not found',
+      error: "Workspace not found",
     };
   }
   const updatedWorkspaceSettings = await prisma.workspaceSettings.update({
@@ -96,7 +102,7 @@ export const patchWorkspaceSettings = async ({
   if (!updatedWorkspaceSettings) {
     return {
       isSuccess: false,
-      error: 'Error while updating workspace settings',
+      error: "Error while updating workspace settings",
     };
   }
 

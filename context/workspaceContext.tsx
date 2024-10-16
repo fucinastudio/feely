@@ -52,6 +52,10 @@ export const WorkspaceProvider = ({
 }) => {
   const [org, setOrg] = useState<string>(initialOrg);
 
+  useEffect(() => {
+    setOrg(initialOrg);
+  }, [initialOrg]);
+
   const {
     data: workspace,
     isLoading: isLoadingWorkspace,

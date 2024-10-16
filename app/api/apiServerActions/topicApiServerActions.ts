@@ -1,16 +1,16 @@
-'use server';
+"use server";
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath } from "next/cache";
 
-import { IAccessToken } from '@/app/api/apiClient';
-import { isAdmin } from '@/app/api/apiServerActions/userApiServerActions';
+import { IAccessToken } from "@/app/api/apiClient";
+import { isAdmin } from "@/app/api/apiServerActions/userApiServerActions";
 import {
   ICreateTopic,
   IDeleteTopic,
   IUpdateTopic,
-} from '@/app/api/controllers/topicController';
-import prisma from '@/prisma/client';
-import { createClient } from '@/utils/supabase/server';
+} from "@/app/api/controllers/topicController";
+import prisma from "@/prisma/client";
+import { createClient } from "@/utils/supabase/server";
 
 interface IGetTopics {
   workspaceId: string;
@@ -22,7 +22,7 @@ export const getTopics = async ({ workspaceId }: IGetTopics) => {
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -30,13 +30,13 @@ export const getTopics = async ({ workspaceId }: IGetTopics) => {
       id: currentUser.data.user.id,
     },
     orderBy: {
-      name: 'asc',
+      name: "asc",
     },
   });
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const topics = await prisma.topic.findMany({
@@ -63,7 +63,7 @@ export const getTopicsByWorkspaceName = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -74,17 +74,20 @@ export const getTopicsByWorkspaceName = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const topics = await prisma.topic.findMany({
     where: {
       workspace: {
-        name: workspaceName,
+        name: {
+          equals: workspaceName,
+          mode: "insensitive",
+        },
       },
     },
     orderBy: {
-      name: 'asc',
+      name: "asc",
     },
   });
   return {
@@ -104,7 +107,7 @@ export const patchTopic = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -115,18 +118,18 @@ export const patchTopic = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const isAdminResult = await isAdmin({
     access_token,
-    check_option: 'id',
+    check_option: "id",
     current_org: workspaceId,
   });
   if (!isAdminResult.isSuccess) {
     return {
       isSuccess: false,
-      error: 'Unauthorized',
+      error: "Unauthorized",
     };
   }
   const newTopic = await prisma.topic.update({
@@ -142,7 +145,7 @@ export const patchTopic = async ({
   if (!newTopic) {
     return {
       isSuccess: false,
-      error: 'Failed to update topic',
+      error: "Failed to update topic",
     };
   }
   return {
@@ -161,7 +164,7 @@ export const addTopic = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -172,18 +175,18 @@ export const addTopic = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const isAdminResult = await isAdmin({
     access_token,
-    check_option: 'id',
+    check_option: "id",
     current_org: workspaceId,
   });
   if (!isAdminResult.isSuccess) {
     return {
       isSuccess: false,
-      error: 'Unauthorized',
+      error: "Unauthorized",
     };
   }
   const newTopic = await prisma.topic.create({
@@ -196,10 +199,10 @@ export const addTopic = async ({
   if (!newTopic) {
     return {
       isSuccess: false,
-      error: 'Failed to create topic',
+      error: "Failed to create topic",
     };
   }
-  revalidatePath(`/${workspaceId}/settings/topics`, 'layout');
+  revalidatePath(`/${workspaceId}/settings/topics`, "layout");
   revalidatePath(`/${workspaceId}`);
   return {
     isSuccess: true,
@@ -217,7 +220,7 @@ export const removeTopic = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -228,18 +231,18 @@ export const removeTopic = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const isAdminResult = await isAdmin({
     access_token,
-    check_option: 'id',
+    check_option: "id",
     current_org: workspaceId,
   });
   if (!isAdminResult.isSuccess) {
     return {
       isSuccess: false,
-      error: 'Unauthorized',
+      error: "Unauthorized",
     };
   }
   const relatedIdeas = await prisma.idea.count({
@@ -264,7 +267,7 @@ export const removeTopic = async ({
   if (!removedTopic) {
     return {
       isSuccess: false,
-      error: 'Failed to create topic',
+      error: "Failed to create topic",
     };
   }
   return {

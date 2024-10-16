@@ -264,7 +264,10 @@ export const getUsersForWorkspace = async ({
   if (!workspaceId) {
     const workspace = await prisma.workspace.findFirst({
       where: {
-        name: workspaceName!,
+        name: {
+          equals: workspaceName!,
+          mode: "insensitive",
+        },
       },
     });
     if (!workspace) {

@@ -14,7 +14,10 @@ import { AwardType, Prisma, userInWorkspace } from "@prisma/client";
 export const checkWorkspaceExistanceServer = async (workspaceName: string) => {
   const res = await prisma.workspace.findFirst({
     where: {
-      name: workspaceName,
+      name: {
+        equals: workspaceName,
+        mode: "insensitive",
+      },
     },
   });
   if (res) {
@@ -30,7 +33,10 @@ export const getWorkspaceByName = async (
 ) => {
   const res = await prisma.workspace.findFirst({
     where: {
-      name: workspaceName,
+      name: {
+        equals: workspaceName,
+        mode: "insensitive",
+      },
     },
     include: {
       workspaceSettings: true,
@@ -45,6 +51,7 @@ export const getWorkspaceByName = async (
       },
     });
   }
+  console.log("Res", res, workspaceName);
   if (res) {
     if (retrieveImage) {
       const supabase = createClient();

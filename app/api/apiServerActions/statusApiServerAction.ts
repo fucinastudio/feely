@@ -1,8 +1,8 @@
-'use server';
+"use server";
 
-import { IAccessToken } from '@/app/api/apiClient';
-import { createClient } from '@/utils/supabase/server';
-import prisma from '@/prisma/client';
+import { IAccessToken } from "@/app/api/apiClient";
+import { createClient } from "@/utils/supabase/server";
+import prisma from "@/prisma/client";
 
 interface IGetStatusesByWorkspaceName {
   workspaceName: string;
@@ -17,7 +17,7 @@ export const getStatusesByWorkspaceName = async ({
   if (!currentUser.data.user) {
     return {
       isSuccess: false,
-      error: 'Session not found',
+      error: "Session not found",
     };
   }
   const user = await prisma.users.findFirst({
@@ -28,13 +28,16 @@ export const getStatusesByWorkspaceName = async ({
   if (!user) {
     return {
       isSuccess: false,
-      error: 'User not found',
+      error: "User not found",
     };
   }
   const statuses = await prisma.status.findMany({
     where: {
       workspace: {
-        name: workspaceName,
+        name: {
+          equals: workspaceName,
+          mode: "insensitive",
+        },
       },
     },
   });
