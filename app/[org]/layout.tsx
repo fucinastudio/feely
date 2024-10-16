@@ -1,37 +1,17 @@
-import { Suspense } from 'react';
-import { redirect } from 'next/navigation';
-import type { Metadata } from 'next';
+import { Suspense } from "react";
+import { redirect } from "next/navigation";
 
-import Loading from '@/app/loading';
-import UserTab from '@/app/[org]/userTab';
+import Loading from "@/app/loading";
+import UserTab from "@/app/[org]/userTab";
 import {
   checkWorkspaceExistanceServer,
   getWorkspaceByName,
-} from '@/app/api/apiServerActions/workspaceApiServerActions';
-import protectRoute from '@/utils/protectedRoute';
-import { WorkspaceProvider } from '@/context/workspaceContext';
-import { AuthProvider } from '@/context/authContext';
-import Navbar from '@/components/org/navbar';
-import BrandBadge from '@/components/org/brand-badge';
-
-async function getOrgData(org: string) {
-  const workspace = await getWorkspaceByName(org);
-  if (!workspace) {
-    throw new Error('Not found');
-  }
-  return { name: workspace?.externalName || org };
-}
-
-export async function generateMetadata({
-  params,
-}: {
-  params: { org: string };
-}): Promise<Metadata> {
-  const org = await getOrgData(params.org);
-  return {
-    title: `${org.name}`,
-  };
-}
+} from "@/app/api/apiServerActions/workspaceApiServerActions";
+import protectRoute from "@/utils/protectedRoute";
+import { WorkspaceProvider } from "@/context/workspaceContext";
+import { AuthProvider } from "@/context/authContext";
+import Navbar from "@/components/org/navbar";
+import BrandBadge from "@/components/org/brand-badge";
 
 export default async function RootLayout({
   children,
@@ -45,7 +25,7 @@ export default async function RootLayout({
   const user = await protectRoute(`/${org}`);
   const exists = await checkWorkspaceExistanceServer(org);
   if (!exists) {
-    redirect('/');
+    redirect("/");
   } else
     return (
       <Suspense

@@ -5,8 +5,10 @@ import { updateSession } from "@/utils/supabase/middleware";
 export async function middleware(request: NextRequest) {
   const res = await updateSession(request);
   const url = request.nextUrl;
+  console.log("Url.Pathnam", url);
   if (url.pathname === "/") {
     if (res.user) {
+      console.log("Redirecting");
       return NextResponse.redirect(
         new URL("/redirect_to_workspace", request.url)
       );
