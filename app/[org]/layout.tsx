@@ -27,7 +27,6 @@ export async function generateMetadata({
 }: {
   params: { org: string };
 }): Promise<Metadata> {
-  console.log("Params", params);
   const org = await getOrgData(params.org);
   return {
     title: `${org.name}`,
