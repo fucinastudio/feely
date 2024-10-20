@@ -33,6 +33,7 @@ export const Endpoints = {
     uploadImage: "api/workspace/image",
     main: "api/workspace",
     admin: "api/workspace/admin",
+    user: "api/workspace/user",
   },
   workspaceSettings: {
     main: "api/workspaceSettings",

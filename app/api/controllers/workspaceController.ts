@@ -240,3 +240,28 @@ export const useAddWorkspaceAdmins = () => {
     },
   });
 };
+
+export const useGetUserWorkspaces = (enabled = true) => {
+  const request: FeelyRequest = {
+    url: `${Endpoints.workspace.user}`,
+    config: {
+      method: "get",
+    },
+  };
+  const requestConfig = {
+    queryKey: [Endpoints.workspace.user],
+    queryFn: () => client(request),
+    staleTime: 60 * 60 * 1000,
+    enabled,
+  };
+
+  return useQuery<
+    {
+      data: {
+        message: string;
+        workspaces: WorkspaceTypeWithImageAndSettings[] | null;
+      };
+    },
+    null
+  >(requestConfig);
+};

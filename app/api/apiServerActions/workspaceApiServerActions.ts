@@ -51,7 +51,6 @@ export const getWorkspaceByName = async (
       },
     });
   }
-  console.log("Res", res, workspaceName);
   if (res) {
     if (retrieveImage) {
       const supabase = createClient();
@@ -529,6 +528,63 @@ export const addWorkspaceAdmins = async ({
   return {
     isSuccess: true,
     count: workspaceAdminCreated.count,
+  };
+};
+
+export const getUserWorkspaces = async ({ access_token }: IAccessToken) => {
+  //Get the workspaces of the currentUser in the access token, both if he is the owner or an admin
+  const supabase = createClient();
+  const currentUser = await supabase.auth.getUser(access_token);
+  if (!currentUser.data.user) {
+    return {
+      isSuccess: false,
+      error: "Session not found",
+    };
+  }
+  const user = await prisma.users.findFirst({
+    where: {
+      id: currentUser.data.user.id,
+    },
+  });
+  if (!user) {
+    return {
+      isSuccess: false,
+      error: "User not found",
+    };
+  }
+  const workspaces = await prisma.workspace.findMany({
+    where: {
+      OR: [
+        {
+          ownerId: user.id,
+        },
+        {
+          workspaceAdmin: {
+            some: {
+              userId: user.id,
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      subscription: {
+        select: {
+          id: true,
+        },
+      },
+    },
+  });
+
+  const workspacesWithSubscription = workspaces.map((workspace) => ({
+    ...workspace,
+    isPro: !!workspace.subscription,
+    subscription: undefined,
+  }));
+
+  return {
+    isSuccess: true,
+    data: workspacesWithSubscription,
   };
 };
 
