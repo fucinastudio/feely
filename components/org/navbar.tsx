@@ -242,7 +242,10 @@ const Navbar = () => {
                               const isSelected =
                                 workspace?.id === userWorkspace.id;
                               return (
-                                <DropdownMenuRadioItem value={userWorkspace.id}>
+                                <DropdownMenuRadioItem
+                                  value={userWorkspace.id}
+                                  key={userWorkspace.id}
+                                >
                                   <Avatar size="sm">
                                     <AvatarImage
                                       src={userWorkspace?.imageUrl ?? undefined}
