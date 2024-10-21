@@ -248,13 +248,13 @@ const Navbar = () => {
                                 >
                                   <Avatar size="sm">
                                     <AvatarImage
-                                      src={userWorkspace?.imageUrl ?? undefined}
+                                      src={userWorkspace.imageUrl ?? undefined}
                                       alt={
-                                        userWorkspace?.externalName ?? undefined
+                                        userWorkspace.externalName ?? undefined
                                       }
                                     />
                                     <AvatarFallback className="capitalize">
-                                      {userWorkspace?.externalName?.[0]}
+                                      {userWorkspace.externalName?.[0]}
                                     </AvatarFallback>
                                   </Avatar>
                                   <div className="flex justify-between items-center gap-2 w-full">
