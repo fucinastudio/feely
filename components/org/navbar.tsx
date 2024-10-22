@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useMemo } from "react";
-import Link from "next/link";
-import { redirect, usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
+import React, { useMemo } from 'react';
+import Link from 'next/link';
+import { redirect, usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import {
   LogOut,
   Settings,
@@ -17,11 +17,11 @@ import {
   CircleFadingPlus,
   Map,
   CircleFadingArrowUp,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { logoutUser } from "@/app/api/apiServerActions/userApiServerActions";
-import { useAuth } from "@/context/authContext";
-import { useWorkspace } from "@/context/workspaceContext";
+import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
+import { useAuth } from '@/context/authContext';
+import { useWorkspace } from '@/context/workspaceContext';
 import {
   Avatar,
   AvatarFallback,
@@ -54,16 +54,16 @@ import {
   DropdownMenuRadioGroup,
   Dialog,
   Tag,
-} from "@fucina/ui";
-import { cn, focusRing } from "@fucina/utils";
-import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
-import UpgradePlan from "@/components/org/upgrade-plan";
+} from '@fucina/ui';
+import { cn, focusRing } from '@fucina/utils';
+import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+import UpgradePlan from '@/components/org/upgrade-plan';
 import {
   NewWorkspaceContent,
   NewWorkspaceTrigger,
-} from "@/components/org/new-workspace";
-import { useGetUserWorkspaces } from "@/app/api/controllers/workspaceController";
-import { getUrl } from "@/utils/utils";
+} from '@/components/org/new-workspace';
+import { useGetUserWorkspaces } from '@/app/api/controllers/workspaceController';
+import { getUrl } from '@/utils/utils';
 
 const Navbar = () => {
   const { setTheme, theme } = useTheme();
@@ -73,13 +73,13 @@ const Navbar = () => {
   const orgLetter = org[0];
   // Function to check if the route is active
   const isActive = (route: string) => {
-    return pathname?.split("/")[2] === route;
+    return pathname?.split('/')[2] === route;
   };
   const { user, isAdmin } = useAuth();
 
   const handleClickButton = () => {
     if (workspace?.logoUrl) {
-      window.open(workspace?.logoUrl, "_blank");
+      window.open(workspace?.logoUrl, '_blank');
     }
   };
 
@@ -91,7 +91,7 @@ const Navbar = () => {
     );
     if (!selectedWorkspace) return;
     const baseUrl = getUrl();
-    window.open(`${baseUrl}/${selectedWorkspace.name}/ideas`, "_self");
+    window.open(`${baseUrl}/${selectedWorkspace.name}/ideas`, '_self');
   };
 
   const alreadyHasOwnedWorkspace = useMemo(() => {
@@ -102,7 +102,7 @@ const Navbar = () => {
 
   const handleCreateFreeWorkspace = () => {
     if (!alreadyHasOwnedWorkspace) {
-      redirect("/signup");
+      redirect('/signup');
     }
   };
 
@@ -112,7 +112,7 @@ const Navbar = () => {
         <div className="flex justify-center items-center space-x-4 h-9">
           <button
             onClick={handleClickButton}
-            className={cn("rounded", focusRing)}
+            className={cn('rounded', focusRing)}
           >
             <div className="flex justify-center items-center space-x-2 h-9">
               <Avatar size="md">
@@ -144,7 +144,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("ideas")}>
+                      <NavigationMenuLink active={isActive('ideas')}>
                         Ideas
                       </NavigationMenuLink>
                     </Link>
@@ -158,7 +158,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("roadmap")}>
+                      <NavigationMenuLink active={isActive('roadmap')}>
                         Roadmap
                       </NavigationMenuLink>
                     </Link>
@@ -172,7 +172,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("community")}>
+                      <NavigationMenuLink active={isActive('community')}>
                         Community
                       </NavigationMenuLink>
                     </Link>
@@ -186,7 +186,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive("settings")}>
+                      <NavigationMenuLink active={isActive('settings')}>
                         Settings
                       </NavigationMenuLink>
                     </Link>
@@ -204,7 +204,7 @@ const Navbar = () => {
           )}
           <Dialog>
             <DropdownMenu>
-              <DropdownMenuTrigger className={cn("rounded-full", focusRing)}>
+              <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
                 <Avatar size="lg" className="hover:cursor-pointer">
                   <AvatarImage
                     src={user?.image_url ?? undefined}
@@ -270,12 +270,18 @@ const Navbar = () => {
                                       {userWorkspace.externalName?.[0]}
                                     </AvatarFallback>
                                   </Avatar>
-                                  <div className="flex justify-between items-center gap-2 w-full">
-                                    <span>{userWorkspace.externalName}</span>
+                                  <div className="flex justify-between items-center gap-1 w-full">
+                                    <span className="line-clamp-1">
+                                      {userWorkspace.externalName}
+                                    </span>
                                     <Tag
-                                      variant={isSelected ? "brand" : "neutral"}
+                                      variant={
+                                        userWorkspace.isPro
+                                          ? 'brand'
+                                          : 'neutral'
+                                      }
                                     >
-                                      {userWorkspace.isPro ? "Pro" : "Free"}
+                                      {userWorkspace.isPro ? 'Pro' : 'Free'}
                                     </Tag>
                                   </div>
                                 </DropdownMenuRadioItem>
@@ -303,9 +309,9 @@ const Navbar = () => {
                   <DropdownMenuSubMenu>
                     <DropdownMenuSubMenuTrigger>
                       <>
-                        {theme === "dark" ? (
+                        {theme === 'dark' ? (
                           <Moon />
-                        ) : theme === "light" ? (
+                        ) : theme === 'light' ? (
                           <Sun />
                         ) : (
                           <Monitor />
@@ -317,21 +323,21 @@ const Navbar = () => {
                       <DropdownMenuRadioGroup value={theme}>
                         <DropdownMenuRadioItem
                           value="light"
-                          onClick={() => setTheme("light")}
+                          onClick={() => setTheme('light')}
                         >
                           <Sun />
                           <span>Light</span>
                         </DropdownMenuRadioItem>
                         <DropdownMenuRadioItem
                           value="dark"
-                          onClick={() => setTheme("dark")}
+                          onClick={() => setTheme('dark')}
                         >
                           <Moon />
                           <span>Dark</span>
                         </DropdownMenuRadioItem>
                         <DropdownMenuRadioItem
                           value="system"
-                          onClick={() => setTheme("system")}
+                          onClick={() => setTheme('system')}
                         >
                           <Monitor />
                           <span>System</span>
@@ -343,7 +349,7 @@ const Navbar = () => {
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
                   <Link
-                    href={"https://app.feely.so/feely/ideas"}
+                    href={'https://app.feely.so/feely/ideas'}
                     target="_blank"
                   >
                     <DropdownMenuItem>
@@ -406,7 +412,7 @@ const Navbar = () => {
                           <SheetClose asChild>
                             <Link href={`/${org}/ideas`} scroll={false}>
                               <NavigationMenuLink
-                                active={isActive("ideas")}
+                                active={isActive('ideas')}
                                 className="justify-start w-full"
                               >
                                 Ideas
@@ -420,7 +426,7 @@ const Navbar = () => {
                           <SheetClose asChild>
                             <Link href={`/${org}/roadmap`} scroll={false}>
                               <NavigationMenuLink
-                                active={isActive("roadmap")}
+                                active={isActive('roadmap')}
                                 className="justify-start w-full"
                               >
                                 Roadmap
@@ -434,7 +440,7 @@ const Navbar = () => {
                           <SheetClose asChild>
                             <Link href={`/${org}/community`} scroll={false}>
                               <NavigationMenuLink
-                                active={isActive("community")}
+                                active={isActive('community')}
                                 className="justify-start w-full"
                               >
                                 Community
@@ -451,7 +457,7 @@ const Navbar = () => {
                               scroll={false}
                             >
                               <NavigationMenuLink
-                                active={isActive("settings")}
+                                active={isActive('settings')}
                                 className="justify-start w-full"
                               >
                                 Settings
@@ -486,7 +492,7 @@ const Navbar = () => {
                           scroll={false}
                         >
                           <NavigationMenuLink
-                            active={isActive("account")}
+                            active={isActive('account')}
                             className="justify-start w-full"
                           >
                             <Settings />

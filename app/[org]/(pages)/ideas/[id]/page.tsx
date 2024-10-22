@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ChevronUp, Inbox } from 'lucide-react';
+import { ChevronUp, Inbox, Ellipsis } from 'lucide-react';
 
 import {
   Button,

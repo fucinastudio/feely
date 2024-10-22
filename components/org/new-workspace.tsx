@@ -15,8 +15,6 @@ import {
   Label,
 } from "@fucina/ui";
 import { useCheckWorkspaceExistance } from "@/app/api/controllers/workspaceController";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 interface NewWorkspaceTriggerProps {
   children: React.ReactNode;

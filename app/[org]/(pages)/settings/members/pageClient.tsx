@@ -34,6 +34,11 @@ import {
   useGetWorkspaceAdmins,
 } from '@/app/api/controllers/workspaceController';
 import Loading from '@/app/loading';
+import {
+  DeleteDialog,
+  DeleteDialogContent,
+  DeleteDialogTrigger,
+} from '@/components/org/delete-dialog';
 
 const Members = () => {
   const { workspace } = useWorkspace();
@@ -228,25 +233,31 @@ const Members = () => {
                         {admin.id === workspace?.ownerId ? 'Owner' : 'Admin'}
                       </TableCell>
                       <TableCell>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger>
-                            <Button variant="text" icon>
-                              <Ellipsis />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="w-40">
-                            <DropdownMenuItem
-                              disabled={
-                                !isOwner || admin.id === workspace?.ownerId
-                              }
-                              onClick={() =>
-                                handleDeleteWorkspaceAdmin(admin.id)
-                              }
-                            >
-                              Delete user
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <DeleteDialog>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger>
+                              <Button variant="text" icon>
+                                <Ellipsis />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-40">
+                              <DeleteDialogTrigger>
+                                <DropdownMenuItem
+                                  disabled={
+                                    !isOwner || admin.id === workspace?.ownerId
+                                  }
+                                >
+                                  Delete user
+                                </DropdownMenuItem>
+                              </DeleteDialogTrigger>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                          <DeleteDialogContent
+                            title="Are you absolutely sure?"
+                            description="This action cannot be undone. This will permanently delete the admin and remove all data from our servers."
+                            onClick={() => handleDeleteWorkspaceAdmin(admin.id)}
+                          />
+                        </DeleteDialog>
                       </TableCell>
                     </TableRow>
                   ))
