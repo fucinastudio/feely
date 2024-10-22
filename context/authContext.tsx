@@ -10,13 +10,13 @@ import {
 } from "react";
 
 import { useGetUser } from "@/app/api/controllers/userController";
-import { UserType } from "@/types/user";
+import { UserTypeWithWorkspaces } from "@/types/user";
 import { useWorkspace } from "@/context/workspaceContext";
 
 interface IAuthContext {
   isAdmin: boolean;
   isOwner: boolean;
-  user: UserType | null;
+  user: UserTypeWithWorkspaces | null;
   isLoading: boolean;
 }
 

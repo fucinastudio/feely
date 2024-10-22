@@ -23,7 +23,6 @@ import {
   changeNeutralColor,
   changePrimaryColor,
 } from "@/utils/themes";
-import { useGetUser } from "@/app/api/controllers/userController";
 import { UserType } from "@/types/user";
 
 interface IWorkspaceContext {

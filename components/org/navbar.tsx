@@ -1,8 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import {
   LogOut,
@@ -93,6 +93,19 @@ const Navbar = () => {
     const baseUrl = getUrl();
     window.open(`${baseUrl}/${selectedWorkspace.name}/ideas`, "_self");
   };
+
+  const alreadyHasOwnedWorkspace = useMemo(() => {
+    return !!user?.workspaces.find((workspace) => {
+      return workspace.ownerId === user.id;
+    });
+  }, [user]);
+
+  const handleCreateFreeWorkspace = () => {
+    if (!alreadyHasOwnedWorkspace) {
+      redirect("/signup");
+    }
+  };
+
   return (
     <div className="z-50 fixed flex justify-center items-center border-default bg-background border-b w-full h-14">
       <div className="flex justify-between items-center mx-auto px-5 sm:px-10 w-full max-w-screen-xl">
@@ -271,12 +284,19 @@ const Navbar = () => {
                           )}
                         </DropdownMenuRadioGroup>
                         <DropdownMenuSeparator />
-                        <NewWorkspaceTrigger>
-                          <DropdownMenuItem>
+                        {alreadyHasOwnedWorkspace ? (
+                          <NewWorkspaceTrigger>
+                            <DropdownMenuItem>
+                              <CirclePlus />
+                              <span>Create new Workspace</span>
+                            </DropdownMenuItem>
+                          </NewWorkspaceTrigger>
+                        ) : (
+                          <DropdownMenuItem onClick={handleCreateFreeWorkspace}>
                             <CirclePlus />
                             <span>Create new Workspace</span>
                           </DropdownMenuItem>
-                        </NewWorkspaceTrigger>
+                        )}
                       </DropdownMenuSubMenuContent>
                     </DropdownMenuSubMenu>
                   )}

@@ -1,24 +1,21 @@
-'use server';
+"use server";
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
-import {
-  getUser,
-  getUserById,
-} from '@/app/api/apiServerActions/userApiServerActions';
-import { authenticateUser } from '@/app/api/apiUtils';
+import { getUserById } from "@/app/api/apiServerActions/userApiServerActions";
+import { authenticateUser } from "@/app/api/apiUtils";
 
 export async function GET(req: NextRequest) {
   const user = await authenticateUser(req);
   if (!user) {
-    return NextResponse.json({ message: 'Unauthorized user' }, { status: 401 });
+    return NextResponse.json({ message: "Unauthorized user" }, { status: 401 });
   }
   const { searchParams } = new URL(req.url);
-  const workspaceId = searchParams.get('workspaceId');
-  const userId = searchParams.get('userId');
+  const workspaceId = searchParams.get("workspaceId");
+  const userId = searchParams.get("userId");
   if (!workspaceId || !userId) {
     return NextResponse.json(
-      { message: 'Missing parameters' },
+      { message: "Missing parameters" },
       { status: 400 }
     );
   }
@@ -30,7 +27,7 @@ export async function GET(req: NextRequest) {
 
   if (res.isSuccess) {
     return NextResponse.json(
-      { message: 'User retrieved', user: res.data?.user },
+      { message: "User retrieved", user: res.data?.user },
       { status: 200 }
     );
   }

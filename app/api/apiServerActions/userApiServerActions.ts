@@ -39,11 +39,14 @@ export const getUser = async ({
     where: {
       id: currentUser.data.user.id,
     },
-    select: {
-      id: true,
-      email: true,
-      image_url: true,
-      name: true,
+    include: {
+      workspaces: {
+        select: {
+          id: true,
+          name: true,
+          ownerId: true,
+        },
+      },
     },
   });
   if (!user) {
