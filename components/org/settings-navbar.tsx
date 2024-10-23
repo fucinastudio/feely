@@ -1,22 +1,36 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
-import { useWorkspace } from '@/context/workspaceContext';
+import { useWorkspace } from "@/context/workspaceContext";
 import {
   NavigationMenu,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-} from '@fucina/ui';
+} from "@fucina/ui";
+import { createStripePortal } from "@/utils/stripe/server";
 
 const SettingsNavbar = () => {
-  const { org } = useWorkspace();
+  const { org, isProWorkspace, workspace } = useWorkspace();
   const pathname = usePathname();
   const isActive = (route: string) => {
     return pathname === `/${org}/${route}`;
+  };
+
+  const handleClickCustomerPortal = async () => {
+    if (!workspace) return;
+    try {
+      const url = await createStripePortal(
+        workspace?.id,
+        window.location.pathname
+      );
+      window.open(url, "_blank");
+    } catch (error) {
+      console.log("Error", error);
+    }
   };
 
   return (
@@ -34,7 +48,7 @@ const SettingsNavbar = () => {
             className="w-full"
           >
             <NavigationMenuLink
-              active={isActive('settings/general')}
+              active={isActive("settings/general")}
               className="justify-start w-full"
             >
               General
@@ -44,7 +58,7 @@ const SettingsNavbar = () => {
         <NavigationMenuItem className="w-full">
           <Link href={`/${org}/settings/members`} legacyBehavior passHref>
             <NavigationMenuLink
-              active={isActive('settings/members')}
+              active={isActive("settings/members")}
               className="justify-start w-full"
             >
               Members
@@ -54,7 +68,7 @@ const SettingsNavbar = () => {
         <NavigationMenuItem className="w-full">
           <Link href={`/${org}/settings/topics`} legacyBehavior passHref>
             <NavigationMenuLink
-              active={isActive('settings/topics')}
+              active={isActive("settings/topics")}
               className="justify-start w-full"
             >
               Topics
@@ -64,7 +78,7 @@ const SettingsNavbar = () => {
         <NavigationMenuItem className="w-full">
           <Link href={`/${org}/settings/theme`} legacyBehavior passHref>
             <NavigationMenuLink
-              active={isActive('settings/theme')}
+              active={isActive("settings/theme")}
               className="justify-start w-full"
             >
               Theme
@@ -78,20 +92,23 @@ const SettingsNavbar = () => {
             passHref
           >
             <NavigationMenuLink
-              active={isActive('settings/site-navigation')}
+              active={isActive("settings/site-navigation")}
               className="justify-start w-full"
             >
               Site navigation
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem className="w-full">
-          <Link href="#" legacyBehavior passHref>
-            <NavigationMenuLink className="justify-start w-full">
+        {isProWorkspace && (
+          <NavigationMenuItem className="w-full">
+            <NavigationMenuLink
+              className="justify-start w-full"
+              onClick={handleClickCustomerPortal}
+            >
               Billing
             </NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
+          </NavigationMenuItem>
+        )}
       </NavigationMenuList>
     </NavigationMenu>
   );

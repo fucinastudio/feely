@@ -15,6 +15,10 @@ import {
   Label,
 } from "@fucina/ui";
 import { useCheckWorkspaceExistance } from "@/app/api/controllers/workspaceController";
+import { checkoutWithStripeNewWorkspace } from "@/utils/stripe/server";
+import { useWorkspace } from "@/context/workspaceContext";
+import { getStripe } from "@/utils/stripe/client";
+import { useGetPrices } from "@/app/api/controllers/priceController";
 
 interface NewWorkspaceTriggerProps {
   children: React.ReactNode;
@@ -25,30 +29,17 @@ const NewWorkspaceTrigger = ({ children }: NewWorkspaceTriggerProps) => {
 };
 
 const NewWorkspaceContent = () => {
+  const { org } = useWorkspace();
   const {
     mutateAsync: checkWorkspaceExistanceAsync,
     isLoading: isLoadingCheckWorkspaceExistance,
   } = useCheckWorkspaceExistance();
-  const FormSchema = z.object({
-    workspaceName: z
-      .string()
-      .min(2, {
-        message: "Workspace name must be at least 2 characters.",
-      })
-      .regex(/^[a-zA-Z0-9-_]+$/, {
-        message:
-          "Invalid input: only alphanumeric characters, hyphens, and underscores are allowed.",
-      })
-      .refine(async (value) => {
-        if (!value) return true;
-        const checkSimilar = await checkWorkspaceExistanceAsync(value);
-        return !checkSimilar.data.exists;
-      }, "This workspace name is already taken."),
-  });
 
   const [error, setError] = useState<string | null>(null);
 
   const [value, setValue] = useState<string>("");
+
+  const { data: prices } = useGetPrices();
 
   const handleConfirm = async (value: string) => {
     //Check if the values if correct
@@ -67,7 +58,41 @@ const NewWorkspaceContent = () => {
       setError("This workspace name is already taken.");
       return;
     }
+    //TODO: change this if we change how we select the price to pay. For now we are picking the one that is month and not free
+    const price = prices?.data.prices.find(
+      (price) => price.interval === "month" && (price.unit_amount ?? 0) > 0
+    );
+    if (!price) {
+      setError("Error finding the price to pay.");
+      return;
+    }
     //If everything is correct, create the workspace
+    const { errorRedirect, sessionId } = await checkoutWithStripeNewWorkspace(
+      price,
+      value,
+      `${org}/`
+    );
+    if (errorRedirect) {
+      console.log("Error redirect", errorRedirect);
+      // setPriceIdLoading(undefined);
+      // return router.push(errorRedirect);
+    }
+
+    if (!sessionId) {
+      console.log("Error sessionId", sessionId);
+      return;
+      // setPriceIdLoading(undefined);
+      // return router.push(
+      //   getErrorRedirect(
+      //     currentPath,
+      //     'An unknown error occurred.',
+      //     'Please try again later or contact a system administrator.'
+      //   )
+      // );
+    }
+
+    const stripe = await getStripe();
+    stripe?.redirectToCheckout({ sessionId });
   };
 
   return (

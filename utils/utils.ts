@@ -161,3 +161,11 @@ export const toDateTime = (secs: number) => {
   t.setSeconds(secs);
   return t;
 };
+
+export const getPrice = (
+  unit_amount: number,
+  divideYearInMonths: boolean = false
+) => {
+  const divisionPerMonths = divideYearInMonths ? 12 : 1;
+  return ((unit_amount ?? 0) / 100 / divisionPerMonths).toFixed(2);
+};

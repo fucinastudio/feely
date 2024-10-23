@@ -209,6 +209,135 @@ export const createWorkspace = async (
   };
 };
 
+export const createPaymentWorkspace = async (
+  workspaceName: string,
+  email: string
+): Promise<{
+  isSuccess: boolean;
+  error?: string;
+  id?: string;
+}> => {
+  const alreadyExists = await checkWorkspaceExistanceServer(workspaceName);
+  if (alreadyExists) {
+    //For now we create the same with an additional number
+    const newWorkspace = await createPaymentWorkspace(
+      workspaceName + "1",
+      email
+    );
+    return newWorkspace;
+  }
+  const user = await prisma.users.findFirst({
+    where: {
+      email: email,
+    },
+  });
+  if (!user) {
+    return {
+      isSuccess: false,
+      error: "User not found",
+    };
+  }
+  const newWorkspace = await prisma.workspace.create({
+    data: {
+      name: workspaceName,
+      externalName: workspaceName,
+      ownerId: user?.id,
+    },
+  });
+  if (!newWorkspace) {
+    return {
+      isSuccess: false,
+      error: "Failed to create workspace",
+    };
+  }
+  //TODO: this part can be refactored to be shared with the normal creation
+  //Create workspaceSettings
+  const workspaceSettings = await prisma.workspaceSettings.create({
+    data: {
+      workspaceId: newWorkspace.id,
+    },
+  });
+
+  //Create default topics
+  const defaultTopics = [
+    "🐛 Bug",
+    "✨ Feature",
+    "🔗 Integration",
+    "🚀 Improvement",
+    "❓ Question",
+  ];
+  const resultTopics = await prisma.topic.createMany({
+    data: defaultTopics.map((topic) => ({
+      name: topic,
+      workspaceId: newWorkspace.id,
+    })),
+  });
+  if (resultTopics.count !== defaultTopics.length) {
+    //Delete created topics
+    await prisma.topic.deleteMany({
+      where: {
+        workspaceId: newWorkspace.id,
+      },
+    });
+    //Delete the workspace
+    await prisma.workspace.delete({
+      where: {
+        id: newWorkspace.id,
+      },
+    });
+
+    return {
+      isSuccess: false,
+      error: "Failed to initialize the workspace correctly",
+    };
+  }
+
+  //Create default statuses
+  const defaultStatuses = [
+    "In review",
+    "Planned",
+    "In progress",
+    "Completed",
+    "Archived",
+  ];
+  const resultStatuses = await prisma.status.createMany({
+    data: defaultStatuses.map((status, index) => ({
+      name: status,
+      workspaceId: newWorkspace.id,
+      order: index,
+    })),
+  });
+  if (resultStatuses.count !== defaultStatuses.length) {
+    //Delete created statuses
+    await prisma.status.deleteMany({
+      where: {
+        workspaceId: newWorkspace.id,
+      },
+    });
+    //Delete created topics
+    await prisma.topic.deleteMany({
+      where: {
+        workspaceId: newWorkspace.id,
+      },
+    });
+    //Delete the workspace
+    await prisma.workspace.delete({
+      where: {
+        id: newWorkspace.id,
+      },
+    });
+
+    return {
+      isSuccess: false,
+      error: "Failed to initialize the workspace correctly",
+    };
+  }
+  return {
+    isSuccess: true,
+    id: newWorkspace.id,
+  };
+};
+
 export const patchWorkspace = async ({
   workspaceId,
   workspaceExternalName,
@@ -578,7 +707,7 @@ export const getUserWorkspaces = async ({ access_token }: IAccessToken) => {
 
   const workspacesWithSubscription = workspaces.map((workspace) => ({
     ...workspace,
-    isPro: !!workspace.subscription,
+    isPro: workspace.subscription.length > 0,
     subscription: undefined,
   }));
 

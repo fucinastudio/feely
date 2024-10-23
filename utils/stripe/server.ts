@@ -8,7 +8,10 @@ import {
   getErrorRedirect,
   getUrl,
 } from "@/utils/utils";
-import { createOrRetrieveCustomer } from "@/utils/supabase/admin";
+import {
+  createCustomerForNewWorkspace,
+  createOrRetrieveCustomer,
+} from "@/utils/supabase/admin";
 import { Prisma } from "@prisma/client";
 import prisma from "@/prisma/client";
 
@@ -151,8 +154,12 @@ export async function checkoutWithStripeNewWorkspace(
     // Retrieve or create the customer in Stripe
     let customer: string;
     try {
-      customer = await createOrRetrieveCustomer({
-        uuid: workspaceId,
+      // customer = await createOrRetrieveCustomer({
+      //   uuid: workspaceId,
+      //   email: user?.email || "",
+      // });
+      customer = await createCustomerForNewWorkspace({
+        workspaceName: workspaceName,
         email: user?.email || "",
       });
     } catch (err) {

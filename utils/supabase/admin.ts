@@ -1,3 +1,7 @@
+import {
+  createPaymentWorkspace,
+  createWorkspace,
+} from "@/app/api/apiServerActions/workspaceApiServerActions";
 import prisma from "@/prisma/client";
 import { stripe } from "@/utils/stripe/config";
 import { toDateTime } from "@/utils/utils";
@@ -203,6 +207,33 @@ const createOrRetrieveCustomer = async ({
   }
 };
 
+const createCustomerForNewWorkspace = async ({
+  email,
+  workspaceName,
+}: {
+  email: string;
+  workspaceName: string;
+}): Promise<string> => {
+  // Create a new candidate workspace
+  const candidateWorkspace = await prisma.candidateWorkspace.create({
+    data: {
+      name: workspaceName,
+      created_at: new Date(),
+    },
+  });
+  if (!candidateWorkspace) {
+    throw new Error("Workspace creation failed.");
+  }
+  // Create a new customer in Stripe
+  const stripeIdToInsert = await createCustomerInStripe(
+    candidateWorkspace.id,
+    email
+  );
+  if (!stripeIdToInsert) throw new Error("Stripe customer creation failed.");
+
+  return stripeIdToInsert;
+};
+
 /**
  * Copies the billing details from the payment method to the customer object.
  */
@@ -234,17 +265,50 @@ const manageSubscriptionStatusChange = async (
   createAction = false
 ) => {
   let customerData: Prisma.customerGetPayload<{}> | null = null;
+  let uuid: string | null = null;
   // Get customer's UUID from mapping table.
   try {
     customerData = await prisma.customer.findFirst({
       where: { stripe_customer_id: customerId },
     });
+    if (customerData) {
+      uuid = customerData.workspace_id;
+    } else {
+      //If no already existing customer, look if a candidate workspace exists
+      const stripeCustomer = await stripe.customers.retrieve(customerId);
+      if (!stripeCustomer || stripeCustomer.deleted) {
+        throw new Error(
+          `No customer found for subscription ID: ${subscriptionId}`
+        );
+      }
+      const candidateWorkspace = await prisma.candidateWorkspace.findFirst({
+        where: { id: stripeCustomer.metadata.supabaseUUID },
+      });
+      if (
+        candidateWorkspace &&
+        stripeCustomer &&
+        !stripeCustomer.deleted &&
+        stripeCustomer.email
+      ) {
+        uuid = candidateWorkspace.id;
+        //Create the new workspace
+        const newWorkspace = await createPaymentWorkspace(
+          candidateWorkspace.name,
+          stripeCustomer.email
+        );
+        if (!newWorkspace.isSuccess) {
+          throw new Error("Workspace creation failed.");
+        }
+        uuid = newWorkspace.id!;
+      }
+    }
   } catch (noCustomerError: any) {
-    throw new Error(`Customer lookup failed: ${noCustomerError.message}`);
+    throw new Error(`No customer found for subscription ID: ${subscriptionId}`);
   }
-
-  const { workspace_id: uuid } = customerData!;
-
+  if (!uuid) {
+    console.log("No UUID", customerId);
+    throw new Error(`No customer found for subscription ID: ${subscriptionId}`);
+  }
   const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
     expand: ["default_payment_method"],
   });
@@ -309,4 +373,5 @@ export {
   deletePriceRecord,
   createOrRetrieveCustomer,
   manageSubscriptionStatusChange,
+  createCustomerForNewWorkspace,
 };

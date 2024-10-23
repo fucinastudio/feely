@@ -1,5 +1,5 @@
-import React from 'react';
-import { Palette, Users, Clock } from 'lucide-react';
+import React, { useMemo } from "react";
+import { Palette, Users, Clock } from "lucide-react";
 
 import {
   Badge,
@@ -16,20 +16,64 @@ import {
   SegmentedList,
   SegmentedTrigger,
   Separator,
-} from '@fucina/ui';
+} from "@fucina/ui";
+import { getStripe } from "@/utils/stripe/client";
+import { useGetPrices } from "@/app/api/controllers/priceController";
+import { Prisma } from "@prisma/client";
+import { useWorkspace } from "@/context/workspaceContext";
+import { checkoutWithStripe } from "@/utils/stripe/server";
+import { getPrice } from "@/utils/utils";
 
 interface UpgradeCardProps {
-  price: number;
+  price: Prisma.priceGetPayload<{}>;
   payment: string;
 }
 
 const UpgradeCard = ({ price, payment }: UpgradeCardProps) => {
+  const { workspace, org } = useWorkspace();
+
+  const handleClick = async () => {
+    console.log("Click");
+    if (!workspace) {
+      return;
+    }
+    const { errorRedirect, sessionId } = await checkoutWithStripe(
+      price,
+      workspace?.id,
+      `${org}/`
+    );
+    if (errorRedirect) {
+      console.log("Error redirect", errorRedirect);
+      // setPriceIdLoading(undefined);
+      // return router.push(errorRedirect);
+    }
+
+    if (!sessionId) {
+      console.log("Error sessionId", sessionId);
+      return;
+      // setPriceIdLoading(undefined);
+      // return router.push(
+      //   getErrorRedirect(
+      //     currentPath,
+      //     'An unknown error occurred.',
+      //     'Please try again later or contact a system administrator.'
+      //   )
+      // );
+    }
+
+    const stripe = await getStripe();
+    stripe?.redirectToCheckout({ sessionId });
+  };
+  const isYearly = price.interval === "year";
+  const amountToShow = price.unit_amount
+    ? getPrice(price.unit_amount, isYearly)
+    : "NaN";
   return (
     <Card className="flex flex-col gap-5 p-6 w-full">
       <div className="flex flex-col gap-1">
         <p className="text-heading-body">Pro plan</p>
         <div className="flex items-end gap-1">
-          <p className="text-heading-section">{price}€</p>
+          <p className="text-heading-section">{amountToShow}€</p>
           <span className="pb-1 text-description text-sm">/{payment}</span>
         </div>
       </div>
@@ -70,7 +114,9 @@ const UpgradeCard = ({ price, payment }: UpgradeCardProps) => {
         </div>
       </div>
       <Separator />
-      <Button className="w-full">Upgrade to Pro</Button>
+      <Button className="w-full" onClick={() => handleClick()}>
+        Upgrade to Pro
+      </Button>
     </Card>
   );
 };
@@ -80,6 +126,15 @@ interface UpgradePlanProps {
 }
 
 const UpgradePlan = ({ children }: UpgradePlanProps) => {
+  const { data: pricesFromDb } = useGetPrices();
+
+  const prices = useMemo(() => {
+    if (!pricesFromDb) {
+      return [];
+    }
+    return pricesFromDb.data.prices;
+  }, [pricesFromDb]);
+
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -100,12 +155,29 @@ const UpgradePlan = ({ children }: UpgradePlanProps) => {
               Pay yearly <Badge variant="brand">Save 20%</Badge>
             </SegmentedTrigger>
           </SegmentedList>
-          <SegmentedContent value="month" className="px-0">
-            <UpgradeCard price={25} payment="per month" />
-          </SegmentedContent>
-          <SegmentedContent value="year" className="px-0">
-            <UpgradeCard price={20} payment="per month, billed yearly" />
-          </SegmentedContent>
+          {prices
+            .filter((price) => price.interval && price.unit_amount)
+            .map((price) => {
+              const isMonthly = price.interval === "month";
+              return (
+                <SegmentedContent
+                  value={price.interval!}
+                  className="px-0"
+                  key={price.id}
+                >
+                  <UpgradeCard
+                    price={price}
+                    payment={
+                      isMonthly ? "per month" : "per month, billed yearly"
+                    }
+                  />
+                </SegmentedContent>
+                // <Button onClick={() => handleClick(price)} key={price.id}>
+                //   {price.product.name} {((price.unit_amount ?? 0) / 100).toFixed(2)}{" "}
+                //   {price.currency}/{price.interval}
+                // </Button>
+              );
+            })}
         </Segmented>
       </DialogContent>
     </Dialog>
