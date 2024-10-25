@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React, { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronUp, Inbox, Ellipsis } from "lucide-react";
+import React, { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { ChevronUp, Inbox, Trash } from 'lucide-react';
 
 import {
   Button,
@@ -35,24 +35,31 @@ import {
   SelectGroupLabel,
   SelectGroup,
   toast,
-} from "@fucina/ui";
+  Tooltip,
+} from '@fucina/ui';
 import {
   useDeleteIdea,
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
-} from "@/app/api/controllers/ideaController";
-import { useCreateComment } from "@/app/api/controllers/commentController";
+} from '@/app/api/controllers/ideaController';
+import { useCreateComment } from '@/app/api/controllers/commentController';
 import CommentCard, {
   OptimisticComment,
-} from "@/app/[org]/(pages)/ideas/[id]/components/comment";
-import { useAuth } from "@/context/authContext";
-import { useWorkspace } from "@/context/workspaceContext";
-import Loading from "@/app/loading";
-import { useOptimistic } from "@/utils/useOptimistic";
-import { CommentType } from "@/types/comment";
-import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
-import HoverCardUser from "@/components/org/hover-card-user";
+} from '@/app/[org]/(pages)/ideas/[id]/components/comment';
+import { useAuth } from '@/context/authContext';
+import { useWorkspace } from '@/context/workspaceContext';
+import Loading from '@/app/loading';
+import { useOptimistic } from '@/utils/useOptimistic';
+import { CommentType } from '@/types/comment';
+import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+import HoverCardUser from '@/components/org/hover-card-user';
+import {
+  DeleteDialog,
+  DeleteDialogContent,
+  DeleteDialogTrigger,
+} from '@/components/org/delete-dialog';
+import { cn } from '@fucina/utils';
 
 export interface IPropsIdeaPage {
   params: {
@@ -69,7 +76,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
   const pathName = usePathname();
 
   const handleClose = () => {
-    router.push(pathName?.substring(0, pathName?.lastIndexOf("/")) ?? "/");
+    router.push(pathName?.substring(0, pathName?.lastIndexOf('/')) ?? '/');
   };
   const { data: ideaData, isLoading: isLoadingGetIdea } = useGetIdeaById({
     id,
@@ -78,7 +85,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     return ideaData?.data.idea;
   }, [ideaData]);
 
-  const [comment, setComment] = useState<string>("");
+  const [comment, setComment] = useState<string>('');
 
   const { mutateAsync: createComment, isLoading: isLoadingCreateComment } =
     useCreateComment();
@@ -105,7 +112,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
         });
       }
       const content = comment;
-      setComment("");
+      setComment('');
       const res = await createComment({
         ideaId: id,
         comment: content,
@@ -238,11 +245,36 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   <ChevronUp size={24} />
                   <p className="text-md">{votedCountToShow}</p>
                 </Toggle>
-                <div className="flex flex-col gap-1">
+                <div
+                  className={cn(
+                    'flex flex-col gap-1 w-full',
+                    isAdminOrAuthor ? 'pr-10' : ''
+                  )}
+                >
                   <SheetTitle>{idea?.title}</SheetTitle>
                   <SheetDescription>{idea?.description}</SheetDescription>
                 </div>
               </div>
+              {isAdminOrAuthor ? (
+                <DeleteDialog>
+                  <DeleteDialogTrigger>
+                    <Button
+                      variant="danger"
+                      icon
+                      size="small"
+                      className="top-4 sm:top-6 right-14 sm:right-16 absolute"
+                      isLoading={isLoadingDeleteIdea}
+                    >
+                      <Trash />
+                    </Button>
+                  </DeleteDialogTrigger>
+                  <DeleteDialogContent
+                    title="Are you absolutely sure?"
+                    description="This action cannot be undone. This will permanently delete the idea and remove all data from our servers."
+                    onClick={handleDeleteIdea}
+                  />
+                </DeleteDialog>
+              ) : null}
             </SheetHeader>
             <div className="flex flex-col gap-4 py-4 w-full overflow-auto">
               <div className="flex flex-col gap-3 sm:gap-1.5 px-0.5 sm:px-0 w-full">
@@ -311,7 +343,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       defaultValue={idea.statusId ?? undefined}
                       onValueChange={(ev) => handleChangeStatus(ev)}
                     >
-                      <SelectTrigger className="hover:bg-item-active active:bg-item-selected shadow-none border-none rounded w-36 h-9 font-medium">
+                      <SelectTrigger className="hover:bg-item-active active:bg-item-selected shadow-none border-none rounded w-44 h-9 font-medium">
                         <SelectValue placeholder="Chose one status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -342,10 +374,10 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       defaultValue={idea.topicId ?? undefined}
                       onValueChange={(ev) => handleChangeTopic(ev)}
                     >
-                      <SelectTrigger className="hover:bg-item-active active:bg-item-selected shadow-none border-none rounded w-36 h-9 font-medium">
+                      <SelectTrigger className="hover:bg-item-active active:bg-item-selected shadow-none border-none rounded w-44 h-9 font-medium">
                         <SelectValue placeholder="Chose one topic" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="min-w-44">
                         <SelectGroup>
                           <SelectGroupLabel>Topic</SelectGroupLabel>
                           {topics?.map((topic) => {
@@ -383,7 +415,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                       <Button variant="text">
                         <span className="flex justify-start items-center gap-2">
                           {idea.voters.length === 0 ? (
-                            "0 Voters"
+                            '0 Voters'
                           ) : (
                             <>
                               <div className="flex justify-start items-center -space-x-1.5">
@@ -462,12 +494,6 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   />
                 </div>
                 <div className="flex justify-end items-center px-1 w-full">
-                  <Button
-                    onClick={handleDeleteIdea}
-                    isLoading={isLoadingDeleteIdea}
-                  >
-                    Delete idea
-                  </Button>
                   <Button
                     disabled={!comment}
                     isLoading={isLoadingCreateComment}
