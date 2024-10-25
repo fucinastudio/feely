@@ -1,14 +1,15 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import client, { FeelyRequest } from '@/app/api/apiClient';
+import client, { FeelyRequest } from "@/app/api/apiClient";
 import {
   ICreateIdea,
   IPatchIdea,
   IVoteIdea,
-} from '@/app/api/apiServerActions/ideaApiServerActions';
-import { Endpoints } from '@/app/api/endpoints';
-import { IGetIdeasByWorkspaceName } from '@/types/DTO/getIdeasByWorkspaceNameDTO';
-import { IdeaType, IdeaWithCommentsType } from '@/types/idea';
+} from "@/app/api/apiServerActions/ideaApiServerActions";
+import { Endpoints } from "@/app/api/endpoints";
+import { IGetIdeasByWorkspaceName } from "@/types/DTO/getIdeasByWorkspaceNameDTO";
+import { IdeaType, IdeaWithCommentsType } from "@/types/idea";
+import { AxiosError, AxiosResponse } from "axios";
 
 export const useGetIdeasByWorkspaceName = (
   params: IGetIdeasByWorkspaceName,
@@ -17,14 +18,14 @@ export const useGetIdeasByWorkspaceName = (
   const urlParams = new URLSearchParams({
     workspaceName: params.workspaceName,
     ...(params.title ? { title: params.title } : {}),
-    ...(params.statusId ? { statusId: params.statusId.sort().join(',') } : {}),
-    ...(params.topicId ? { topicId: params.topicId.sort().join(',') } : {}),
+    ...(params.statusId ? { statusId: params.statusId.sort().join(",") } : {}),
+    ...(params.topicId ? { topicId: params.topicId.sort().join(",") } : {}),
     ...(params.orderBy ? { orderBy: params.orderBy } : {}),
   });
   const request: FeelyRequest = {
     url: `${Endpoints.idea.workspace.main}?${urlParams.toString()}`,
     config: {
-      method: 'get',
+      method: "get",
     },
   };
   const requestConfig = {
@@ -51,7 +52,7 @@ export const useCreateIdea = () => {
     const req: FeelyRequest = {
       url: Endpoints.idea.createIdea,
       config: {
-        method: 'POST',
+        method: "POST",
         data: JSON.stringify({ data: createIdea }),
       },
     };
@@ -74,7 +75,7 @@ export const useGetIdeaById = ({ id }: { id: string }) => {
   const request: FeelyRequest = {
     url: `${Endpoints.idea.main}?${params.toString()}`,
     config: {
-      method: 'get',
+      method: "get",
     },
   };
 
@@ -107,7 +108,7 @@ export const useGetIdeaByUserInWorkspace = (
   const request: FeelyRequest = {
     url: `${Endpoints.idea.workspace.user}?${params.toString()}`,
     config: {
-      method: 'get',
+      method: "get",
     },
   };
 
@@ -135,7 +136,7 @@ export const useVoteIdea = () => {
     const req: FeelyRequest = {
       url: Endpoints.idea.vote,
       config: {
-        method: 'POST',
+        method: "POST",
         data: JSON.stringify({ data: voteIdea }),
       },
     };
@@ -159,7 +160,7 @@ export const usePatchIdea = () => {
     const req: FeelyRequest = {
       url: Endpoints.idea.main,
       config: {
-        method: 'PATCH',
+        method: "PATCH",
         data: JSON.stringify({ data: patchIdeaBody }),
       },
     };
@@ -175,4 +176,28 @@ export const usePatchIdea = () => {
       },
     }
   );
+};
+
+export const useDeleteIdea = () => {
+  const queryClient = useQueryClient();
+  const deleteIdeaFunction = async (ideaId: string) => {
+    const req: FeelyRequest = {
+      url: `${Endpoints.idea.main}?id=${ideaId}`,
+      config: {
+        method: "DELETE",
+      },
+    };
+    return await client(req);
+  };
+
+  return useMutation<
+    { data: { message: string } },
+    AxiosError<{ message: string }> | null,
+    string
+  >(deleteIdeaFunction, {
+    onSettled: (_a, _b, variables) => {
+      queryClient.invalidateQueries([Endpoints.idea.workspace.main]);
+      queryClient.invalidateQueries([Endpoints.idea.main, variables]);
+    },
+  });
 };

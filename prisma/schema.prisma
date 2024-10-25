@@ -142,7 +142,7 @@ model idea {
 model votedIdea {
   ideaId     String
   userId     String
-  idea       idea     @relation(fields: [ideaId], references: [id])
+  idea       idea     @relation(fields: [ideaId], references: [id], onDelete: Cascade)
   user       users    @relation(fields: [userId], references: [id])
   created_at DateTime @default(now())
 
@@ -157,8 +157,8 @@ model comment {
   ideaId        String
   parentId      String?
   author        users          @relation(fields: [authorId], references: [id])
-  idea          idea           @relation(fields: [ideaId], references: [id])
-  parent        comment?       @relation("ChildComments", fields: [parentId], references: [id])
+  idea          idea           @relation(fields: [ideaId], references: [id], onDelete: Cascade)
+  parent        comment?       @relation("ChildComments", fields: [parentId], references: [id], onDelete: Cascade)
   childComments comment[]      @relation("ChildComments")
   votes         votedComment[]
 }
@@ -166,7 +166,7 @@ model comment {
 model votedComment {
   commentId  String
   userId     String
-  comment    comment  @relation(fields: [commentId], references: [id])
+  comment    comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
   user       users    @relation(fields: [userId], references: [id])
   created_at DateTime @default(now())
 

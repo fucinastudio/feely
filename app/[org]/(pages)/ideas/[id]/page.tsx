@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ChevronUp, Inbox, Ellipsis } from "lucide-react";
@@ -34,8 +34,10 @@ import {
   HoverCardContent,
   SelectGroupLabel,
   SelectGroup,
+  toast,
 } from "@fucina/ui";
 import {
+  useDeleteIdea,
   useGetIdeaById,
   usePatchIdea,
   useVoteIdea,
@@ -177,9 +179,33 @@ const IdeaPage = (props: IPropsIdeaPage) => {
     return isVoted ? votedCountWithoutUser + 1 : votedCountWithoutUser;
   }, [isVoted, votedCountWithoutUser]);
 
-  const canEditTopic = useMemo(() => {
+  const isAdminOrAuthor = useMemo(() => {
     return isAdmin || idea?.authorId === user?.id;
   }, [isAdmin, idea, user]);
+
+  const {
+    mutate: deleteIdea,
+    isLoading: isLoadingDeleteIdea,
+    error: errorDeleteIdea,
+    isSuccess: isSuccessDeleteIdea,
+  } = useDeleteIdea();
+
+  useEffect(() => {
+    if (isSuccessDeleteIdea) {
+      handleClose();
+    }
+  }, [isSuccessDeleteIdea]);
+
+  useEffect(() => {
+    if (errorDeleteIdea) {
+      toast.error(errorDeleteIdea.response?.data.message);
+    }
+  }, [errorDeleteIdea]);
+
+  const handleDeleteIdea = () => {
+    if (!idea) return;
+    deleteIdea(idea.id);
+  };
 
   return (
     <div>
@@ -311,7 +337,7 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   <p className="px-3 sm:px-0 min-w-20 text-description text-md">
                     Topic
                   </p>
-                  {isAdmin ? (
+                  {isAdminOrAuthor ? (
                     <Select
                       defaultValue={idea.topicId ?? undefined}
                       onValueChange={(ev) => handleChangeTopic(ev)}
@@ -436,6 +462,12 @@ const IdeaPage = (props: IPropsIdeaPage) => {
                   />
                 </div>
                 <div className="flex justify-end items-center px-1 w-full">
+                  <Button
+                    onClick={handleDeleteIdea}
+                    isLoading={isLoadingDeleteIdea}
+                  >
+                    Delete idea
+                  </Button>
                   <Button
                     disabled={!comment}
                     isLoading={isLoadingCreateComment}
