@@ -33,7 +33,6 @@ const UpgradeCard = ({ price, payment }: UpgradeCardProps) => {
   const { workspace, org } = useWorkspace();
 
   const handleClick = async () => {
-    console.log("Click");
     if (!workspace) {
       return;
     }
@@ -123,9 +122,10 @@ const UpgradeCard = ({ price, payment }: UpgradeCardProps) => {
 
 interface UpgradePlanProps {
   children: React.ReactNode;
+  disabled?: boolean;
 }
 
-const UpgradePlan = ({ children }: UpgradePlanProps) => {
+const UpgradePlan = ({ children, disabled }: UpgradePlanProps) => {
   const { data: pricesFromDb } = useGetPrices();
 
   const prices = useMemo(() => {
@@ -136,7 +136,7 @@ const UpgradePlan = ({ children }: UpgradePlanProps) => {
   }, [pricesFromDb]);
 
   return (
-    <Dialog>
+    <Dialog open={disabled ? false : undefined}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>

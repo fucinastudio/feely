@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { FormEvent, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
+import React, { FormEvent, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import {
   Button,
@@ -16,19 +16,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@fucina/ui';
-import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/loading';
-import AvatarPicker from '@/app/[org]/(pages)/settings/general/components/avatarPicker';
+  Switch,
+} from "@fucina/ui";
+import { useWorkspace } from "@/context/workspaceContext";
+import Loading from "@/app/loading";
+import AvatarPicker from "@/app/[org]/(pages)/settings/general/components/avatarPicker";
 import {
   useCheckWorkspaceExistance,
   usePatchWorkspace,
-} from '@/app/api/controllers/workspaceController';
-import {
-  DeleteDialog,
-  DeleteDialogContent,
-  DeleteDialogTrigger,
-} from '@/components/org/delete-dialog';
+} from "@/app/api/controllers/workspaceController";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { usePatchWorkspaceSettings } from "@/app/api/controllers/workspaceSettingsController";
+import UpgradePlan from "@/components/org/upgrade-plan";
 
 function General() {
   const {
@@ -39,26 +38,26 @@ function General() {
   const FormSchema = z.object({
     workspaceId: z.string(),
     companyName: z.string().min(2, {
-      message: 'Company name must be at least 2 characters.',
+      message: "Company name must be at least 2 characters.",
     }),
     companyUrl: z
       .string()
       .min(2, {
-        message: 'Company url must be at least 2 characters.',
+        message: "Company url must be at least 2 characters.",
       })
       .regex(/^[a-zA-Z0-9-_]+$/, {
         message:
-          'Invalid input: only alphanumeric characters, hyphens, and underscores are allowed.',
+          "Invalid input: only alphanumeric characters, hyphens, and underscores are allowed.",
       })
       .refine(async (value) => {
         if (!value || value === org) return true;
         const checkSimilar = await checkWorkspaceExistanceAsync(value);
         return !checkSimilar.data.exists;
-      }, 'This workspace name is already taken.'),
+      }, "This workspace name is already taken."),
     logoLink: z.string().optional(),
   });
 
-  const { org, workspace, isLoadingWorkspace } = useWorkspace();
+  const { org, workspace, isLoadingWorkspace, isProWorkspace } = useWorkspace();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -86,10 +85,10 @@ function General() {
     form.handleSubmit(async () => {
       try {
         const formData = new FormData(event.target as any);
-        const workspaceId = formData.get('workspaceId');
-        const workspaceExternalName = formData.get('companyName');
-        const workspaceName = formData.get('companyUrl');
-        const logoLink = formData.get('logoLink');
+        const workspaceId = formData.get("workspaceId");
+        const workspaceExternalName = formData.get("companyName");
+        const workspaceName = formData.get("companyUrl");
+        const logoLink = formData.get("logoLink");
         const response = await patchWorkspaceAsync({
           workspaceId: workspaceId as string,
           ...(workspaceExternalName
@@ -110,6 +109,21 @@ function General() {
       }
     })(event);
   };
+
+  const { mutateAsync: patchWorkspaceSettingsAsync } =
+    usePatchWorkspaceSettings();
+
+  const [optimisticShowBranding, handleChangeOptimisticShowBranding] =
+    useOptimistic({
+      mainState: workspace?.workspaceSettings?.showBranding,
+      callOnChange: (state: boolean | undefined) => {
+        if (!workspace) return;
+        patchWorkspaceSettingsAsync({
+          workspaceName: workspace?.name,
+          showBranding: state,
+        });
+      },
+    });
 
   return (
     <div className="flex flex-col gap-5 md:gap-6 w-full">
@@ -181,6 +195,18 @@ function General() {
                       </FormItem>
                     )}
                   />
+                  <div className="flex justify-between items-center w-full">
+                    <p className="font-medium text-md">Show feely branding</p>
+                    <UpgradePlan disabled={isProWorkspace}>
+                      <Switch
+                        checked={optimisticShowBranding}
+                        onCheckedChange={(newValue: boolean) => {
+                          if (!isProWorkspace) return;
+                          handleChangeOptimisticShowBranding(newValue);
+                        }}
+                      />
+                    </UpgradePlan>
+                  </div>
                 </div>
               </div>
             )}
