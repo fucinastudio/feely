@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
+import React from 'react';
+import Link from 'next/link';
 
-import { Button } from "@fucina/ui";
-import { useWorkspace } from "@/context/workspaceContext";
+import { Button } from '@fucina/ui';
+import { useWorkspace } from '@/context/workspaceContext';
 
 export default function BrandBadge() {
   const { workspace } = useWorkspace();

@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   createContext,
@@ -6,24 +6,22 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
-} from "react";
+} from 'react';
 
-import { useGetStatusesByWorkspaceName } from "@/app/api/controllers/statusController";
-import { useGetTopicsByWorkspaceName } from "@/app/api/controllers/topicController";
-import { useGetWorkspace } from "@/app/api/controllers/workspaceController";
-import { StatusType } from "@/types/status";
-import { TopicType } from "@/types/topic";
-import { WorkspaceTypeWithImageAndSettings } from "@/types/workspace";
+import { useGetStatusesByWorkspaceName } from '@/app/api/controllers/statusController';
+import { useGetTopicsByWorkspaceName } from '@/app/api/controllers/topicController';
+import { useGetWorkspace } from '@/app/api/controllers/workspaceController';
+import { StatusType } from '@/types/status';
+import { TopicType } from '@/types/topic';
+import { WorkspaceTypeWithImageAndSettings } from '@/types/workspace';
 import {
   NeutralColorType,
   PrimaryColorType,
   changeFontFamily,
   changeNeutralColor,
   changePrimaryColor,
-} from "@/utils/themes";
-import { UserType } from "@/types/user";
+} from '@/utils/themes';
 
 interface IWorkspaceContext {
   org: string;
@@ -40,7 +38,7 @@ const WorkspaceContext = createContext<IWorkspaceContext | undefined>(
   undefined
 );
 
-WorkspaceContext.displayName = "WorkspaceContext";
+WorkspaceContext.displayName = 'WorkspaceContext';
 
 export const WorkspaceProvider = ({
   children,
@@ -85,7 +83,7 @@ export const WorkspaceProvider = ({
           ...workspace?.data.workspace,
           imageUrl: workspace?.data.workspace?.imageUrl
             ? workspace.data.workspace.imageUrl + `?c=${randomNumber}`
-            : "",
+            : '',
         }
       : null;
   }, [workspace, randomNumber]);
@@ -127,7 +125,7 @@ export const WorkspaceProvider = ({
 export const useWorkspace = () => {
   const context = useContext(WorkspaceContext);
   if (context === undefined) {
-    throw new Error("useWorkspace must be used within a WorkspaceProvider");
+    throw new Error('useWorkspace must be used within a WorkspaceProvider');
   }
   return context;
 };
