@@ -10,6 +10,7 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
+  toast,
 } from "@fucina/ui";
 import { createStripePortal } from "@/utils/stripe/server";
 
@@ -27,9 +28,13 @@ const SettingsNavbar = () => {
         workspace?.id,
         window.location.pathname
       );
-      window.open(url, "_blank");
+      if (url) {
+        window.open(url, "_blank");
+      }
     } catch (error) {
-      console.log("Error", error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      }
     }
   };
 

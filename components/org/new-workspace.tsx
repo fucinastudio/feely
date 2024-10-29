@@ -13,6 +13,7 @@ import {
   Form,
   Input,
   Label,
+  toast,
 } from "@fucina/ui";
 import { useCheckWorkspaceExistance } from "@/app/api/controllers/workspaceController";
 import { checkoutWithStripeNewWorkspace } from "@/utils/stripe/server";
@@ -73,12 +74,14 @@ const NewWorkspaceContent = () => {
       `${org}/`
     );
     if (errorRedirect) {
+      toast.error(errorRedirect);
       console.log("Error redirect", errorRedirect);
       // setPriceIdLoading(undefined);
       // return router.push(errorRedirect);
     }
 
     if (!sessionId) {
+      toast.error("An unknown error occurred.");
       console.log("Error sessionId", sessionId);
       return;
       // setPriceIdLoading(undefined);

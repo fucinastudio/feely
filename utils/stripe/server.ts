@@ -23,7 +23,7 @@ type CheckoutResponse = {
 export async function checkoutWithStripe(
   price: Prisma.priceGetPayload<{}>,
   workspaceId: string,
-  redirectPath: string = "/account"
+  redirectPath: string = "/redirect_to_workspace"
 ): Promise<CheckoutResponse> {
   try {
     // Get the user from Supabase auth
@@ -49,10 +49,10 @@ export async function checkoutWithStripe(
       });
     } catch (err) {
       console.error(err);
-      throw new Error("User is not the owner of the workspace.");
+      throw new Error("You are not the owner of the workspace.");
     }
     if (!workspace) {
-      throw new Error("User is not the owner of the workspace.");
+      throw new Error("You are not the owner of the workspace.");
     }
     // Retrieve or create the customer in Stripe
     let customer: string;
@@ -115,19 +115,11 @@ export async function checkoutWithStripe(
   } catch (error) {
     if (error instanceof Error) {
       return {
-        errorRedirect: getErrorRedirect(
-          redirectPath,
-          error.message,
-          "Please try again later or contact a system administrator."
-        ),
+        errorRedirect: error.message,
       };
     } else {
       return {
-        errorRedirect: getErrorRedirect(
-          redirectPath,
-          "An unknown error occurred.",
-          "Please try again later or contact a system administrator."
-        ),
+        errorRedirect: "An unknown error occurred.",
       };
     }
   }
@@ -136,7 +128,7 @@ export async function checkoutWithStripe(
 export async function checkoutWithStripeNewWorkspace(
   price: Prisma.priceGetPayload<{}>,
   workspaceName: string,
-  redirectPath: string = "/account"
+  redirectPath: string = "/redirect_to_workspace"
 ): Promise<CheckoutResponse> {
   try {
     // Get the user from Supabase auth
@@ -216,19 +208,11 @@ export async function checkoutWithStripeNewWorkspace(
   } catch (error) {
     if (error instanceof Error) {
       return {
-        errorRedirect: getErrorRedirect(
-          redirectPath,
-          error.message,
-          "Please try again later or contact a system administrator."
-        ),
+        errorRedirect: error.message,
       };
     } else {
       return {
-        errorRedirect: getErrorRedirect(
-          redirectPath,
-          "An unknown error occurred.",
-          "Please try again later or contact a system administrator."
-        ),
+        errorRedirect: "An unknown error occurred.",
       };
     }
   }
@@ -262,10 +246,10 @@ export async function createStripePortal(
       });
     } catch (err) {
       console.error(err);
-      throw new Error("User is not the owner of the workspace.");
+      throw new Error("You are not the owner of the workspace.");
     }
     if (!workspace) {
-      throw new Error("User is not the owner of the workspace.");
+      throw new Error("You are not the owner of the workspace.");
     }
 
     let customer;
@@ -286,7 +270,7 @@ export async function createStripePortal(
     try {
       const { url } = await stripe.billingPortal.sessions.create({
         customer,
-        return_url: getUrl("/account"),
+        return_url: getUrl(currentPath),
       });
       if (!url) {
         throw new Error("Could not create billing portal");
@@ -299,17 +283,8 @@ export async function createStripePortal(
   } catch (error) {
     if (error instanceof Error) {
       console.error(error);
-      return getErrorRedirect(
-        currentPath,
-        error.message,
-        "Please try again later or contact a system administrator."
-      );
     } else {
-      return getErrorRedirect(
-        currentPath,
-        "An unknown error occurred.",
-        "Please try again later or contact a system administrator."
-      );
     }
+    throw error;
   }
 }
