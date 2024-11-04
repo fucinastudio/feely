@@ -8,7 +8,11 @@ import {
 import { Endpoints } from "@/app/api/endpoints";
 import { IGetUserDTO } from "@/types/DTO/getUserDTO";
 import { IGetUserInWorkspaceDTO } from "@/types/DTO/getUserInWorkspaceDTO";
-import { UserType, UserTypeWithPoints } from "@/types/user";
+import {
+  UserType,
+  UserTypeWithPoints,
+  UserTypeWithWorkspaces,
+} from "@/types/user";
 
 export const useGetUser = (params: IGetUserDTO, enabled = true) => {
   const urlParams = new URLSearchParams({
@@ -31,7 +35,7 @@ export const useGetUser = (params: IGetUserDTO, enabled = true) => {
     {
       data: {
         message: string;
-        user: UserType;
+        user: UserTypeWithWorkspaces;
         isAdmin: boolean;
       };
     },

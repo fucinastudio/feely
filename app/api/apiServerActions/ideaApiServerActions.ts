@@ -646,7 +646,7 @@ export const patchIdea = async ({
         isSuccess: false,
         error: "Status not found",
       };
-    } else if (status?.order === 3) {
+    } else if (status?.order === Constants.completedStatusIndex) {
       isNewStatusCompleted = true;
     } else {
       isNewStatusCompleted = false;
@@ -692,9 +692,12 @@ export const patchIdea = async ({
   } else {
     //Grant points if moved to completed
     //=======================NOTE=======================
-    //FOR THE MOMENT WE CANNOT CHANGE THE STATUSES, SO WE CONSIDER THE NUMBER 3 (COMPLEPTED) AS THE ONE THAT GRANTS POINTS
+    //FOR THE MOMENT WE CANNOT CHANGE THE STATUSES, SO WE CONSIDER THE NUMBER 3 (COMPLETED) AS THE ONE THAT GRANTS POINTS
     //=======================NOTE=======================
-    if (ideaUpdated.status?.order === 3 && previousStatus?.order !== 3) {
+    if (
+      ideaUpdated.status?.order === Constants.completedStatusIndex &&
+      previousStatus?.order !== Constants.completedStatusIndex
+    ) {
       const pointsToGrant = Constants.pointsForCompletedIdea;
       await prisma.userInWorkspace.update({
         where: {
@@ -722,8 +725,8 @@ export const patchIdea = async ({
         },
       });
     } else if (
-      previousStatus?.order === 3 &&
-      ideaUpdated.status?.order !== 3 &&
+      previousStatus?.order === Constants.completedStatusIndex &&
+      ideaUpdated.status?.order !== Constants.completedStatusIndex &&
       idea.completed_at
     ) {
       //Remove the points if moved from completed
@@ -774,6 +777,251 @@ export const patchIdea = async ({
     }
     return {
       isSuccess: true,
+    };
+  }
+};
+
+export const deleteIdea = async ({
+  ideaId,
+  access_token,
+}: {
+  ideaId: string;
+  access_token: string;
+}) => {
+  const supabase = createClient();
+  const currentUser = await supabase.auth.getUser(access_token);
+  if (!currentUser.data.user) {
+    return {
+      isSuccess: false,
+      error: "Session not found",
+    };
+  }
+  const user = await prisma.users.findFirst({
+    where: {
+      id: currentUser.data.user.id,
+    },
+  });
+  if (!user) {
+    return {
+      isSuccess: false,
+      error: "User not found",
+    };
+  }
+  const idea = await prisma.idea.findFirst({
+    where: {
+      id: ideaId,
+    },
+  });
+  if (!idea) {
+    return {
+      isSuccess: false,
+      error: "Idea not found",
+    };
+  }
+
+  const checkIsAdmin = await isAdmin({
+    current_org: idea.workspaceId,
+    check_option: "id",
+    access_token,
+  });
+  if (!checkIsAdmin.isSuccess && idea.authorId !== user.id) {
+    return {
+      isSuccess: false,
+      error: "Unauthorized user",
+    };
+  }
+  try {
+    const ideaComments = await prisma.comment.findMany({
+      where: {
+        ideaId,
+      },
+      include: {
+        votes: true,
+      },
+    });
+    //Since these are getting deleted, we need to remove the points
+    const pointsToGrant = Constants.pointsForReceivedUpvote;
+    ideaComments.forEach(async (comment) => {
+      comment.votes.forEach(async (vote) => {
+        const {
+          applyToWeekly,
+          applyToMonthly,
+          applyToQuarterly,
+          applyToYearly,
+        } = getPointsToModify(vote.created_at);
+        await prisma.userInWorkspace.update({
+          where: {
+            userId_workspaceId: {
+              userId: comment.authorId,
+              workspaceId: idea.workspaceId,
+            },
+          },
+          data: {
+            points: {
+              decrement: pointsToGrant,
+            },
+            ...(applyToWeekly
+              ? {
+                  pointsInWeek: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+            ...(applyToMonthly
+              ? {
+                  pointsInMonth: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+            ...(applyToQuarterly
+              ? {
+                  pointsInQuarter: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+            ...(applyToYearly
+              ? {
+                  pointsInYear: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+          },
+        });
+      });
+    });
+    const deletedIdea = await prisma.idea.delete({
+      where: {
+        id: ideaId,
+      },
+      include: {
+        voters: true,
+        status: true,
+      },
+    });
+
+    if (!deletedIdea) {
+      return {
+        isSuccess: false,
+        message: "An error occurred while deleting the idea",
+      };
+    } else {
+      //Remove the points given by the votes
+      deletedIdea.voters.forEach(async (voter) => {
+        const {
+          applyToWeekly,
+          applyToMonthly,
+          applyToQuarterly,
+          applyToYearly,
+        } = getPointsToModify(voter.created_at);
+        await prisma.userInWorkspace.update({
+          where: {
+            userId_workspaceId: {
+              userId: idea.authorId,
+              workspaceId: deletedIdea.workspaceId,
+            },
+          },
+          data: {
+            points: {
+              decrement: Constants.pointsForReceivedUpvote,
+            },
+            ...(applyToWeekly
+              ? {
+                  pointsInWeek: {
+                    decrement: Constants.pointsForReceivedUpvote,
+                  },
+                }
+              : {}),
+            ...(applyToMonthly
+              ? {
+                  pointsInMonth: {
+                    decrement: Constants.pointsForReceivedUpvote,
+                  },
+                }
+              : {}),
+            ...(applyToQuarterly
+              ? {
+                  pointsInQuarter: {
+                    decrement: Constants.pointsForReceivedUpvote,
+                  },
+                }
+              : {}),
+            ...(applyToYearly
+              ? {
+                  pointsInYear: {
+                    decrement: Constants.pointsForReceivedUpvote,
+                  },
+                }
+              : {}),
+          },
+        });
+      });
+      if (
+        deletedIdea.status?.order === Constants.completedStatusIndex &&
+        deletedIdea.completed_at
+      ) {
+        //Remove the points if moved from completed
+        const pointsToGrant = Constants.pointsForCompletedIdea;
+        const {
+          applyToWeekly,
+          applyToMonthly,
+          applyToQuarterly,
+          applyToYearly,
+        } = getPointsToModify(deletedIdea.completed_at);
+        await prisma.userInWorkspace.update({
+          where: {
+            userId_workspaceId: {
+              userId: deletedIdea.authorId,
+              workspaceId: deletedIdea.workspaceId,
+            },
+          },
+          data: {
+            points: {
+              decrement: pointsToGrant,
+            },
+            ...(applyToWeekly
+              ? {
+                  pointsInWeek: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+            ...(applyToMonthly
+              ? {
+                  pointsInMonth: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+            ...(applyToQuarterly
+              ? {
+                  pointsInQuarter: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+            ...(applyToYearly
+              ? {
+                  pointsInYear: {
+                    decrement: pointsToGrant,
+                  },
+                }
+              : {}),
+          },
+        });
+      }
+      return {
+        isSuccess: true,
+      };
+    }
+  } catch (e: any) {
+    console.log(e);
+    return {
+      isSuccess: false,
+      error:
+        "The idea cannot be deleted since there are comments or vote related to it",
     };
   }
 };

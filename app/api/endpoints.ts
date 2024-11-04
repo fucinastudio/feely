@@ -13,6 +13,9 @@ export const Endpoints = {
       user: "api/idea/workspace/user",
     },
   },
+  price: {
+    main: "api/price",
+  },
   status: {
     main: "api/status",
   },
@@ -29,6 +32,8 @@ export const Endpoints = {
     createWorkspace: "api/workspace/createWorkspace",
     uploadImage: "api/workspace/image",
     main: "api/workspace",
+    admin: "api/workspace/admin",
+    user: "api/workspace/user",
   },
   workspaceSettings: {
     main: "api/workspaceSettings",

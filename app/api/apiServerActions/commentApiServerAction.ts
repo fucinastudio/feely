@@ -190,10 +190,7 @@ export const voteComment = async (
         },
       },
     });
-    if (
-      response.comment.idea.authorId &&
-      response.comment.idea.authorId !== user.id
-    ) {
+    if (response.comment.authorId && response.comment.authorId !== user.id) {
       const pointsToGrant = Constants.pointsForReceivedUpvote;
       await prisma.userInWorkspace.update({
         where: {

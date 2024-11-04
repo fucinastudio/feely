@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
+import React, { useMemo } from "react";
+import Link from "next/link";
+import { redirect, usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import {
   LogOut,
   Settings,
@@ -16,11 +16,12 @@ import {
   Monitor,
   CircleFadingPlus,
   Map,
-} from 'lucide-react';
+  CircleFadingArrowUp,
+} from "lucide-react";
 
-import { logoutUser } from '@/app/api/apiServerActions/userApiServerActions';
-import { useAuth } from '@/context/authContext';
-import { useWorkspace } from '@/context/workspaceContext';
+import { logoutUser } from "@/app/api/apiServerActions/userApiServerActions";
+import { useAuth } from "@/context/authContext";
+import { useWorkspace } from "@/context/workspaceContext";
 import {
   Avatar,
   AvatarFallback,
@@ -51,9 +52,18 @@ import {
   DropdownMenuSubMenuContent,
   DropdownMenuRadioItem,
   DropdownMenuRadioGroup,
-} from '@fucina/ui';
-import { cn, focusRing } from '@fucina/utils';
-import UserProfileLinkComponent from '@/components/userProfileLinkComponent';
+  Dialog,
+  Tag,
+} from "@fucina/ui";
+import { cn, focusRing } from "@fucina/utils";
+import UserProfileLinkComponent from "@/components/userProfileLinkComponent";
+import UpgradePlan from "@/components/org/upgrade-plan";
+import {
+  NewWorkspaceContent,
+  NewWorkspaceTrigger,
+} from "@/components/org/new-workspace";
+import { useGetUserWorkspaces } from "@/app/api/controllers/workspaceController";
+import { getUrl } from "@/utils/utils";
 
 const Navbar = () => {
   const { setTheme, theme } = useTheme();
@@ -63,22 +73,46 @@ const Navbar = () => {
   const orgLetter = org[0];
   // Function to check if the route is active
   const isActive = (route: string) => {
-    return pathname?.split('/')[2] === route;
+    return pathname?.split("/")[2] === route;
   };
   const { user, isAdmin } = useAuth();
 
   const handleClickButton = () => {
     if (workspace?.logoUrl) {
-      window.open(workspace?.logoUrl, '_blank');
+      window.open(workspace?.logoUrl, "_blank");
     }
   };
+
+  const { data: userWorkspaces } = useGetUserWorkspaces();
+
+  const handleChangeWorkspace = (workspaceId: string) => {
+    const selectedWorkspace = userWorkspaces?.data.workspaces?.find(
+      (workspace) => workspace.id === workspaceId
+    );
+    if (!selectedWorkspace) return;
+    const baseUrl = getUrl();
+    window.open(`${baseUrl}/${selectedWorkspace.name}/ideas`, "_self");
+  };
+
+  const alreadyHasOwnedWorkspace = useMemo(() => {
+    return !!user?.workspaces.find((workspace) => {
+      return workspace.ownerId === user.id;
+    });
+  }, [user]);
+
+  const handleCreateFreeWorkspace = () => {
+    if (!alreadyHasOwnedWorkspace) {
+      redirect("/signup");
+    }
+  };
+
   return (
     <div className="z-50 fixed flex justify-center items-center border-default bg-background border-b w-full h-14">
       <div className="flex justify-between items-center mx-auto px-5 sm:px-10 w-full max-w-screen-xl">
         <div className="flex justify-center items-center space-x-4 h-9">
           <button
             onClick={handleClickButton}
-            className={cn('rounded', focusRing)}
+            className={cn("rounded", focusRing)}
           >
             <div className="flex justify-center items-center space-x-2 h-9">
               <Avatar size="md">
@@ -110,7 +144,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('ideas')}>
+                      <NavigationMenuLink active={isActive("ideas")}>
                         Ideas
                       </NavigationMenuLink>
                     </Link>
@@ -124,7 +158,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('roadmap')}>
+                      <NavigationMenuLink active={isActive("roadmap")}>
                         Roadmap
                       </NavigationMenuLink>
                     </Link>
@@ -138,7 +172,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('community')}>
+                      <NavigationMenuLink active={isActive("community")}>
                         Community
                       </NavigationMenuLink>
                     </Link>
@@ -152,7 +186,7 @@ const Navbar = () => {
                       legacyBehavior
                       passHref
                     >
-                      <NavigationMenuLink active={isActive('settings')}>
+                      <NavigationMenuLink active={isActive("settings")}>
                         Settings
                       </NavigationMenuLink>
                     </Link>
@@ -163,156 +197,194 @@ const Navbar = () => {
           )}
         </div>
         <div className="md:flex space-x-2 hidden">
-          <DropdownMenu>
-            <DropdownMenuTrigger className={cn('rounded-full', focusRing)}>
-              <Avatar size="lg" className="hover:cursor-pointer">
-                <AvatarImage
-                  src={user?.image_url ?? undefined}
-                  alt={user?.name ?? undefined}
-                />
-                <AvatarFallback className="capitalize">
-                  {user?.name?.[0]}
-                </AvatarFallback>
-              </Avatar>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel className="pt-1 pb-0 h-7 !text">
-                {user?.name}
-              </DropdownMenuLabel>
-              <DropdownMenuLabel className="pt-0 pb-1 h-7 !font-normal text-md">
-                {user?.email}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <UserProfileLinkComponent userId={user?.id ?? null}>
-                  <DropdownMenuItem>
-                    <User />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                </UserProfileLinkComponent>
-                <Link href={`/${org}/account/settings/profile`} scroll={false}>
-                  <DropdownMenuItem>
-                    <Settings />
-                    <span>Settings</span>
-                  </DropdownMenuItem>
-                </Link>
-                {/*
-                {isAdmin && (
+          {/* 
+          Commented for the moment while we implement legal stuff
+          {isAdmin && workspace?.isPro === false && (
+            <UpgradePlan asChild={true}>
+              <Button variant="secondary">Upgrade plan</Button>
+            </UpgradePlan>
+          )} */}
+          <Dialog>
+            <DropdownMenu>
+              <DropdownMenuTrigger className={cn("rounded-full", focusRing)}>
+                <Avatar size="lg" className="hover:cursor-pointer">
+                  <AvatarImage
+                    src={user?.image_url ?? undefined}
+                    alt={user?.name ?? undefined}
+                  />
+                  <AvatarFallback className="capitalize">
+                    {user?.name?.[0]}
+                  </AvatarFallback>
+                </Avatar>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel className="pt-1 pb-0 h-7 !text">
+                  {user?.name}
+                </DropdownMenuLabel>
+                <DropdownMenuLabel className="pt-0 pb-1 h-7 !font-normal text-md">
+                  {user?.email}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <UserProfileLinkComponent userId={user?.id ?? null}>
+                    <DropdownMenuItem>
+                      <User />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                  </UserProfileLinkComponent>
+                  <Link
+                    href={`/${org}/account/settings/profile`}
+                    scroll={false}
+                  >
+                    <DropdownMenuItem>
+                      <Settings />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  {/*
+                  Commented for the moment while we implement legal stuff
+                   {isAdmin && (
+                    <DropdownMenuSubMenu>
+                      <DropdownMenuSubMenuTrigger>
+                        <Grip />
+                        <span>Workspaces</span>
+                      </DropdownMenuSubMenuTrigger>
+                      <DropdownMenuSubMenuContent className="w-64">
+                        <DropdownMenuRadioGroup
+                          value={workspace?.id}
+                          onValueChange={handleChangeWorkspace}
+                        >
+                          {userWorkspaces?.data.workspaces?.map(
+                            (userWorkspace) => {
+                              return (
+                                <DropdownMenuRadioItem
+                                  value={userWorkspace.id}
+                                  key={userWorkspace.id}
+                                >
+                                  <Avatar size="sm">
+                                    <AvatarImage
+                                      src={userWorkspace.imageUrl ?? undefined}
+                                      alt={
+                                        userWorkspace.externalName ?? undefined
+                                      }
+                                    />
+                                    <AvatarFallback className="capitalize">
+                                      {userWorkspace.externalName?.[0]}
+                                    </AvatarFallback>
+                                  </Avatar>
+                                  <div className="flex justify-between items-center gap-1 w-full">
+                                    <span className="line-clamp-1">
+                                      {userWorkspace.externalName}
+                                    </span>
+                                    <Tag
+                                      variant={
+                                        userWorkspace.isPro
+                                          ? "brand"
+                                          : "neutral"
+                                      }
+                                    >
+                                      {userWorkspace.isPro ? "Pro" : "Free"}
+                                    </Tag>
+                                  </div>
+                                </DropdownMenuRadioItem>
+                              );
+                            }
+                          )}
+                        </DropdownMenuRadioGroup>
+                        
+                        <DropdownMenuSeparator />
+                        {alreadyHasOwnedWorkspace ? (
+                          <NewWorkspaceTrigger>
+                            <DropdownMenuItem>
+                              <CirclePlus />
+                              <span>Create new Workspace</span>
+                            </DropdownMenuItem>
+                          </NewWorkspaceTrigger>
+                        ) : (
+                          <DropdownMenuItem onClick={handleCreateFreeWorkspace}>
+                            <CirclePlus />
+                            <span>Create new Workspace</span>
+                          </DropdownMenuItem>
+                        )} 
+                      </DropdownMenuSubMenuContent>
+                    </DropdownMenuSubMenu>
+                  )} */}
                   <DropdownMenuSubMenu>
                     <DropdownMenuSubMenuTrigger>
-                      <Grip />
-                      <span>Workspaces</span>
+                      <>
+                        {theme === "dark" ? (
+                          <Moon />
+                        ) : theme === "light" ? (
+                          <Sun />
+                        ) : (
+                          <Monitor />
+                        )}
+                        <span>Theme</span>
+                      </>
                     </DropdownMenuSubMenuTrigger>
-                    <DropdownMenuSubMenuContent className="w-64">
-                      <DropdownMenuRadioGroup value="fucina">
-                        <DropdownMenuRadioItem value="fucina">
-                          <Avatar size="sm">
-                            <AvatarImage
-                              src={workspace?.imageUrl ?? undefined}
-                              alt={workspace?.externalName ?? undefined}
-                            />
-                            <AvatarFallback className="capitalize">
-                              {workspace?.externalName?.[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>Fucina</span>
+                    <DropdownMenuSubMenuContent className="w-40">
+                      <DropdownMenuRadioGroup value={theme}>
+                        <DropdownMenuRadioItem
+                          value="light"
+                          onClick={() => setTheme("light")}
+                        >
+                          <Sun />
+                          <span>Light</span>
                         </DropdownMenuRadioItem>
-                        <DropdownMenuRadioItem value="pedro">
-                          <Avatar size="sm">
-                            <AvatarImage
-                              src={workspace?.imageUrl ?? undefined}
-                              alt={workspace?.externalName ?? undefined}
-                            />
-                            <AvatarFallback className="capitalize">
-                              {workspace?.externalName?.[0]}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span>Pedro</span>
+                        <DropdownMenuRadioItem
+                          value="dark"
+                          onClick={() => setTheme("dark")}
+                        >
+                          <Moon />
+                          <span>Dark</span>
+                        </DropdownMenuRadioItem>
+                        <DropdownMenuRadioItem
+                          value="system"
+                          onClick={() => setTheme("system")}
+                        >
+                          <Monitor />
+                          <span>System</span>
                         </DropdownMenuRadioItem>
                       </DropdownMenuRadioGroup>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem>
-                        <CirclePlus />
-                        <span>Create new Workspace</span>
-                      </DropdownMenuItem>
                     </DropdownMenuSubMenuContent>
                   </DropdownMenuSubMenu>
-                )}
-                */}
-                <DropdownMenuSubMenu>
-                  <DropdownMenuSubMenuTrigger>
-                    {theme === 'dark' ? (
-                      <>
-                        <Moon /> <span>Theme</span>
-                      </>
-                    ) : theme === 'light' ? (
-                      <>
-                        <Sun /> <span>Theme</span>
-                      </>
-                    ) : (
-                      <>
-                        <Monitor /> <span>Theme</span>
-                      </>
-                    )}
-                  </DropdownMenuSubMenuTrigger>
-                  <DropdownMenuSubMenuContent className="w-40">
-                    <DropdownMenuRadioGroup value={theme}>
-                      <DropdownMenuRadioItem
-                        value="light"
-                        onClick={() => setTheme('light')}
-                      >
-                        <Sun />
-                        <span>Light</span>
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem
-                        value="dark"
-                        onClick={() => setTheme('dark')}
-                      >
-                        <Moon />
-                        <span>Dark</span>
-                      </DropdownMenuRadioItem>
-                      <DropdownMenuRadioItem
-                        value="system"
-                        onClick={() => setTheme('system')}
-                      >
-                        <Monitor />
-                        <span>System</span>
-                      </DropdownMenuRadioItem>
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuSubMenuContent>
-                </DropdownMenuSubMenu>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <Link href={'https://app.feely.so/feely/ideas'} target="_blank">
-                  <DropdownMenuItem>
-                    <CircleFadingPlus />
-                    <span>Feature requests</span>
-                  </DropdownMenuItem>
-                </Link>
-                <Link
-                  href={`https://app.feely.so/feely/roadmap`}
-                  target="_blank"
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuGroup>
+                  <Link
+                    href={"https://app.feely.so/feely/ideas"}
+                    target="_blank"
+                  >
+                    <DropdownMenuItem>
+                      <CircleFadingPlus />
+                      <span>Feature requests</span>
+                    </DropdownMenuItem>
+                  </Link>
+                  <Link
+                    href={`https://app.feely.so/feely/roadmap`}
+                    target="_blank"
+                  >
+                    <DropdownMenuItem>
+                      <Map />
+                      <span>Roadmap</span>
+                    </DropdownMenuItem>
+                  </Link>
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={async (e: any) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    await logoutUser();
+                  }}
                 >
-                  <DropdownMenuItem>
-                    <Map />
-                    <span>Roadmap</span>
-                  </DropdownMenuItem>
-                </Link>
-              </DropdownMenuGroup>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={async (e: any) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  await logoutUser();
-                }}
-              >
-                <LogOut />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  <LogOut />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <NewWorkspaceContent />
+          </Dialog>
         </div>
         <div className="flex md:hidden">
           <Sheet>
@@ -333,7 +405,7 @@ const Navbar = () => {
                     <Skeleton className="w-20 h-7" />
                   </div>
                 ) : (
-                  <NavigationMenu className="w-full">
+                  <NavigationMenu className="w-full [&>div]:w-full">
                     <NavigationMenuList
                       orientation="vertical"
                       className="w-full"
@@ -343,7 +415,7 @@ const Navbar = () => {
                           <SheetClose asChild>
                             <Link href={`/${org}/ideas`} scroll={false}>
                               <NavigationMenuLink
-                                active={isActive('ideas')}
+                                active={isActive("ideas")}
                                 className="justify-start w-full"
                               >
                                 Ideas
@@ -357,7 +429,7 @@ const Navbar = () => {
                           <SheetClose asChild>
                             <Link href={`/${org}/roadmap`} scroll={false}>
                               <NavigationMenuLink
-                                active={isActive('roadmap')}
+                                active={isActive("roadmap")}
                                 className="justify-start w-full"
                               >
                                 Roadmap
@@ -371,7 +443,7 @@ const Navbar = () => {
                           <SheetClose asChild>
                             <Link href={`/${org}/community`} scroll={false}>
                               <NavigationMenuLink
-                                active={isActive('community')}
+                                active={isActive("community")}
                                 className="justify-start w-full"
                               >
                                 Community
@@ -388,7 +460,7 @@ const Navbar = () => {
                               scroll={false}
                             >
                               <NavigationMenuLink
-                                active={isActive('settings')}
+                                active={isActive("settings")}
                                 className="justify-start w-full"
                               >
                                 Settings
@@ -401,7 +473,7 @@ const Navbar = () => {
                   </NavigationMenu>
                 )}
                 <Separator orientation="horizontal" className="my-4" />
-                <NavigationMenu className="w-full">
+                <NavigationMenu className="w-full [&>div]:w-full">
                   <NavigationMenuList orientation="vertical" className="w-full">
                     <NavigationMenuItem className="w-full">
                       <UserProfileLinkComponent
@@ -423,7 +495,7 @@ const Navbar = () => {
                           scroll={false}
                         >
                           <NavigationMenuLink
-                            active={isActive('account')}
+                            active={isActive("account")}
                             className="justify-start w-full"
                           >
                             <Settings />
@@ -432,10 +504,22 @@ const Navbar = () => {
                         </Link>
                       </SheetClose>
                     </NavigationMenuItem>
+                    {/* 
+                    Commented for the moment while we implement legal stuff
+                    {isAdmin && workspace?.isPro === false && (
+                      <UpgradePlan asChild={true}>
+                        <NavigationMenuItem className="w-full">
+                          <NavigationMenuLink className="justify-start w-full">
+                            <CircleFadingArrowUp />
+                            Upgrade plan
+                          </NavigationMenuLink>
+                        </NavigationMenuItem>
+                      </UpgradePlan>
+                    )} */}
                   </NavigationMenuList>
                 </NavigationMenu>
                 <Separator orientation="horizontal" className="my-4" />
-                <NavigationMenu className="w-full">
+                <NavigationMenu className="w-full [&>div]:w-full">
                   <NavigationMenuList orientation="vertical" className="w-full">
                     <NavigationMenuItem className="w-full">
                       <Link href="https://app.feely.so/ideas" target="_blank">
@@ -456,7 +540,7 @@ const Navbar = () => {
                   </NavigationMenuList>
                 </NavigationMenu>
                 <Separator orientation="horizontal" className="my-4" />
-                <NavigationMenu className="w-full">
+                <NavigationMenu className="w-full [&>div]:w-full">
                   <NavigationMenuList orientation="vertical" className="w-full">
                     <NavigationMenuItem className="w-full">
                       <NavigationMenuLink

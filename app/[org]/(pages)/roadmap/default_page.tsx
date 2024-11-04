@@ -1,15 +1,17 @@
-'use client';
+"use client";
 
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
-import { useWorkspace } from '@/context/workspaceContext';
-import useMainPageFilters from '@/components/filters/filters';
-import FiltersComponentObject from '@/components/filters/filtersComponent';
-import StatusColumn from '@/app/[org]/(pages)/roadmap/components/statusColumn';
-import { useGetIdeasByWorkspaceName } from '@/app/api/controllers/ideaController';
-import { IdeaType } from '@/types/idea';
-import { Skeleton } from '@fucina/ui';
-import Loading from '@/app/loading';
+import { useWorkspace } from "@/context/workspaceContext";
+import useMainPageFilters from "@/components/filters/filters";
+import FiltersComponentObject from "@/components/filters/filtersComponent";
+import StatusColumn from "@/app/[org]/(pages)/roadmap/components/statusColumn";
+import { useGetIdeasByWorkspaceName } from "@/app/api/controllers/ideaController";
+import { IdeaType } from "@/types/idea";
+import { Skeleton } from "@fucina/ui";
+import Loading from "@/app/loading";
+
+export const allowedStatuses = ["Planned", "In progress", "Completed"];
 
 const RoadmapPage = () => {
   const { org, workspace, statuses, topics } = useWorkspace();
@@ -23,6 +25,7 @@ const RoadmapPage = () => {
   } = useMainPageFilters({
     topics: topics ?? [],
     statuses: statuses ?? [],
+    roadmapStatuses: true,
   });
 
   const { data: allIdeas } = useGetIdeasByWorkspaceName({
@@ -34,7 +37,6 @@ const RoadmapPage = () => {
   });
 
   const statusesToRender = useMemo(() => {
-    const allowedStatuses = ['Planned', 'In progress', 'Completed'];
     const filteredStatuses = statuses?.filter((status) =>
       allowedStatuses.includes(status.name)
     );

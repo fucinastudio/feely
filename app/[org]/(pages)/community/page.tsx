@@ -56,6 +56,10 @@ const Community = () => {
       <div className="flex flex-col space-y-1 border-default bg-background p-1 border rounded-lg w-full">
         {isLoadingUsersInWorkspace ? (
           <Loading className="w-full min-h-[60vh]" />
+        ) : usersInWorkspace?.data.usersInWorkspace?.length === 0 ? (
+          <div className="flex justify-center items-center w-full min-h-[60vh] text-description">
+            <p>No user found.</p>
+          </div>
         ) : (
           usersInWorkspace?.data.usersInWorkspace?.map((user, index) => {
             const isLastItem =

@@ -16,6 +16,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  Switch,
+  Label,
 } from "@fucina/ui";
 import { useWorkspace } from "@/context/workspaceContext";
 import Loading from "@/app/loading";
@@ -24,6 +26,9 @@ import {
   useCheckWorkspaceExistance,
   usePatchWorkspace,
 } from "@/app/api/controllers/workspaceController";
+import { useOptimistic } from "@/utils/useOptimistic";
+import { usePatchWorkspaceSettings } from "@/app/api/controllers/workspaceSettingsController";
+import UpgradePlan from "@/components/org/upgrade-plan";
 
 function General() {
   const {
@@ -53,7 +58,7 @@ function General() {
     logoLink: z.string().optional(),
   });
 
-  const { org, workspace, isLoadingWorkspace } = useWorkspace();
+  const { org, workspace, isLoadingWorkspace, isProWorkspace } = useWorkspace();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -105,6 +110,21 @@ function General() {
       }
     })(event);
   };
+
+  const { mutateAsync: patchWorkspaceSettingsAsync } =
+    usePatchWorkspaceSettings();
+
+  const [optimisticShowBranding, handleChangeOptimisticShowBranding] =
+    useOptimistic({
+      mainState: workspace?.workspaceSettings?.showBranding,
+      callOnChange: (state: boolean | undefined) => {
+        if (!workspace) return;
+        patchWorkspaceSettingsAsync({
+          workspaceName: workspace?.name,
+          showBranding: state,
+        });
+      },
+    });
 
   return (
     <div className="flex flex-col gap-5 md:gap-6 w-full">
@@ -176,10 +196,25 @@ function General() {
                       </FormItem>
                     )}
                   />
+                  {/* 
+                  Commented for the moment while we implement legal stuff
+                  <Separator />
+                  <div className="flex justify-between items-center w-full">
+                    <Label>Show feely branding</Label>
+                    {isProWorkspace ? (
+                      <Switch
+                        checked={optimisticShowBranding}
+                        onCheckedChange={handleChangeOptimisticShowBranding}
+                      />
+                    ) : (
+                      <UpgradePlan asChild={false}>
+                        <Switch checked={true} disabled />
+                      </UpgradePlan>
+                    )}
+                  </div> */}
                 </div>
               </div>
             )}
-
             <div className="flex justify-end items-center border-default px-5 md:px-6 py-4 border-t w-full">
               <Button
                 isLoading={isLoading || isLoadingCheckWorkspaceExistance}
@@ -195,9 +230,10 @@ function General() {
       </div>
 
       {/*To be implemented */}
-      {/* <div className="border-danger bg-card border rounded-lg w-full overflow-hidden">
-        <div className="flex flex-col gap-1 p-5 md:p-6 border-b border-b-danger">
-          <h2 className="text-heading-subsection">Delete Company</h2>
+      {/*
+      <div className="border-danger-subtlest bg-card border rounded-lg w-full overflow-hidden">
+        <div className="flex flex-col gap-1 p-5 md:p-6 border-b border-b-danger-subtlest">
+          <h2 className="text-heading-subsection">Delete Workspace</h2>
           <p className="text-description text-md">
             Permanently remove your account and all of its contents from the
             feely platform. This action is not reversible, so please continue
@@ -205,9 +241,19 @@ function General() {
           </p>
         </div>
         <div className="flex justify-end items-center bg-danger-subtlest px-5 md:px-6 py-4 w-full">
-          <Button variant="danger">Delete company</Button>
+          <DeleteDialog>
+            <DeleteDialogTrigger>
+              <Button variant="danger">Delete workspace</Button>
+            </DeleteDialogTrigger>
+            <DeleteDialogContent
+              title="Are you absolutely sure?"
+              description="This action cannot be undone. This will permanently delete the workspace and remove all data from our servers."
+              onClick={() => console.log('Pedro')}
+            />
+          </DeleteDialog>
         </div>
-      </div> */}
+      </div>
+      */}
     </div>
   );
 }

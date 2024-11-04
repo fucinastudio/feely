@@ -1,6 +1,7 @@
 import axios, { Method } from "axios";
 
 import { createClient } from "@/utils/supabase/client";
+import { getUrl } from "@/utils/utils";
 
 export interface FeelyRequest {
   url: string;
@@ -18,12 +19,7 @@ const client = async (req: FeelyRequest) => {
   const supabase = createClient();
   const { data: dataSession } = await supabase.auth.getSession();
   const { url, config } = req;
-  const baseUrl =
-    (process.env.NEXT_PUBLIC_VERCEL_ENV === "development"
-      ? "http://"
-      : "https://") +
-    process.env.NEXT_PUBLIC_VERCEL_URL +
-    "/";
+  const baseUrl = getUrl();
   return axios(`${baseUrl}${url}`, {
     ...config,
     ...(dataSession && {

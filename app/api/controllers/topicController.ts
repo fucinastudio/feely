@@ -1,8 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from "react-query";
 
-import client, { FeelyRequest } from '@/app/api/apiClient';
-import { Endpoints } from '@/app/api/endpoints';
-import { TopicType } from '@/types/topic';
+import client, { FeelyRequest } from "@/app/api/apiClient";
+import { Endpoints } from "@/app/api/endpoints";
+import { TopicType } from "@/types/topic";
+import { AxiosError } from "axios";
+import { FeelyError } from "@/types/feelyError";
+import { toast } from "@fucina/ui";
 
 export const useGetTopicsByWorkspaceName = (
   params: {
@@ -16,7 +19,7 @@ export const useGetTopicsByWorkspaceName = (
   const request: FeelyRequest = {
     url: `${Endpoints.topic.main}?${urlParams.toString()}`,
     config: {
-      method: 'get',
+      method: "get",
     },
   };
   const requestConfig = {
@@ -48,7 +51,7 @@ export const useCreateTopic = () => {
     const req: FeelyRequest = {
       url: Endpoints.topic.main,
       config: {
-        method: 'POST',
+        method: "POST",
         data: JSON.stringify({ data: createTopic }),
       },
     };
@@ -76,7 +79,7 @@ export const usePatchTopic = () => {
     const req: FeelyRequest = {
       url: Endpoints.topic.main,
       config: {
-        method: 'PATCH',
+        method: "PATCH",
         data: JSON.stringify({ data: patchTopic }),
       },
     };
@@ -105,7 +108,7 @@ export const useDeleteTopic = () => {
     const req: FeelyRequest = {
       url: Endpoints.topic.main,
       config: {
-        method: 'DELETE',
+        method: "DELETE",
         data: JSON.stringify({ data: deleteTopic }),
       },
     };
@@ -114,11 +117,17 @@ export const useDeleteTopic = () => {
 
   return useMutation<
     { data: { message: string; id?: string; isSuccess: boolean } },
-    null,
+    FeelyError,
     IDeleteTopic
   >(deleteTopicFunction, {
-    onSettled: () => {
+    onSettled: (value, error, variables) => {
       queryClient.invalidateQueries([Endpoints.topic.main]);
+    },
+    onSuccess: (_d) => {
+      toast("Topic deleted successfully");
+    },
+    onError: (error) => {
+      toast.error(error.response?.data.message ?? "Error while deleting topic");
     },
   });
 };

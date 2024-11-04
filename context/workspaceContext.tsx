@@ -6,7 +6,6 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from 'react';
 
@@ -23,8 +22,6 @@ import {
   changeNeutralColor,
   changePrimaryColor,
 } from '@/utils/themes';
-import { useGetUser } from '@/app/api/controllers/userController';
-import { UserType } from '@/types/user';
 
 interface IWorkspaceContext {
   org: string;
@@ -33,6 +30,7 @@ interface IWorkspaceContext {
   statuses: StatusType[] | null;
   topics: TopicType[] | null;
   onChangeImage: () => void;
+  isProWorkspace: boolean;
 }
 
 // Create the AuthContext with default values
@@ -104,6 +102,8 @@ export const WorkspaceProvider = ({
       changeFontFamily(workspaceToExport.workspaceSettings.fontFamily);
   }, [workspaceToExport]);
 
+  const isProWorkspace = workspaceToExport?.isPro ?? false;
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -113,6 +113,7 @@ export const WorkspaceProvider = ({
         statuses: statuses?.data.statuses ?? null,
         topics: topics?.data.topics ?? null,
         onChangeImage,
+        isProWorkspace,
       }}
     >
       {children}

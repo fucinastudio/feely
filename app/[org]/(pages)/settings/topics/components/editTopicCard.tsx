@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React, { FormEvent, useRef, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { PenSquare, Trash2, Save } from 'lucide-react';
+import React, { FormEvent, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { PenSquare, Trash2, Save } from "lucide-react";
 
 import {
   Button,
@@ -16,14 +16,14 @@ import {
   FormLabel,
   toast,
   Tooltip,
-} from '@fucina/ui';
+} from "@fucina/ui";
 import {
   useDeleteTopic,
   usePatchTopic,
-} from '@/app/api/controllers/topicController';
-import { TopicType } from '@/types/topic';
-import { useWorkspace } from '@/context/workspaceContext';
-import Loading from '@/app/loading';
+} from "@/app/api/controllers/topicController";
+import { TopicType } from "@/types/topic";
+import { useWorkspace } from "@/context/workspaceContext";
+import Loading from "@/app/loading";
 
 interface IProps {
   topic: TopicType;
@@ -68,7 +68,7 @@ const EditTopicCard = ({ topic }: IProps) => {
 
   const FormSchema = z.object({
     topicName: z.string().min(2, {
-      message: 'The name of the topic should contain at least 2 letters',
+      message: "The name of the topic should contain at least 2 letters",
     }),
   });
 
@@ -147,7 +147,7 @@ const EditTopicCard = ({ topic }: IProps) => {
       </Form>
       <div className="flex items-center gap-1">
         {isLoadingPatchTopic || isLoadingDeleteTopic ? (
-          <Loading className="size-9" />
+          <Loading className="size-9 min-h-5" />
         ) : isEditing ? (
           <Tooltip content="Save changes">
             <Button variant="text" icon onClick={handleSave}>

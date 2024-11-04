@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 
 import { Button, Card, Separator } from "@fucina/ui";
@@ -13,7 +13,7 @@ import FiltersComponentObject from "@/components/filters/filtersComponent";
 import IdeasEmpty from "@/components/org/ideas-empty";
 
 const Ideas = () => {
-  const { org, workspace, statuses, topics } = useWorkspace();
+  const { org, workspace, statuses, topics, isProWorkspace } = useWorkspace();
 
   const {
     filterObjectAttributes,
@@ -35,6 +35,7 @@ const Ideas = () => {
       orderBy: selectedOrder,
     }
   );
+
   if (!workspace?.workspaceSettings?.showIdeas) {
     return <Loading className="w-full min-h-[60vh]" />;
   }

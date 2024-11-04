@@ -34,13 +34,8 @@ export type IPatchWorkspaceSettings = Prisma.workspaceSettingsUpdateInput & {
 
 export const patchWorkspaceSettings = async ({
   workspaceName,
-  showIdeas,
-  showCommunity,
-  showRoadmap,
   access_token,
-  fontFamily,
-  neutralColor,
-  primaryColor,
+  ...data
 }: IPatchWorkspaceSettings & IAccessToken) => {
   const supabase = createClient();
   const currentUser = await supabase.auth.getUser(access_token);
@@ -90,14 +85,7 @@ export const patchWorkspaceSettings = async ({
     where: {
       workspaceId: workspace.id,
     },
-    data: {
-      showIdeas,
-      showRoadmap,
-      showCommunity,
-      fontFamily,
-      neutralColor,
-      primaryColor,
-    },
+    data: data,
   });
   if (!updatedWorkspaceSettings) {
     return {
