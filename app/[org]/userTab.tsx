@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
-import { HeartHandshake, X } from 'lucide-react';
+import React, { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { HeartHandshake, X } from "lucide-react";
 
 import {
   Avatar,
@@ -22,23 +22,25 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@fucina/ui';
-import { useGetIdeaByUserInWorkspace } from '@/app/api/controllers/ideaController';
-import { useGetUserById } from '@/app/api/controllers/userController';
-import { useWorkspace } from '@/context/workspaceContext';
-import IdeaCard from '@/app/[org]/(pages)/ideas/components/idea';
-import Loading from '@/app/loading';
+} from "@fucina/ui";
+import { useGetIdeaByUserInWorkspace } from "@/app/api/controllers/ideaController";
+import { useGetUserById } from "@/app/api/controllers/userController";
+import { useWorkspace } from "@/context/workspaceContext";
+import IdeaCard from "@/app/[org]/(pages)/ideas/components/idea";
+import Loading from "@/app/loading";
+import { useAuth } from "@/context/authContext";
 
 const UserTab = () => {
   const { workspace, org } = useWorkspace();
+  const { user: userCurrentlyLogged } = useAuth();
   const searchParams = useSearchParams();
-  const userId = searchParams?.get('user');
+  const userId = searchParams?.get("user");
   const router = useRouter();
   const handleClose = () => {
     if (searchParams) {
       const newParams = new URLSearchParams(searchParams);
-      newParams.delete('user');
-      router.push(window.location.pathname + '?' + newParams.toString());
+      newParams.delete("user");
+      router.push(window.location.pathname + "?" + newParams.toString());
     } else {
       router.push(window.location.pathname);
     }
@@ -50,13 +52,18 @@ const UserTab = () => {
     isLoading: isLoadingGetUserById,
   } = useGetUserById(
     {
-      workspaceId: workspace?.id ?? '',
-      userId: userId ?? '',
+      workspaceId: workspace?.id ?? "",
+      userId: userId ?? "",
     },
     !!userId && !!workspace?.id
   );
-
-  const user = userFromDb?.data.user;
+  const user = useMemo(() => {
+    //This means that a user is trying to access his own profile but has not interacted with the workspace yet
+    if (errorGetUserById && userCurrentlyLogged?.id === userId) {
+      return { ...userCurrentlyLogged, points: 0 };
+    }
+    return userFromDb?.data?.user;
+  }, [userFromDb, errorGetUserById, userId, userCurrentlyLogged]);
 
   const {
     data: ideasByUserInWorkspace,
@@ -64,7 +71,7 @@ const UserTab = () => {
   } = useGetIdeaByUserInWorkspace(
     {
       userId: userId!,
-      workspaceId: workspace?.id ?? '',
+      workspaceId: workspace?.id ?? "",
     },
     !!user && !!userId && !!workspace
   );
@@ -139,7 +146,6 @@ const UserTab = () => {
                 {(isLoadingIdeaByUserInWorkspace || isLoadingGetUserById) && (
                   <Loading className="p-10 w-full" />
                 )}
-                {errorGetUserById && <div>{errorGetUserById}</div>}
                 {ideasByUserInWorkspace?.data.ideas.length === 0 ? (
                   <div className="flex justify-center items-center w-full min-h-[40vh] text-description">
                     <p>No ideas found.</p>
