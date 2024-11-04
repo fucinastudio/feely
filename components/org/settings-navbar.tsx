@@ -60,6 +60,8 @@ const SettingsNavbar = () => {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
+        {/* 
+        Commented for the moment while we implement legal stuff
         <NavigationMenuItem className="w-full">
           <Link href={`/${org}/settings/members`} legacyBehavior passHref>
             <NavigationMenuLink
@@ -69,7 +71,7 @@ const SettingsNavbar = () => {
               Members
             </NavigationMenuLink>
           </Link>
-        </NavigationMenuItem>
+        </NavigationMenuItem> */}
         <NavigationMenuItem className="w-full">
           <Link href={`/${org}/settings/topics`} legacyBehavior passHref>
             <NavigationMenuLink
@@ -104,6 +106,8 @@ const SettingsNavbar = () => {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
+        {/* 
+        Commented for the moment while we implement legal stuff
         {isProWorkspace && (
           <NavigationMenuItem className="w-full">
             <NavigationMenuLink
@@ -113,7 +117,7 @@ const SettingsNavbar = () => {
               Billing
             </NavigationMenuLink>
           </NavigationMenuItem>
-        )}
+        )} */}
       </NavigationMenuList>
     </NavigationMenu>
   );

@@ -116,8 +116,13 @@ const UpgradeCard = ({ price, payment }: UpgradeCardProps) => {
         </div>
       </div>
       <Separator />
+      {/* 
+      Commented for the moment while we implement legal stuff
       <Button className="w-full" onClick={() => handleClick()}>
         Upgrade to Pro
+      </Button> */}
+      <Button className="w-full" disabled>
+        Coming soon...
       </Button>
     </Card>
   );

@@ -25,6 +25,8 @@ export async function checkoutWithStripe(
   workspaceId: string,
   redirectPath: string = "/redirect_to_workspace"
 ): Promise<CheckoutResponse> {
+  //Commented for the moment while we implement legal stuff
+  throw new Error("Not implemented");
   try {
     // Get the user from Supabase auth
     const supabase = createClient();
@@ -44,7 +46,7 @@ export async function checkoutWithStripe(
       workspace = await prisma.workspace.findFirst({
         where: {
           id: workspaceId,
-          ownerId: user.id,
+          ownerId: user?.id,
         },
       });
     } catch (err) {
@@ -115,7 +117,7 @@ export async function checkoutWithStripe(
   } catch (error) {
     if (error instanceof Error) {
       return {
-        errorRedirect: error.message,
+        errorRedirect: (error as any).message,
       };
     } else {
       return {
@@ -130,6 +132,8 @@ export async function checkoutWithStripeNewWorkspace(
   workspaceName: string,
   redirectPath: string = "/redirect_to_workspace"
 ): Promise<CheckoutResponse> {
+  //Commented for the moment while we implement legal stuff
+  throw new Error("Not implemented");
   try {
     // Get the user from Supabase auth
     const supabase = createClient();
@@ -208,7 +212,7 @@ export async function checkoutWithStripeNewWorkspace(
   } catch (error) {
     if (error instanceof Error) {
       return {
-        errorRedirect: error.message,
+        errorRedirect: (error as any).message,
       };
     } else {
       return {
@@ -222,6 +226,8 @@ export async function createStripePortal(
   workspaceId: string,
   currentPath: string
 ) {
+  //Commented for the moment while we implement legal stuff
+  throw new Error("Not implemented");
   try {
     const supabase = createClient();
     const {
@@ -241,7 +247,7 @@ export async function createStripePortal(
       workspace = await prisma.workspace.findFirst({
         where: {
           id: workspaceId,
-          ownerId: user.id,
+          ownerId: user?.id,
         },
       });
     } catch (err) {
@@ -256,7 +262,7 @@ export async function createStripePortal(
     try {
       customer = await createOrRetrieveCustomer({
         uuid: workspaceId,
-        email: user.email || "",
+        email: user?.email || "",
       });
     } catch (err) {
       console.error(err);
