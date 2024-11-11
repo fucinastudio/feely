@@ -241,74 +241,80 @@ const Navbar = () => {
                       <span>Settings</span>
                     </DropdownMenuItem>
                   </Link>
-                  {/*
-                  Commented for the moment while we implement legal stuff
-                   {isAdmin && (
-                    <DropdownMenuSubMenu>
-                      <DropdownMenuSubMenuTrigger>
-                        <Grip />
-                        <span>Workspaces</span>
-                      </DropdownMenuSubMenuTrigger>
-                      <DropdownMenuSubMenuContent className="w-64">
-                        <DropdownMenuRadioGroup
-                          value={workspace?.id}
-                          onValueChange={handleChangeWorkspace}
-                        >
-                          {userWorkspaces?.data.workspaces?.map(
-                            (userWorkspace) => {
-                              return (
-                                <DropdownMenuRadioItem
-                                  value={userWorkspace.id}
-                                  key={userWorkspace.id}
-                                >
-                                  <Avatar size="sm">
-                                    <AvatarImage
-                                      src={userWorkspace.imageUrl ?? undefined}
-                                      alt={
-                                        userWorkspace.externalName ?? undefined
-                                      }
-                                    />
-                                    <AvatarFallback className="capitalize">
-                                      {userWorkspace.externalName?.[0]}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex justify-between items-center gap-1 w-full">
-                                    <span className="line-clamp-1">
-                                      {userWorkspace.externalName}
-                                    </span>
-                                    <Tag
-                                      variant={
-                                        userWorkspace.isPro
-                                          ? "brand"
-                                          : "neutral"
-                                      }
-                                    >
-                                      {userWorkspace.isPro ? "Pro" : "Free"}
-                                    </Tag>
-                                  </div>
-                                </DropdownMenuRadioItem>
-                              );
-                            }
-                          )}
-                        </DropdownMenuRadioGroup>
-                        
-                        <DropdownMenuSeparator />
-                        {alreadyHasOwnedWorkspace ? (
-                          <NewWorkspaceTrigger>
-                            <DropdownMenuItem>
+                  {isAdmin &&
+                    userWorkspaces?.data.workspaces?.length &&
+                    userWorkspaces.data.workspaces.length > 1 && (
+                      <DropdownMenuSubMenu>
+                        <DropdownMenuSubMenuTrigger>
+                          <Grip />
+                          <span>Workspaces</span>
+                        </DropdownMenuSubMenuTrigger>
+                        <DropdownMenuSubMenuContent className="w-64">
+                          <DropdownMenuRadioGroup
+                            value={workspace?.id}
+                            onValueChange={handleChangeWorkspace}
+                          >
+                            {userWorkspaces?.data.workspaces?.map(
+                              (userWorkspace) => {
+                                return (
+                                  <DropdownMenuRadioItem
+                                    value={userWorkspace.id}
+                                    key={userWorkspace.id}
+                                  >
+                                    <Avatar size="sm">
+                                      <AvatarImage
+                                        src={
+                                          userWorkspace.imageUrl ?? undefined
+                                        }
+                                        alt={
+                                          userWorkspace.externalName ??
+                                          undefined
+                                        }
+                                      />
+                                      <AvatarFallback className="capitalize">
+                                        {userWorkspace.externalName?.[0]}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex justify-between items-center gap-1 w-full">
+                                      <span className="line-clamp-1">
+                                        {userWorkspace.externalName}
+                                      </span>
+                                      <Tag
+                                        variant={
+                                          userWorkspace.isPro
+                                            ? "brand"
+                                            : "neutral"
+                                        }
+                                      >
+                                        {userWorkspace.isPro ? "Pro" : "Free"}
+                                      </Tag>
+                                    </div>
+                                  </DropdownMenuRadioItem>
+                                );
+                              }
+                            )}
+                          </DropdownMenuRadioGroup>
+
+                          {/* <DropdownMenuSeparator />
+                          {alreadyHasOwnedWorkspace ? (
+                            <NewWorkspaceTrigger>
+                              <DropdownMenuItem>
+                                <CirclePlus />
+                                <span>Create new Workspace</span>
+                              </DropdownMenuItem>
+                            </NewWorkspaceTrigger>
+                          ) 
+                          : (
+                            <DropdownMenuItem
+                              onClick={handleCreateFreeWorkspace}
+                            >
                               <CirclePlus />
                               <span>Create new Workspace</span>
                             </DropdownMenuItem>
-                          </NewWorkspaceTrigger>
-                        ) : (
-                          <DropdownMenuItem onClick={handleCreateFreeWorkspace}>
-                            <CirclePlus />
-                            <span>Create new Workspace</span>
-                          </DropdownMenuItem>
-                        )} 
-                      </DropdownMenuSubMenuContent>
-                    </DropdownMenuSubMenu>
-                  )} */}
+                          )} */}
+                        </DropdownMenuSubMenuContent>
+                      </DropdownMenuSubMenu>
+                    )}
                   <DropdownMenuSubMenu>
                     <DropdownMenuSubMenuTrigger>
                       <>
