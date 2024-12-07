@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import React from "react";
+import { usePathname, useRouter } from "next/navigation";
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@fucina/ui';
-import NewIdeaForm from '@/app/[org]/(pages)/ideas/new_idea/new_idea_form';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@fucina/ui";
+import NewIdeaForm from "@/app/[org]/(pages)/ideas/new_idea/new_idea_form";
 
 const NewIdeaPage = () => {
   const router = useRouter();
   const pathName = usePathname();
   const handleClose = () => {
-    router.push(pathName?.split('/new_idea')[0] ?? '/');
+    router.push(pathName?.split("/new_idea")[0] ?? "/");
   };
   return (
     <div>

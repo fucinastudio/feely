@@ -28,7 +28,8 @@ const useMainPageFilters = ({
   const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
-  const [selectedOrder, setSelectedOrder] = useState<IIdeasOrdering>("latest");
+  const [selectedOrder, setSelectedOrder] =
+    useState<IIdeasOrdering>("most_voted");
 
   return {
     filterObjectAttributes: {

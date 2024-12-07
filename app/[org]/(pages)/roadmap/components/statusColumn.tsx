@@ -1,15 +1,15 @@
-import React from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Inbox } from 'lucide-react';
+import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Inbox } from "lucide-react";
 
-import { Button, Separator } from '@fucina/ui';
-import IdeaCard from '@/app/[org]/(pages)/roadmap/components/idea';
-import Loading from '@/app/loading';
-import { IdeaType } from '@/types/idea';
-import { StatusTagColumn } from '@/utils/parseStatus';
-import { useWorkspace } from '@/context/workspaceContext';
-import IdeasEmpty from '@/components/org/ideas-empty';
+import { Button, Separator } from "@fucina/ui";
+import IdeaCard from "@/app/[org]/(pages)/roadmap/components/idea";
+import Loading from "@/app/loading";
+import { IdeaType } from "@/types/idea";
+import { StatusTagColumn } from "@/utils/parseStatus";
+import { useWorkspace } from "@/context/workspaceContext";
+import IdeasEmpty from "@/components/org/ideas-empty";
 
 interface IProps {
   status: string;
@@ -17,7 +17,7 @@ interface IProps {
 }
 
 const StatusColumn = ({ status, ideas }: IProps) => {
-  const { org } = useWorkspace();
+  const { org, workspace } = useWorkspace();
 
   const router = useRouter();
 
@@ -36,11 +36,19 @@ const StatusColumn = ({ status, ideas }: IProps) => {
       ) : ideas.length === 0 ? (
         <IdeasEmpty
           title="No ideas found"
-          description="Be brave. Leave the first one."
+          description={
+            workspace?.workspaceSettings?.allowNewIdeas
+              ? "Be brave. Leave the first one."
+              : ""
+          }
           button={
-            <Button variant="secondary" className="mt-3" asChild>
-              <Link href={`/${org}/roadmap/new_idea`}>New idea</Link>
-            </Button>
+            workspace?.workspaceSettings?.allowNewIdeas ? (
+              <Button variant="secondary" className="mt-3" asChild>
+                <Link href={`/${org}/ideas/new_idea`}>New idea</Link>
+              </Button>
+            ) : (
+              <></>
+            )
           }
         />
       ) : (
@@ -49,7 +57,7 @@ const StatusColumn = ({ status, ideas }: IProps) => {
             const isLastItem = index === ideas.length - 1;
             return (
               <>
-                <IdeaCard idea={idea} org={org} key={idea.id} />{' '}
+                <IdeaCard idea={idea} org={org} key={idea.id} />{" "}
                 {!isLastItem && <Separator />}
               </>
             );

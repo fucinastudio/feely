@@ -49,11 +49,19 @@ const Ideas = () => {
         ) : ideas?.data.ideas.length === 0 ? (
           <IdeasEmpty
             title="No ideas found"
-            description="Be brave. Leave the first one."
+            description={
+              workspace?.workspaceSettings?.allowNewIdeas
+                ? "Be brave. Leave the first one."
+                : ""
+            }
             button={
-              <Button variant="secondary" className="mt-3" asChild>
-                <Link href={`/${org}/ideas/new_idea`}>New idea</Link>
-              </Button>
+              workspace?.workspaceSettings?.allowNewIdeas ? (
+                <Button variant="secondary" className="mt-3" asChild>
+                  <Link href={`/${org}/ideas/new_idea`}>New idea</Link>
+                </Button>
+              ) : (
+                <></>
+              )
             }
           />
         ) : (

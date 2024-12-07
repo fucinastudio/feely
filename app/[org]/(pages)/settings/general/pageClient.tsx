@@ -114,14 +114,25 @@ function General() {
   const { mutateAsync: patchWorkspaceSettingsAsync } =
     usePatchWorkspaceSettings();
 
-  const [optimisticShowBranding, handleChangeOptimisticShowBranding] =
+  // const [optimisticShowBranding, handleChangeOptimisticShowBranding] =
+  //   useOptimistic({
+  //     mainState: workspace?.workspaceSettings?.showBranding,
+  //     callOnChange: (state: boolean | undefined) => {
+  //       if (!workspace) return;
+  //       patchWorkspaceSettingsAsync({
+  //         workspaceName: workspace?.name,
+  //         showBranding: state,
+  //       });
+  //     },
+  //   });
+  const [optimisticAllowNewIdea, handleChangeOptimisticAllowNewIdea] =
     useOptimistic({
-      mainState: workspace?.workspaceSettings?.showBranding,
+      mainState: workspace?.workspaceSettings?.allowNewIdeas,
       callOnChange: (state: boolean | undefined) => {
         if (!workspace) return;
         patchWorkspaceSettingsAsync({
           workspaceName: workspace?.name,
-          showBranding: state,
+          allowNewIdeas: state,
         });
       },
     });
@@ -196,9 +207,16 @@ function General() {
                       </FormItem>
                     )}
                   />
+                  <Separator />
+                  <div className="flex justify-between items-center w-full">
+                    <Label>Allow creation of new ideas</Label>
+                    <Switch
+                      checked={optimisticAllowNewIdea}
+                      onCheckedChange={handleChangeOptimisticAllowNewIdea}
+                    />
+                  </div>
                   {/* 
                   Commented for the moment while we implement legal stuff
-                  <Separator />
                   <div className="flex justify-between items-center w-full">
                     <Label>Show feely branding</Label>
                     {isProWorkspace ? (

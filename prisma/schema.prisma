@@ -62,6 +62,7 @@ model workspaceSettings {
   showIdeas     Boolean   @default(true)
   showRoadmap   Boolean   @default(true)
   showBranding  Boolean   @default(true)
+  allowNewIdeas Boolean   @default(true)
   primaryColor  String?
   neutralColor  String?
   fontFamily    String?

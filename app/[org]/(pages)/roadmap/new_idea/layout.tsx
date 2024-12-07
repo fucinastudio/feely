@@ -16,7 +16,7 @@ export default async function RootLayout({
     return <Loading className="min-h-[80vh] size-full" />;
   //If new ideas are not allowed, redirect to the home page
   if (!workspace.workspaceSettings.allowNewIdeas) {
-    redirect(`/${org}/ideas`);
+    redirect(`/${org}/roadmap`);
   }
   return (
     <Suspense fallback={<Loading className="min-h-[80vh] size-full" />}>
