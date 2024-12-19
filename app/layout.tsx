@@ -1,5 +1,5 @@
 import { Analytics } from '@vercel/analytics/react';
-import { GoogleTagManager } from '@next/third-parties/google';
+import { GoogleTagManager, GoogleAnalytics } from '@next/third-parties/google';
 
 import { ToastProvider } from '@fucina/ui';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -19,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className="font-sans">
       <GoogleTagManager gtmId="GTM-5FJ9D5DV" />
+      <GoogleAnalytics gaId="G-9BX851TF15" />
       <body className={getFontClasses()}>
         <noscript>
           <iframe
