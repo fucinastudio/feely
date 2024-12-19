@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/react';
+import { GoogleTagManager } from '@next/third-parties/google';
 
 import { ToastProvider } from '@fucina/ui';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -30,6 +31,15 @@ export default function RootLayout({
         </ReactQueryProvider>
         <ToastProvider />
         <Analytics />
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID!} />
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${process.env.NEXT_PUBLIC_GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: 'none', visibility: 'hidden' }}
+          ></iframe>
+        </noscript>
       </body>
     </html>
   );

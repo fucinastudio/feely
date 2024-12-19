@@ -17,6 +17,7 @@
     "@fucina/tailwind": "0.0.7",
     "@fucina/ui": "0.0.17",
     "@fucina/utils": "^0.0.5",
+    "@next/third-parties": "^15.1.2",
     "@prisma/client": "^5.18.0",
     "@react-three/drei": "^9.106.0",
     "@react-three/fiber": "^8.16.6",
