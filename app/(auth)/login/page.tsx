@@ -11,7 +11,9 @@ export default async function Login() {
   return (
     <Card className="relative z-30 flex flex-col space-y-6 p-6 sm:p-10 max-w-[400px]">
       <div className="flex flex-col items-center space-y-3 text-center">
-        <h1 className="text-heading-section">Welcome back</h1>
+        <h1 className="text-heading-section">
+          {isAccessingAnotherWorkspace ? "Welcome!" : "Welcome back"}
+        </h1>
         <p className="text-description text-md">
           {isAccessingAnotherWorkspace
             ? "Hey, just one more step before you can leave your idea"
