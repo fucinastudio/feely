@@ -3,6 +3,7 @@
 import React from 'react';
 import { redirect } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
+import { track } from '@vercel/analytics';
 
 import { createClient } from '@/utils/supabase/client';
 import { Button } from '@fucina/ui';
@@ -52,6 +53,7 @@ const AuthButtons = () => {
           <Button
             variant="secondary"
             className="flex justify-center items-center gap-2 w-full h-10"
+            onClick={() => track('Auth')}
           >
             <GoogleIcon />
             Continue with Google
